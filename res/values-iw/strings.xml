@@ -850,6 +850,7 @@
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"‏מצב שמדמה תקשורת לוויינית דרך ספק הסלולר (גרסת build לניפוי באגים בלבד)"</string>
     <string name="esos_satellite_string" msgid="7274794226125968657">"‏מצב בדיקה שמדמה תקשורת לוויינית eSOS (גרסת build לניפוי באגים בלבד)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"‏מצב בדיקה שמדמה תקשורת לוויינית לא במצב eSOS (גרסת build לניפוי באגים בלבד)"</string>
+    <string name="demo_esos_satellite_string" msgid="2941811482168709730">"‏מצב בדיקה שמדמה תקשורת לוויינית eSOS (גרסת build לניפוי באגים בלבד)"</string>
     <string name="radioInfo_menu_viewADN" msgid="4533179730908559846">"‏הצגת פנקס כתובות של SIM"</string>
     <string name="radioInfo_menu_viewFDN" msgid="1847236480527032061">"הצגת מספרי חיוג קבועים"</string>
     <string name="radioInfo_menu_viewSDN" msgid="2613431584522392842">"מספרי חיוג לשירות"</string>
@@ -916,7 +917,6 @@
     <string name="radio_info_smsc_label" msgid="3749927072726033763">"SMSC:"</string>
     <string name="radio_info_smsc_update_label" msgid="5141996256097115753">"עדכון"</string>
     <string name="radio_info_smsc_refresh_label" msgid="8409923721451604560">"רענון"</string>
-    <string name="radio_info_toggle_dns_check_label" msgid="1394078554927787350">"‏החלפת מצב של בדיקת DNS"</string>
     <string name="oem_radio_info_label" msgid="2914167475119997456">"‏מידע/הגדרות ספציפיים ל-OEM"</string>
     <string name="radio_info_endc_available" msgid="2983767110681230019">"‏זמין ל-EN-DC‏ (NSA):"</string>
     <string name="radio_info_dcnr_restricted" msgid="7147511536420148173">"‏מוגבל על ידי DCNR‏ (NSA):"</string>

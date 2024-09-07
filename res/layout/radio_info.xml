@@ -212,7 +212,9 @@
 
         <!-- Mock signal strength -->
         <LinearLayout style="@style/RadioInfo_entry_layout">
-            <TextView android:text="@string/radio_info_signal_strength_label" style="@style/info_label" />
+            <TextView android:id="@+id/signal_strength_label"
+                android:text="@string/radio_info_signal_strength_label"
+                style="@style/info_label" />
             <Spinner android:id="@+id/signalStrength"
                  android:layout_width="match_parent"
                  android:layout_height="wrap_content"/>
@@ -220,7 +222,9 @@
 
        <!-- Mock data network type -->
        <LinearLayout style="@style/RadioInfo_entry_layout">
-            <TextView android:text="@string/radio_info_data_network_type_label" style="@style/info_label" />
+            <TextView android:id="@+id/data_network_type_label"
+                android:text="@string/radio_info_data_network_type_label"
+                style="@style/info_label" />
             <Spinner android:id="@+id/dataNetworkType"
                  android:layout_width="match_parent"
                  android:layout_height="wrap_content"/>
@@ -538,19 +542,5 @@
                       android:layout_toStartOf="@id/update_smsc"
                       android:layout_toEndOf="@id/smsc_label" />
         </RelativeLayout>
-
-        <!-- Test setting to ignore bad DNS, useful in lab environments -->
-        <LinearLayout style="@style/RadioInfo_entry_layout">
-            <Button android:id="@+id/dns_check_toggle"
-                    android:textSize="14sp"
-                    android:layout_marginTop="8dip"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/radio_info_toggle_dns_check_label"
-                    />
-            <TextView android:id="@+id/dnsCheckState" style="@style/info_value" />
-        </LinearLayout>
-
-
     </LinearLayout>
 </ScrollView>
