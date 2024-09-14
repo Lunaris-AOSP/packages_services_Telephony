@@ -1942,12 +1942,13 @@ public class RadioInfo extends AppCompatActivity {
             intent.putExtra("action", "reset");
             mSimulateOos[mPhoneId] = false;
         }
+        mPhone.getTelephonyTester().setServiceStateTestIntent(intent);
     };
 
     private static final int SATELLITE_CHANNEL = 8665;
     private final OnCheckedChangeListener mForceSatelliteChannelOnChangeListener =
             (buttonView, isChecked) -> {
-                if (SubscriptionManager.isValidSubscriptionId(mSubId)) {
+                if (!SubscriptionManager.isValidSubscriptionId(mSubId)) {
                     loge("Force satellite channel invalid subId " + mSubId);
                     return;
                 }
