@@ -2613,7 +2613,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
             if (state != PhoneConstants.State.OFFHOOK && state != PhoneConstants.State.RINGING) {
                 Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse(url));
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mApp.startActivity(intent);
+                mApp.startActivityAsUser(intent, UserHandle.CURRENT);
             }
         } finally {
             Binder.restoreCallingIdentity(identity);
@@ -2628,7 +2628,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
         if (DBG) log("call: " + number);
 
         // This is just a wrapper around the ACTION_CALL intent, but we still
-        // need to do a permission check since we're calling startActivity()
+        // need to do a permission check since we're calling startActivityAsUser()
         // from the context of the phone app.
         enforceCallPermission();
 
@@ -2664,7 +2664,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
             Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse(url));
             intent.putExtra(SUBSCRIPTION_KEY, subId);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mApp.startActivity(intent);
+            mApp.startActivityAsUser(intent, UserHandle.CURRENT);
         } finally {
             Binder.restoreCallingIdentity(identity);
         }
@@ -2994,8 +2994,11 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     public boolean needMobileRadioShutdown() {
         enforceReadPrivilegedPermission("needMobileRadioShutdown");
 
-        enforceTelephonyFeatureWithException(getCurrentPackageName(),
-                PackageManager.FEATURE_TELEPHONY_RADIO_ACCESS, "needMobileRadioShutdown");
+        if (!mApp.getResources().getBoolean(
+                com.android.internal.R.bool.config_force_phone_globals_creation)) {
+            enforceTelephonyFeatureWithException(getCurrentPackageName(),
+                    PackageManager.FEATURE_TELEPHONY_RADIO_ACCESS, "needMobileRadioShutdown");
+        }
 
         /*
          * If any of the Radios are available, it will need to be
@@ -7631,8 +7634,12 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     public int getCarrierPrivilegeStatusForUid(int subId, int uid) {
         enforceReadPrivilegedPermission("getCarrierPrivilegeStatusForUid");
 
-        enforceTelephonyFeatureWithException(getCurrentPackageName(),
-                PackageManager.FEATURE_TELEPHONY_SUBSCRIPTION, "getCarrierPrivilegeStatusForUid");
+        if (!mApp.getResources().getBoolean(
+                    com.android.internal.R.bool.config_force_phone_globals_creation)) {
+            enforceTelephonyFeatureWithException(getCurrentPackageName(),
+                    PackageManager.FEATURE_TELEPHONY_SUBSCRIPTION,
+                    "getCarrierPrivilegeStatusForUid");
+        }
 
         return getCarrierPrivilegeStatusForUidWithPermission(subId, uid);
     }
@@ -7917,8 +7924,11 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
             return null;
         }
 
-        enforceTelephonyFeatureWithException(callingPackage,
-                PackageManager.FEATURE_TELEPHONY_SUBSCRIPTION, "getLine1NumberForDisplay");
+        if (!mApp.getResources().getBoolean(
+                    com.android.internal.R.bool.config_force_phone_globals_creation)) {
+            enforceTelephonyFeatureWithException(callingPackage,
+                    PackageManager.FEATURE_TELEPHONY_SUBSCRIPTION, "getLine1NumberForDisplay");
+        }
 
         final long identity = Binder.clearCallingIdentity();
         try {
@@ -9597,7 +9607,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
 
     private WorkSource getWorkSource(int uid) {
         String packageName = mApp.getPackageManager().getNameForUid(uid);
-        if (uid == Process.ROOT_UID && packageName == null) {
+        if (UserHandle.isSameApp(uid, Process.ROOT_UID) && packageName == null) {
             // Downstream WorkSource attribution inside the RIL requires both a UID and package name
             // to be set for wakelock tracking, otherwise RIL requests fail with a runtime
             // exception. ROOT_UID seems not to have a valid package name returned by
@@ -10400,8 +10410,11 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
                             mApp, defaultPhone.getSubId(), "isEmergencyNumber(Potential)");
         }
 
-        enforceTelephonyFeatureWithException(getCurrentPackageName(),
-                PackageManager.FEATURE_TELEPHONY_CALLING, "isEmergencyNumber");
+        if (!mApp.getResources().getBoolean(
+                com.android.internal.R.bool.config_force_phone_globals_creation)) {
+            enforceTelephonyFeatureWithException(getCurrentPackageName(),
+                    PackageManager.FEATURE_TELEPHONY_CALLING, "isEmergencyNumber");
+        }
 
         final long identity = Binder.clearCallingIdentity();
         try {
@@ -11032,7 +11045,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
         // Bring up choose default SMS subscription dialog right now
         intent.putExtra(PickSmsSubscriptionActivity.DIALOG_TYPE_KEY,
                 PickSmsSubscriptionActivity.SMS_PICK_FOR_MESSAGE);
-        mApp.startActivity(intent);
+        mApp.startActivityAsUser(intent, UserHandle.CURRENT);
     }
 
     @Override
@@ -11045,13 +11058,13 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
             Intent intent = new Intent(Intent.ACTION_SENDTO);
             intent.setData(Uri.parse("smsto:"));
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mApp.startActivity(intent);
+            mApp.startActivityAsUser(intent, UserHandle.CURRENT);
         } catch (ActivityNotFoundException e) {
             Log.w(LOG_TAG, "Unable to show intent forwarder, try showing error dialog instead");
             Intent intent = new Intent();
             intent.setClass(mApp, ErrorDialogActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            mApp.startActivity(intent);
+            mApp.startActivityAsUser(intent, UserHandle.CURRENT);
         }
     }
 
@@ -11319,7 +11332,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
         // In fact, the current code acquires way too many,
         // and probably has lurking deadlocks.
 
-        if (Binder.getCallingUid() != Process.SYSTEM_UID) {
+        if (!UserHandle.isSameApp(Binder.getCallingUid(), Process.SYSTEM_UID)) {
             throw new SecurityException("Only the OS may call notifyUserActivity()");
         }
 
@@ -12840,15 +12853,31 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
 
         Context context = getPhoneFromSubIdOrDefault(subId).getContext();
 
-        UserHandle userHandle = null;
-        final long identity = Binder.clearCallingIdentity();
-        try {
-            userHandle = TelephonyUtils.getSubscriptionUserHandle(context, subId);
-        } finally {
-            Binder.restoreCallingIdentity(identity);
+        if (mTelecomFeatureFlags.telecomMainUserInGetRespondMessageApp()){
+            UserHandle mainUser = null;
+            Context userContext = null;
+            final long identity = Binder.clearCallingIdentity();
+            try {
+                mainUser = mUserManager.getMainUser();
+                userContext = context.createContextAsUser(mainUser, 0);
+                Log.d(LOG_TAG, "getDefaultRespondViaMessageApplication: mainUser = " + mainUser);
+            } finally {
+                Binder.restoreCallingIdentity(identity);
+            }
+            return SmsApplication.getDefaultRespondViaMessageApplicationAsUser(userContext,
+                    updateIfNeeded, mainUser);
+        } else {
+            UserHandle userHandle = null;
+            final long identity = Binder.clearCallingIdentity();
+            try {
+                userHandle = TelephonyUtils.getSubscriptionUserHandle(context, subId);
+            } finally {
+                Binder.restoreCallingIdentity(identity);
+            }
+            return SmsApplication.getDefaultRespondViaMessageApplicationAsUser(context,
+                    updateIfNeeded, userHandle);
         }
-        return SmsApplication.getDefaultRespondViaMessageApplicationAsUser(context,
-                updateIfNeeded, userHandle);
+
     }
 
     /**
@@ -13170,7 +13199,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
                 }
             };
             mSatelliteAccessController.requestIsCommunicationAllowedForCurrentLocation(
-                    resultReceiver);
+                    resultReceiver, true);
         } else {
             // No need to check if satellite is allowed at current location when disabling satellite
             mSatelliteController.requestSatelliteEnabled(
@@ -13488,7 +13517,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     public void requestIsCommunicationAllowedForCurrentLocation(int subId,
             @NonNull ResultReceiver result) {
         enforceSatelliteCommunicationPermission("requestIsCommunicationAllowedForCurrentLocation");
-        mSatelliteAccessController.requestIsCommunicationAllowedForCurrentLocation(result);
+        mSatelliteAccessController.requestIsCommunicationAllowedForCurrentLocation(result, false);
     }
 
     /**

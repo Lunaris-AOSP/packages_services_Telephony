@@ -44,6 +44,7 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.os.PersistableBundle;
 import android.os.SystemProperties;
+import android.os.UserHandle;
 import android.os.UserManager;
 import android.telephony.AccessNetworkConstants;
 import android.telephony.CarrierConfigManager;
@@ -361,6 +362,7 @@ public class RadioInfo extends AppCompatActivity {
     private int mPreferredNetworkTypeResult;
     private int mCellInfoRefreshRateIndex;
     private int mPhoneId = SubscriptionManager.INVALID_PHONE_INDEX;
+    private static final int DEFAULT_PHONE_ID = 0;
 
     private int mSubId = SubscriptionManager.INVALID_SUBSCRIPTION_ID;
 
@@ -583,7 +585,15 @@ public class RadioInfo extends AppCompatActivity {
             mPhone = getPhone(SubscriptionManager.getDefaultSubscriptionId());
         }
         mSubId = SubscriptionManager.getDefaultSubscriptionId();
-        mPhoneId = SubscriptionManager.getPhoneId(mSubId);
+        if (mPhone != null) {
+            mPhoneId = mPhone.getPhoneId();
+        } else {
+            mPhoneId = SubscriptionManager.getPhoneId(mSubId);
+        }
+        if (!SubscriptionManager.isValidPhoneId(mPhoneId)) {
+            mPhoneId = DEFAULT_PHONE_ID;
+        }
+
         mTelephonyManager = getSystemService(TelephonyManager.class)
                 .createForSubscriptionId(mSubId);
         mEuiccManager = getSystemService(EuiccManager.class);
@@ -791,13 +801,15 @@ public class RadioInfo extends AppCompatActivity {
             }
             mSatelliteEnableNonEmergencyModeButton.setVisibility(View.GONE);
         } else {
-            mEsosButton.setOnClickListener(v -> startActivity(
+            mEsosButton.setOnClickListener(v -> startActivityAsUser(
                     new Intent(mActionEsos).addFlags(
-                            Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK))
+                            Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK),
+                    UserHandle.CURRENT)
             );
-            mEsosDemoButton.setOnClickListener(v -> startActivity(
+            mEsosDemoButton.setOnClickListener(v -> startActivityAsUser(
                     new Intent(mActionEsosDemo).addFlags(
-                            Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK))
+                            Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK),
+                    UserHandle.CURRENT)
             );
             mSatelliteEnableNonEmergencyModeButton.setOnClickListener(v ->
                     enableSatelliteNonEmergencyMode());
@@ -1022,10 +1034,6 @@ public class RadioInfo extends AppCompatActivity {
             }
             if (mSimulateOos[mPhoneId])  {
                 mSimulateOosOnChangeListener.onCheckedChanged(mSimulateOutOfServiceSwitch, false);
-            }
-            if (mOriginalSystemChannels[mPhoneId] != null) {
-                mForceSatelliteChannelOnChangeListener
-                        .onCheckedChanged(mEnforceSatelliteChannel, false);
             }
             if (mCarrierSatelliteOriginalBundle[mPhoneId] != null) {
                 mMockSatelliteListener.onCheckedChanged(mMockSatellite, false);
@@ -1676,49 +1684,50 @@ public class RadioInfo extends AppCompatActivity {
 
     private MenuItem.OnMenuItemClickListener mViewADNCallback =
             new MenuItem.OnMenuItemClickListener() {
-        public boolean onMenuItemClick(MenuItem item) {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            // XXX We need to specify the component here because if we don't
-            // the activity manager will try to resolve the type by calling
-            // the content provider, which causes it to be loaded in a process
-            // other than the Dialer process, which causes a lot of stuff to
-            // break.
-            intent.setClassName("com.android.phone", "com.android.phone.SimContacts");
-            startActivity(intent);
-            return true;
-        }
-    };
+                public boolean onMenuItemClick(MenuItem item) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    // XXX We need to specify the component here because if we don't
+                    // the activity manager will try to resolve the type by calling
+                    // the content provider, which causes it to be loaded in a process
+                    // other than the Dialer process, which causes a lot of stuff to
+                    // break.
+                    intent.setClassName("com.android.phone", "com.android.phone.SimContacts");
+                    startActivityAsUser(intent, UserHandle.CURRENT);
+                    return true;
+                }
+            };
 
     private MenuItem.OnMenuItemClickListener mViewFDNCallback =
             new MenuItem.OnMenuItemClickListener() {
-        public boolean onMenuItemClick(MenuItem item) {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            // XXX We need to specify the component here because if we don't
-            // the activity manager will try to resolve the type by calling
-            // the content provider, which causes it to be loaded in a process
-            // other than the Dialer process, which causes a lot of stuff to
-            // break.
-            intent.setClassName("com.android.phone", "com.android.phone.settings.fdn.FdnList");
-            startActivity(intent);
-            return true;
-        }
-    };
+                public boolean onMenuItemClick(MenuItem item) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    // XXX We need to specify the component here because if we don't
+                    // the activity manager will try to resolve the type by calling
+                    // the content provider, which causes it to be loaded in a process
+                    // other than the Dialer process, which causes a lot of stuff to
+                    // break.
+                    intent.setClassName("com.android.phone",
+                            "com.android.phone.settings.fdn.FdnList");
+                    startActivityAsUser(intent, UserHandle.CURRENT);
+                    return true;
+                }
+            };
 
     private MenuItem.OnMenuItemClickListener mViewSDNCallback =
             new MenuItem.OnMenuItemClickListener() {
-        public boolean onMenuItemClick(MenuItem item) {
-            Intent intent = new Intent(
-                    Intent.ACTION_VIEW, Uri.parse("content://icc/sdn"));
-            // XXX We need to specify the component here because if we don't
-            // the activity manager will try to resolve the type by calling
-            // the content provider, which causes it to be loaded in a process
-            // other than the Dialer process, which causes a lot of stuff to
-            // break.
-            intent.setClassName("com.android.phone", "com.android.phone.ADNList");
-            startActivity(intent);
-            return true;
-        }
-    };
+                public boolean onMenuItemClick(MenuItem item) {
+                    Intent intent = new Intent(
+                            Intent.ACTION_VIEW, Uri.parse("content://icc/sdn"));
+                    // XXX We need to specify the component here because if we don't
+                    // the activity manager will try to resolve the type by calling
+                    // the content provider, which causes it to be loaded in a process
+                    // other than the Dialer process, which causes a lot of stuff to
+                    // break.
+                    intent.setClassName("com.android.phone", "com.android.phone.ADNList");
+                    startActivityAsUser(intent, UserHandle.CURRENT);
+                    return true;
+                }
+            };
 
     private MenuItem.OnMenuItemClickListener mGetImsStatus =
             new MenuItem.OnMenuItemClickListener() {
@@ -2297,7 +2306,7 @@ public class RadioInfo extends AppCompatActivity {
         public void onClick(View v) {
             Intent intent = new Intent(OEM_RADIO_INFO_INTENT);
             try {
-                startActivity(intent);
+                startActivityAsUser(intent, UserHandle.CURRENT);
             } catch (android.content.ActivityNotFoundException ex) {
                 log("OEM-specific Info/Settings Activity Not Found : " + ex);
                 // If the activity does not exist, there are no OEM
