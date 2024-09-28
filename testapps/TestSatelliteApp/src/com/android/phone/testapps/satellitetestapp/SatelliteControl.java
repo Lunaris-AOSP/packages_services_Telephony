@@ -58,8 +58,10 @@ public class SatelliteControl extends Activity {
         mSubscriptionManager = getSystemService(SubscriptionManager.class);
 
         setContentView(R.layout.activity_SatelliteControl);
-        findViewById(R.id.enableSatellite)
-                .setOnClickListener(this::enableSatelliteApp);
+        findViewById(R.id.enableSatelliteDemoMode)
+                .setOnClickListener(v -> enableSatelliteApp(/* isDemoMode */ true));
+        findViewById(R.id.enableSatelliteRealMode)
+                .setOnClickListener(v -> enableSatelliteApp(/* isDemoMode */ false));
         findViewById(R.id.disableSatellite)
                 .setOnClickListener(this::disableSatelliteApp);
         findViewById(R.id.requestIsSatelliteEnabled)
@@ -100,10 +102,12 @@ public class SatelliteControl extends Activity {
         });
     }
 
-    private void enableSatelliteApp(View view) {
+    private void enableSatelliteApp(boolean isDemoMode) {
         LinkedBlockingQueue<Integer> error = new LinkedBlockingQueue<>(1);
         mSatelliteManager.requestEnabled(
-                new EnableRequestAttributes.Builder(true).setDemoMode(true).setEmergencyMode(true)
+                new EnableRequestAttributes.Builder(true)
+                        .setDemoMode(isDemoMode)
+                        .setEmergencyMode(true)
                         .build(), Runnable::run, error::offer);
         TextView textView = findViewById(R.id.text_id);
         try {

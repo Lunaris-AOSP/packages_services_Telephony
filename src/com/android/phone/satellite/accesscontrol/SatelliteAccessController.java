@@ -259,9 +259,9 @@ public class SatelliteAccessController extends Handler {
      */
     private final ConcurrentHashMap<IBinder, ISatelliteCommunicationAllowedStateCallback>
             mSatelliteCommunicationAllowedStateChangedListeners = new ConcurrentHashMap<>();
-    private final Object mSatelliteCommunicationAllowStateLock = new Object();
+    protected final Object mSatelliteCommunicationAllowStateLock = new Object();
     @GuardedBy("mSatelliteCommunicationAllowStateLock")
-    private boolean mCurrentSatelliteAllowedState = false;
+    protected boolean mCurrentSatelliteAllowedState = false;
 
     protected static final long ALLOWED_STATE_CACHE_VALID_DURATION_NANOS =
             TimeUnit.HOURS.toNanos(4);
@@ -1920,6 +1920,10 @@ public class SatelliteAccessController extends Handler {
                 mLatestSatelliteCommunicationAllowedSetTime = getElapsedRealtimeNanos();
                 mLatestSatelliteCommunicationAllowed = true;
                 mCurrentSatelliteAllowedState = true;
+            } else if ("cache_not_allowed".equalsIgnoreCase(state)) {
+                mLatestSatelliteCommunicationAllowedSetTime = getElapsedRealtimeNanos();
+                mLatestSatelliteCommunicationAllowed = false;
+                mCurrentSatelliteAllowedState = false;
             } else if ("cache_clear_and_not_allowed".equalsIgnoreCase(state)) {
                 mLatestSatelliteCommunicationAllowedSetTime = 0;
                 mLatestSatelliteCommunicationAllowed = false;

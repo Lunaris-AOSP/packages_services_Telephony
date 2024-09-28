@@ -23,7 +23,8 @@
     <string name="SendReceive">Send and Receive datagrams</string>
     <string name="NbIotSatellite">NB IoT Satellite modem interface test</string>
 
-    <string name="enableSatellite">enableSatellite</string>
+    <string name="enableSatelliteRealMode">enableSatellite Real Mode</string>
+    <string name="enableSatelliteDemoMode">enableSatellite Demo Mode</string>
     <string name="disableSatellite">disableSatellite</string>
     <string name="requestIsSatelliteEnabled">requestIsSatelliteEnabled</string>
     <string name="requestIsDemoModeEnabled">requestIsDemoModeEnabled</string>
