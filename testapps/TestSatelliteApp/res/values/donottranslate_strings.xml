@@ -96,6 +96,7 @@
 
     <string name="requestSatelliteSubscriberProvisionStatus">requestSatelliteSubscriberProvisionStatus</string>
     <string name="provisionSatellite">provisionSatellite</string>
+    <string name="deprovisionSatellite">deprovisionSatellite</string>
 
     <string name="Back">Back</string>
     <string name="ClearLog">Clear Log</string>

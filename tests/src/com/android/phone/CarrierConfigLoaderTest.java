@@ -57,7 +57,10 @@ import androidx.test.InstrumentationRegistry;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.android.TelephonyTestBase;
+import com.android.internal.telephony.GsmCdmaPhone;
 import com.android.internal.telephony.IccCardConstants;
+import com.android.internal.telephony.Phone;
+import com.android.internal.telephony.PhoneFactory;
 import com.android.internal.telephony.flags.FeatureFlags;
 import com.android.internal.telephony.subscription.SubscriptionManagerService;
 
@@ -104,6 +107,7 @@ public class CarrierConfigLoaderTest extends TelephonyTestBase {
     @Mock SharedPreferences mSharedPreferences;
     @Mock TelephonyRegistryManager mTelephonyRegistryManager;
     @Mock FeatureFlags mFeatureFlags;
+    @Mock GsmCdmaPhone mMockPhone;
 
     private TelephonyManager mTelephonyManager;
     private CarrierConfigLoader mCarrierConfigLoader;
@@ -118,6 +122,9 @@ public class CarrierConfigLoaderTest extends TelephonyTestBase {
     public void setUp() throws Exception {
         super.setUp();
         MockitoAnnotations.initMocks(this);
+        Phone[] mPhones = new Phone[]{mMockPhone};
+        replaceInstance(PhoneFactory.class, "sPhones", null, mPhones);
+        replaceInstance(PhoneFactory.class, "sMadeDefaults", null, true);
         doReturn(Context.PERMISSION_ENFORCER_SERVICE).when(mContext).getSystemServiceName(
                 eq(PermissionEnforcer.class));
         doReturn(mFakePermissionEnforcer).when(mContext).getSystemService(

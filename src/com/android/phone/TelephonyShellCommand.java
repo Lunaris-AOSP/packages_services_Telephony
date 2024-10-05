@@ -187,6 +187,8 @@ public class TelephonyShellCommand extends BasicShellCommandHandler {
             "set-satellite-gateway-service-package-name";
     private static final String SET_SATELLITE_LISTENING_TIMEOUT_DURATION =
             "set-satellite-listening-timeout-duration";
+    private static final String SET_SATELLITE_IGNORE_CELLULAR_SERVICE_STATE =
+            "set-satellite-ignore-cellular-service-state";
     private static final String SET_SATELLITE_POINTING_UI_CLASS_NAME =
             "set-satellite-pointing-ui-class-name";
     private static final String SET_DATAGRAM_CONTROLLER_TIMEOUT_DURATION =
@@ -209,6 +211,9 @@ public class TelephonyShellCommand extends BasicShellCommandHandler {
             "set-is-satellite-communication-allowed-for-current-location-cache";
     private static final String SET_SATELLITE_SUBSCRIBERID_LIST_CHANGED_INTENT_COMPONENT =
             "set-satellite-subscriberid-list-changed-intent-component";
+
+    private static final String SET_SATELLITE_ACCESS_RESTRICTION_CHECKING_RESULT =
+            "set-satellite-access-restriction-checking-result";
 
     private static final String DOMAIN_SELECTION_SUBCOMMAND = "domainselection";
     private static final String DOMAIN_SELECTION_SET_SERVICE_OVERRIDE = "set-dss-override";
@@ -400,6 +405,8 @@ public class TelephonyShellCommand extends BasicShellCommandHandler {
                 return handleSetSatelliteGatewayServicePackageNameCommand();
             case SET_SATELLITE_LISTENING_TIMEOUT_DURATION:
                 return handleSetSatelliteListeningTimeoutDuration();
+            case SET_SATELLITE_IGNORE_CELLULAR_SERVICE_STATE:
+                return handleSetSatelliteIgnoreCellularServiceState();
             case SET_SATELLITE_POINTING_UI_CLASS_NAME:
                 return handleSetSatellitePointingUiClassNameCommand();
             case SET_DATAGRAM_CONTROLLER_TIMEOUT_DURATION:
@@ -422,6 +429,8 @@ public class TelephonyShellCommand extends BasicShellCommandHandler {
                 return handleSetIsSatelliteCommunicationAllowedForCurrentLocationCache();
             case SET_SATELLITE_SUBSCRIBERID_LIST_CHANGED_INTENT_COMPONENT:
                 return handleSetSatelliteSubscriberIdListChangedIntentComponent();
+            case SET_SATELLITE_ACCESS_RESTRICTION_CHECKING_RESULT:
+                return handleOverrideCarrierRoamingNtnEligibilityChanged();
             default: {
                 return handleDefaultCommands(cmd);
             }
@@ -3355,6 +3364,37 @@ public class TelephonyShellCommand extends BasicShellCommandHandler {
         return 0;
     }
 
+    private int handleSetSatelliteIgnoreCellularServiceState() {
+        PrintWriter errPw = getErrPrintWriter();
+        boolean enabled = false;
+
+        String opt;
+        while ((opt = getNextOption()) != null) {
+            switch (opt) {
+                case "-d": {
+                    enabled = Boolean.parseBoolean(getNextArgRequired());
+                    break;
+                }
+            }
+        }
+        Log.d(LOG_TAG, "handleSetSatelliteIgnoreCellularServiceState: enabled =" + enabled);
+
+        try {
+            boolean result = mInterface.setSatelliteIgnoreCellularServiceState(enabled);
+            if (VDBG) {
+                Log.v(LOG_TAG, "handleSetSatelliteIgnoreCellularServiceState " + enabled
+                        + ", result = " + result);
+            }
+            getOutPrintWriter().println(result);
+        } catch (RemoteException e) {
+            Log.w(LOG_TAG, "handleSetSatelliteIgnoreCellularServiceState: " + enabled
+                    + ", error = " + e.getMessage());
+            errPw.println("Exception: " + e.getMessage());
+            return -1;
+        }
+        return 0;
+    }
+
     private int handleSetDatagramControllerTimeoutDuration() {
         PrintWriter errPw = getErrPrintWriter();
         boolean reset = false;
@@ -3681,7 +3721,6 @@ public class TelephonyShellCommand extends BasicShellCommandHandler {
         PrintWriter errPw = getErrPrintWriter();
         String opt;
         String state;
-
         if ((opt = getNextArg()) == null) {
             errPw.println(
                     "adb shell cmd phone set-is-satellite-communication-allowed-for-current"
@@ -4035,5 +4074,49 @@ public class TelephonyShellCommand extends BasicShellCommandHandler {
                 jSonString = null;
         }
         return jSonString;
+    }
+
+    /**
+     * This method override the check for carrier roaming Ntn eligibility.
+     * <ul>
+     * <li> `adb shell cmd phone set-satellite-access-restriction-checking-result true` will set
+     * override eligibility to true.</li>
+     * <li> `adb shell cmd phone set-satellite-access-restriction-checking-result false` will
+     * override eligibility to false.</li>
+     * <li> `adb shell cmd phone set-satellite-access-restriction-checking-result` will reset the
+     * override data set through adb command.</li>
+     * </ul>
+     *
+     * @return {@code true} is command executed successfully otherwise {@code false}.
+     */
+    private int handleOverrideCarrierRoamingNtnEligibilityChanged() {
+        PrintWriter errPw = getErrPrintWriter();
+        String opt;
+        boolean state = false;
+        boolean isRestRequired = false;
+        try {
+            if ((opt = getNextArg()) == null) {
+                isRestRequired = true;
+            } else {
+                if ("true".equalsIgnoreCase(opt)) {
+                    state = true;
+                }
+            }
+            boolean result = mInterface.overrideCarrierRoamingNtnEligibilityChanged(state,
+                    isRestRequired);
+            if (VDBG) {
+                Log.v(LOG_TAG, "handleSetSatelliteAccessRestrictionCheckingResult "
+                        + "returns: "
+                        + result);
+            }
+            getOutPrintWriter().println(result);
+        } catch (RemoteException e) {
+            Log.w(LOG_TAG, "handleSetSatelliteAccessRestrictionCheckingResult("
+                    + state + "), error = " + e.getMessage());
+            errPw.println("Exception: " + e.getMessage());
+            return -1;
+        }
+        Log.d(LOG_TAG, "handleSetSatelliteAccessRestrictionCheckingResult(" + state + ")");
+        return 0;
     }
 }

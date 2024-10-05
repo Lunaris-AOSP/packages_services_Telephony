@@ -30,6 +30,8 @@ import android.telephony.satellite.wrapper.SatelliteCapabilitiesCallbackWrapper;
 import android.telephony.satellite.wrapper.SatelliteCommunicationAllowedStateCallbackWrapper;
 import android.telephony.satellite.wrapper.SatelliteManagerWrapper;
 import android.telephony.satellite.wrapper.SatelliteModemStateCallbackWrapper2;
+import android.telephony.satellite.wrapper.SatelliteSubscriberInfoWrapper;
+import android.telephony.satellite.wrapper.SatelliteSubscriberProvisionStatusWrapper;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -62,6 +64,8 @@ public class TestSatelliteWrapper extends Activity {
     private SatelliteCapabilitiesCallbackWrapper mSatelliteCapabilitiesCallback;
     private SubscriptionManager mSubscriptionManager;
     private int mSubId;
+    private List<SatelliteSubscriberProvisionStatusWrapper> mSatelliteSubscriberProvisionStatuses =
+            new ArrayList<>();
 
     private ListView mLogListView;
 
@@ -117,6 +121,12 @@ public class TestSatelliteWrapper extends Activity {
                 .setOnClickListener(this::registerForModemStateChanged);
         findViewById(R.id.unregisterForModemStateChanged)
                 .setOnClickListener(this::unregisterForModemStateChanged);
+        findViewById(R.id.requestSatelliteSubscriberProvisionStatusWrapper)
+                .setOnClickListener(this::requestSatelliteSubscriberProvisionStatus);
+        findViewById(R.id.provisionSatelliteWrapper)
+                .setOnClickListener(this::provisionSatellite);
+        findViewById(R.id.deprovisionSatelliteWrapper)
+                .setOnClickListener(this::deprovisionSatellite);
 
         findViewById(R.id.Back).setOnClickListener(new OnClickListener() {
             @Override
@@ -389,7 +399,137 @@ public class TestSatelliteWrapper extends Activity {
         }
     }
 
+    private void requestSatelliteSubscriberProvisionStatus(View view) {
+        addLogMessage("requestSatelliteSubscriberProvisionStatus");
+        logd("requestSatelliteSubscriberProvisionStatus");
 
+        if (mSubId == SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
+            addLogMessage("requestSatelliteSubscriberProvisionStatus: Subscription ID is invalid");
+            logd("requestSatelliteSubscriberProvisionStatus: Subscription ID is invalid");
+            return;
+        }
+
+        OutcomeReceiver<List<SatelliteSubscriberProvisionStatusWrapper>,
+                SatelliteManagerWrapper.SatelliteExceptionWrapper> receiver =
+                new OutcomeReceiver<>() {
+                    @Override
+                    public void onResult(List<SatelliteSubscriberProvisionStatusWrapper> result) {
+                        mSatelliteSubscriberProvisionStatuses = result;
+                        logd("requestSatelliteSubscriberProvisionStatus: onResult=" + result);
+                        addLogMessage(
+                                "requestSatelliteSubscriberProvisionStatus: onResult=" + result);
+                    }
+
+                    @Override
+                    public void onError(
+                            SatelliteManagerWrapper.SatelliteExceptionWrapper exception) {
+                        if (exception != null) {
+                            String onError = "requestSatelliteSubscriberProvisionStatus exception: "
+                                    + translateResultCodeToString(exception.getErrorCode());
+                            logd(onError);
+                            addLogMessage(onError);
+                        }
+                    }
+                };
+
+        try {
+            mSatelliteManagerWrapper.requestSatelliteSubscriberProvisionStatus(mExecutor, receiver);
+        } catch (SecurityException | IllegalArgumentException ex) {
+            String errorMessage = "requestSatelliteSubscriberProvisionStatus: " + ex.getMessage();
+            logd(errorMessage);
+            addLogMessage(errorMessage);
+        }
+    }
+
+    private void provisionSatellite(View view) {
+        addLogMessage("provisionSatellite");
+        logd("provisionSatellite");
+
+        if (mSubId == SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
+            addLogMessage("provisionSatellite: Subscription ID is invalid");
+            logd("provisionSatellite: Subscription ID is invalid");
+            return;
+        }
+
+        OutcomeReceiver<Boolean,
+                SatelliteManagerWrapper.SatelliteExceptionWrapper> receiver =
+                new OutcomeReceiver<>() {
+                    @Override
+                    public void onResult(Boolean result) {
+                        logd("provisionSatellite: onResult=" + result);
+                        addLogMessage("provisionSatellite: onResult=" + result);
+                    }
+
+                    @Override
+                    public void onError(
+                            SatelliteManagerWrapper.SatelliteExceptionWrapper exception) {
+                        if (exception != null) {
+                            String onError = "provisionSatellite exception: "
+                                    + translateResultCodeToString(exception.getErrorCode());
+                            logd(onError);
+                            addLogMessage(onError);
+                        }
+                    }
+                };
+
+        List<SatelliteSubscriberInfoWrapper> list = new ArrayList<>();
+        for (SatelliteSubscriberProvisionStatusWrapper status :
+                mSatelliteSubscriberProvisionStatuses) {
+            list.add(status.getSatelliteSubscriberInfo());
+        }
+        try {
+            mSatelliteManagerWrapper.provisionSatellite(list, mExecutor, receiver);
+        } catch (SecurityException | IllegalArgumentException ex) {
+            String errorMessage = "provisionSatellite: " + ex.getMessage();
+            logd(errorMessage);
+            addLogMessage(errorMessage);
+        }
+    }
+
+    private void deprovisionSatellite(View view) {
+        addLogMessage("deprovisionSatellite");
+        logd("deprovisionSatellite");
+
+        if (mSubId == SubscriptionManager.INVALID_SUBSCRIPTION_ID) {
+            addLogMessage("deprovisionSatellite: Subscription ID is invalid");
+            logd("deprovisionSatellite: Subscription ID is invalid");
+            return;
+        }
+
+        OutcomeReceiver<Boolean,
+                SatelliteManagerWrapper.SatelliteExceptionWrapper> receiver =
+                new OutcomeReceiver<>() {
+                    @Override
+                    public void onResult(Boolean result) {
+                        logd("deprovisionSatellite: onResult=" + result);
+                        addLogMessage("deprovisionSatellite: onResult=" + result);
+                    }
+
+                    @Override
+                    public void onError(
+                            SatelliteManagerWrapper.SatelliteExceptionWrapper exception) {
+                        if (exception != null) {
+                            String onError = "deprovisionSatellite exception: "
+                                    + translateResultCodeToString(exception.getErrorCode());
+                            logd(onError);
+                            addLogMessage(onError);
+                        }
+                    }
+                };
+
+        List<SatelliteSubscriberInfoWrapper> list = new ArrayList<>();
+        for (SatelliteSubscriberProvisionStatusWrapper status :
+                mSatelliteSubscriberProvisionStatuses) {
+            list.add(status.getSatelliteSubscriberInfo());
+        }
+        try {
+            mSatelliteManagerWrapper.deprovisionSatellite(list, mExecutor, receiver);
+        } catch (SecurityException | IllegalArgumentException ex) {
+            String errorMessage = "deprovisionSatellite: " + ex.getMessage();
+            logd(errorMessage);
+            addLogMessage(errorMessage);
+        }
+    }
 
     public class NtnSignalStrengthCallback implements NtnSignalStrengthCallbackWrapper {
         @Override

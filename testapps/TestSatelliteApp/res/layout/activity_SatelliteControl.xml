@@ -145,6 +145,12 @@
             android:layout_height="wrap_content"
             android:paddingRight="4dp"
             android:text="@string/provisionSatellite"/>
+        <Button
+            android:id="@+id/deprovisionSatellite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingRight="4dp"
+            android:text="@string/deprovisionSatellite"/>
          <Button
             android:id="@+id/Back"
             android:onClick="Back"

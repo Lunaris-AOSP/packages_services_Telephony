@@ -2020,6 +2020,32 @@ public class SatelliteAccessController extends Handler {
         }
     }
 
+    /**
+     * This API can be used only for test purpose to override the carrier roaming Ntn eligibility
+     *
+     * @param state        to update Ntn Eligibility.
+     * @param resetRequired to reset the overridden flag in satellite controller.
+     * @return {@code true} if the shell command is successful, {@code false} otherwise.
+     */
+    public boolean overrideCarrierRoamingNtnEligibilityChanged(boolean state,
+            boolean resetRequired) {
+        if (!mFeatureFlags.carrierRoamingNbIotNtn()) {
+            logd("overrideCarrierRoamingNtnEligibilityChanged: "
+                    + "carrierRoamingNbIotNtn is disabled");
+            return false;
+        }
+
+        if (!isMockModemAllowed()) {
+            logd("overrideCarrierRoamingNtnEligibilityChanged: "
+                    + "mock modem not allowed.");
+            return false;
+        }
+
+        logd("calling overrideCarrierRoamingNtnEligibilityChanged");
+        return mSatelliteController.overrideCarrierRoamingNtnEligibilityChanged(state,
+                resetRequired);
+    }
+
     private void plogv(@NonNull String log) {
         Rlog.v(TAG, log);
         if (mPersistentLogger != null) {

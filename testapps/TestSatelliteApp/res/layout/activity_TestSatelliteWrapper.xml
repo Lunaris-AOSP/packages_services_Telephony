@@ -173,6 +173,24 @@
             android:layout_height="wrap_content"
             android:paddingRight="4dp"
             android:text="@string/unregisterForModemStateChanged"/>
+        <Button
+            android:id="@+id/requestSatelliteSubscriberProvisionStatusWrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingRight="4dp"
+            android:text="@string/requestSatelliteSubscriberProvisionStatus"/>
+        <Button
+            android:id="@+id/provisionSatelliteWrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingRight="4dp"
+            android:text="@string/provisionSatellite"/>
+        <Button
+            android:id="@+id/deprovisionSatelliteWrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingRight="4dp"
+            android:text="@string/deprovisionSatellite"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

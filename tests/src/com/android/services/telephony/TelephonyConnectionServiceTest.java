@@ -1440,7 +1440,7 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
     @Test
     @SmallTest
     public void testCreateOutgoingEmergencyConnection_exitingSatellite_placeCall() {
-        when(mSatelliteController.isSatelliteEnabled()).thenReturn(true);
+        when(mSatelliteController.isSatelliteEnabledOrBeingEnabled()).thenReturn(true);
         doReturn(true).when(mMockResources).getBoolean(anyInt());
         doReturn(true).when(mTelephonyManagerProxy).isCurrentEmergencyNumber(
                 anyString());
@@ -1456,7 +1456,7 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
         when(mSST.isRadioOn()).thenReturn(true);
         assertFalse(callback.getValue()
                 .isOkToCall(testPhone, ServiceState.STATE_OUT_OF_SERVICE, false));
-        when(mSatelliteController.isSatelliteEnabled()).thenReturn(false);
+        when(mSatelliteController.isSatelliteEnabledOrBeingEnabled()).thenReturn(false);
         assertTrue(callback.getValue()
                 .isOkToCall(testPhone, ServiceState.STATE_OUT_OF_SERVICE, false));
 
@@ -1481,7 +1481,7 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
     public void testCreateOutgoingEmergencyConnection_exitingSatellite_EmergencySatellite()
             throws Exception {
         doReturn(true).when(mFeatureFlags).carrierRoamingNbIotNtn();
-        doReturn(true).when(mSatelliteController).isSatelliteEnabled();
+        doReturn(true).when(mSatelliteController).isSatelliteEnabledOrBeingEnabled();
 
         // Set config_turn_off_oem_enabled_satellite_during_emergency_call as false
         doReturn(true).when(mTelephonyManagerProxy).isCurrentEmergencyNumber(anyString());
@@ -1500,7 +1500,7 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
     @SmallTest
     public void testCreateOutgoingEmergencyConnection_exitingSatellite_OEM() throws Exception {
         doReturn(true).when(mFeatureFlags).carrierRoamingNbIotNtn();
-        doReturn(true).when(mSatelliteController).isSatelliteEnabled();
+        doReturn(true).when(mSatelliteController).isSatelliteEnabledOrBeingEnabled();
 
         // Set config_turn_off_oem_enabled_satellite_during_emergency_call as false
         doReturn(false).when(mMockResources).getBoolean(anyInt());
@@ -1539,7 +1539,7 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
     @SmallTest
     public void testCreateOutgoingEmergencyConnection_exitingSatellite_Carrier() throws Exception {
         doReturn(true).when(mFeatureFlags).carrierRoamingNbIotNtn();
-        doReturn(true).when(mSatelliteController).isSatelliteEnabled();
+        doReturn(true).when(mSatelliteController).isSatelliteEnabledOrBeingEnabled();
 
         // Set config_turn_off_oem_enabled_satellite_during_emergency_call as false
         doReturn(false).when(mMockResources).getBoolean(anyInt());
@@ -3753,7 +3753,7 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
     @Test
     public void testNormalCallSatelliteEnabled() {
         setupForCallTest();
-        doReturn(true).when(mSatelliteController).isSatelliteEnabled();
+        doReturn(true).when(mSatelliteController).isSatelliteEnabledOrBeingEnabled();
 
         mConnection = mTestConnectionService.onCreateOutgoingConnection(PHONE_ACCOUNT_HANDLE_1,
                 createConnectionRequest(PHONE_ACCOUNT_HANDLE_1, "1234", TELECOM_CALL_ID1));
@@ -3766,7 +3766,7 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
     @Test
     public void testEmergencyCallSatelliteEnabled_blockEmergencyCall() {
         setupForCallTest();
-        doReturn(true).when(mSatelliteController).isSatelliteEnabled();
+        doReturn(true).when(mSatelliteController).isSatelliteEnabledOrBeingEnabled();
         doReturn(false).when(mMockResources).getBoolean(anyInt());
         doReturn(true).when(mTelephonyManagerProxy).isCurrentEmergencyNumber(
                 anyString());
