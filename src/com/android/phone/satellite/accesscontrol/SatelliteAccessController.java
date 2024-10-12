@@ -1242,14 +1242,6 @@ public class SatelliteAccessController extends Handler {
 
     private void executeLocationQuery() {
         plogd("executeLocationQuery");
-        synchronized (mPossibleChangeInSatelliteAllowedRegionLock) {
-            if (isSatelliteAllowedRegionPossiblyChanged()) {
-                mLastLocationQueryForPossibleChangeInAllowedRegionTimeNanos =
-                        getElapsedRealtimeNanos();
-                plogd("mLastLocationQueryForPossibleChangeInAllowedRegionTimeNanos is set "
-                        + mLastLocationQueryForPossibleChangeInAllowedRegionTimeNanos);
-            }
-        }
         synchronized (mLock) {
             mFreshLastKnownLocation = getFreshLastKnownLocation();
             checkSatelliteAccessRestrictionUsingOnDeviceData();
@@ -1321,6 +1313,16 @@ public class SatelliteAccessController extends Handler {
                         + "Request for current location was already sent to LocationManager");
                 return;
             }
+
+            synchronized (mPossibleChangeInSatelliteAllowedRegionLock) {
+                if (isSatelliteAllowedRegionPossiblyChanged()) {
+                    mLastLocationQueryForPossibleChangeInAllowedRegionTimeNanos =
+                            getElapsedRealtimeNanos();
+                    plogd("mLastLocationQueryForPossibleChangeInAllowedRegionTimeNanos is set "
+                            + mLastLocationQueryForPossibleChangeInAllowedRegionTimeNanos);
+                }
+            }
+
             mLocationRequestCancellationSignal = new CancellationSignal();
             mLocationQueryStartTimeMillis = System.currentTimeMillis();
             mLocationManager.getCurrentLocation(LocationManager.FUSED_PROVIDER,

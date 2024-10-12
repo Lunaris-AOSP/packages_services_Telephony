@@ -442,7 +442,7 @@ public class SatelliteAccessControllerTest {
         assertFalse(mSatelliteAccessControllerUT
                 .isSatelliteAccessAllowedForLocation(List.of(TEST_SATELLITE_COUNTRY_CODE_US)));
         assertFalse(mSatelliteAccessControllerUT.isSatelliteAccessAllowedForLocation(
-                        List.of(TEST_SATELLITE_COUNTRY_CODE_US, TEST_SATELLITE_COUNTRY_CODE_KR)));
+                List.of(TEST_SATELLITE_COUNTRY_CODE_US, TEST_SATELLITE_COUNTRY_CODE_KR)));
         assertTrue(mSatelliteAccessControllerUT
                 .isSatelliteAccessAllowedForLocation(List.of(TEST_SATELLITE_COUNTRY_CODE_KR)));
 
@@ -835,6 +835,92 @@ public class SatelliteAccessControllerTest {
         assertEquals(SATELLITE_RESULT_LOCATION_DISABLED, mQueriedSatelliteAllowedResultCode);
         assertFalse(mQueriedSatelliteAllowed);
     }
+
+    @Test
+    public void testLocationQueryThrottleTimeUpdate() {
+        long firstMccChangedTime = 1;
+        long lastKnownLocationElapsedRealtime =
+                firstMccChangedTime + TEST_LOCATION_QUERY_THROTTLE_INTERVAL_NANOS;
+
+        // OEM-enabled satellite is supported
+        when(mMockFeatureFlags.oemEnabledSatelliteFlag()).thenReturn(true);
+
+        verify(mMockCountryDetector).registerForCountryCodeChanged(
+                mCountryDetectorHandlerCaptor.capture(), mCountryDetectorIntCaptor.capture(),
+                mCountryDetectorObjCaptor.capture());
+
+        assertSame(mCountryDetectorHandlerCaptor.getValue(), mSatelliteAccessControllerUT);
+        assertSame(mCountryDetectorIntCaptor.getValue(), EVENT_COUNTRY_CODE_CHANGED);
+        assertNull(mCountryDetectorObjCaptor.getValue());
+
+        // Setup to invoke GPS query
+        clearInvocations(mMockSatelliteOnDeviceAccessController);
+        setUpResponseForRequestIsSatelliteSupported(true, SATELLITE_RESULT_SUCCESS);
+        setUpResponseForRequestIsSatelliteProvisioned(true, SATELLITE_RESULT_SUCCESS);
+        doReturn(true).when(mMockLocationManager).isLocationEnabled();
+        when(mMockLocationManager.getLastKnownLocation(LocationManager.FUSED_PROVIDER))
+                .thenReturn(null);
+        when(mMockLocationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER))
+                .thenReturn(null);
+
+        // When mcc changed first, so queried a location with GPS,
+        // verify if the mLastLocationQueryForPossibleChangeInAllowedRegionTimeNanos
+        // is the same with firstMccChangedTime.
+        // verify mMockLocationManager.getCurrentLocation() is invoked
+        // verify time(mLastLocationQueryForPossibleChangeInAllowedRegionTimeNanos) is
+        // firstMccChangedTime
+        clearInvocations(mMockLocationManager);
+        mSatelliteAccessControllerUT.elapsedRealtimeNanos = firstMccChangedTime;
+        sendCommandValidateCountryCodeChangeEvent(mMockContext);
+        verify(mMockLocationManager, times(1))
+                .getCurrentLocation(any(), any(), any(), any(), any());
+        assertEquals(firstMccChangedTime, mSatelliteAccessControllerUT
+                .mLastLocationQueryForPossibleChangeInAllowedRegionTimeNanos);
+
+        // set current time less than throttle_interval
+        // verify mMockLocationManager.getCurrentLocation() is not invoked
+        // verify time(mLastLocationQueryForPossibleChangeInAllowedRegionTimeNanos) is not updated
+        clearInvocations(mMockLocationManager);
+        doReturn(lastKnownLocationElapsedRealtime).when(mMockLocation1).getElapsedRealtimeNanos();
+        mSatelliteAccessControllerUT.elapsedRealtimeNanos =
+                (firstMccChangedTime + TEST_LOCATION_QUERY_THROTTLE_INTERVAL_NANOS - 1);
+        sendCommandValidateCountryCodeChangeEvent(mMockContext);
+        verify(mMockLocationManager, never())
+                .getCurrentLocation(any(), any(), any(), any(), any());
+        assertEquals(firstMccChangedTime, mSatelliteAccessControllerUT
+                .mLastLocationQueryForPossibleChangeInAllowedRegionTimeNanos);
+
+        // Test the scenario when last know location is fresh and
+        // current time is greater than the location query throttle interval
+        // verify mMockLocationManager.getCurrentLocation() is not invoked
+        // verify time(mLastLocationQueryForPossibleChangeInAllowedRegionTimeNanos) is not updated
+        clearInvocations(mMockLocationManager);
+        doReturn(lastKnownLocationElapsedRealtime).when(mMockLocation1).getElapsedRealtimeNanos();
+        mSatelliteAccessControllerUT.elapsedRealtimeNanos =
+                (lastKnownLocationElapsedRealtime + TEST_LOCATION_FRESH_DURATION_NANOS - 1);
+        sendCommandValidateCountryCodeChangeEvent(mMockContext);
+        verify(mMockLocationManager, never())
+                .getCurrentLocation(any(), any(), any(), any(), any());
+        assertEquals(firstMccChangedTime, mSatelliteAccessControllerUT
+                .mLastLocationQueryForPossibleChangeInAllowedRegionTimeNanos);
+
+        // Test the scenario when last know location is not fresh and
+        // current time is greater than the location query throttle interval
+        // verify mMockLocationManager.getCurrentLocation() is invoked
+        // verify time(mLastLocationQueryForPossibleChangeInAllowedRegionTimeNanos) is updated
+        logd("youngcha 1");
+        clearInvocations(mMockLocationManager);
+        mSatelliteAccessControllerUT.setLocationRequestCancellationSignalAsNull(true);
+        mSatelliteAccessControllerUT.elapsedRealtimeNanos =
+                (lastKnownLocationElapsedRealtime + TEST_LOCATION_FRESH_DURATION_NANOS + 1);
+        sendCommandValidateCountryCodeChangeEvent(mMockContext);
+        verify(mMockLocationManager, times(1))
+                .getCurrentLocation(any(), any(), any(), any(), any());
+        assertEquals(lastKnownLocationElapsedRealtime + TEST_LOCATION_FRESH_DURATION_NANOS + 1,
+                mSatelliteAccessControllerUT
+                        .mLastLocationQueryForPossibleChangeInAllowedRegionTimeNanos);
+    }
+
 
     @Test
     public void testAllowLocationQueryForSatelliteAllowedCheck() {

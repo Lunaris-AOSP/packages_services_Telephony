@@ -13565,10 +13565,10 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     }
 
     /**
-     * Inform that Device is aligned to satellite for demo mode.
+     * Inform whether the device is aligned with the satellite in both real and demo mode.
      *
-     * @param isAligned {@code true} Device is aligned with the satellite for demo mode
-     *                  {@code false} Device fails to align with the satellite for demo mode.
+     * @param isAligned {@code true} Device is aligned with the satellite.
+     *                  {@code false} Device fails to align with the satellite.
      *
      * @throws SecurityException if the caller doesn't have required permission.
      */
