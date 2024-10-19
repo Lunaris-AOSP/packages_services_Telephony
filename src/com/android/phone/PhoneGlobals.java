@@ -566,7 +566,8 @@ public class PhoneGlobals extends ContextWrapper {
                 // Initialize EmergencyStateTracker if domain selection is supported
                 boolean isSuplDdsSwitchRequiredForEmergencyCall = getResources()
                         .getBoolean(R.bool.config_gnss_supl_requires_default_data_for_emergency);
-                EmergencyStateTracker.make(this, isSuplDdsSwitchRequiredForEmergencyCall);
+                EmergencyStateTracker.make(this, isSuplDdsSwitchRequiredForEmergencyCall,
+                        mFeatureFlags);
                 DynamicRoutingController.getInstance().initialize(this);
             }
 

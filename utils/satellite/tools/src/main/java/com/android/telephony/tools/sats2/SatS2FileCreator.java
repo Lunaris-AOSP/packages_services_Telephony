@@ -16,9 +16,9 @@
 
 package com.android.telephony.tools.sats2;
 
-import com.android.storage.s2.S2LevelRange;
 import com.android.telephony.sats2range.read.SatS2RangeFileFormat;
 import com.android.telephony.sats2range.read.SatS2RangeFileReader;
+import com.android.telephony.sats2range.read.SuffixTableRange;
 import com.android.telephony.sats2range.write.SatS2RangeFileWriter;
 
 import com.google.common.base.Stopwatch;
@@ -73,15 +73,15 @@ public final class SatS2FileCreator {
                 FileFormats.getFileFormatForLevel(s2Level, isAllowedList);
         try (SatS2RangeFileWriter satS2RangeFileWriter =
                      SatS2RangeFileWriter.open(new File(outputFile), fileFormat)) {
-            Iterator<S2LevelRange> s2LevelRangeIterator = satS2Ranges
+            Iterator<SuffixTableRange> suffixTableRangeIterator = satS2Ranges
                     .stream()
-                    .map(x -> new S2LevelRange(x.rangeStart.id(), x.rangeEnd.id()))
+                    .map(x -> new SuffixTableRange(x.rangeStart.id(), x.rangeEnd.id()))
                     .iterator();
             /*
              * Group the sorted ranges into contiguous suffix blocks. Big ranges might get split as
              * needed to fit them into suffix blocks.
              */
-            satS2RangeFileWriter.createSortedSuffixBlocks(s2LevelRangeIterator);
+            satS2RangeFileWriter.createSortedSuffixBlocks(suffixTableRangeIterator);
         }
 
         // Validate the output block file

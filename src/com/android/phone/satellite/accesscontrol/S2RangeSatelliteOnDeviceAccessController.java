@@ -15,11 +15,17 @@
  */
 package com.android.phone.satellite.accesscontrol;
 
+import static com.android.phone.satellite.accesscontrol.SatelliteAccessController.DEFAULT_REGIONAL_SATELLITE_CONFIG_ID;
+
 import android.annotation.NonNull;
+import android.annotation.Nullable;
 import android.telephony.Rlog;
 
+import com.android.internal.telephony.flags.FeatureFlags;
 import com.android.storage.s2.S2LevelRange;
+
 import com.android.telephony.sats2range.read.SatS2RangeFileReader;
+import com.android.telephony.sats2range.read.SuffixTableRange;
 
 import com.google.common.geometry.S2CellId;
 import com.google.common.geometry.S2LatLng;
@@ -36,31 +42,42 @@ final class S2RangeSatelliteOnDeviceAccessController extends SatelliteOnDeviceAc
     private static final String TAG = "S2RangeSatelliteOnDeviceAccessController";
     private static final boolean DBG = false;
 
-    @NonNull private final SatS2RangeFileReader mSatS2RangeFileReader;
+    @NonNull
+    private final SatS2RangeFileReader mSatS2RangeFileReader;
 
     private final int mS2Level;
 
+    /** Feature flags to control behavior and errors. */
+    @NonNull
+    private final FeatureFlags mFeatureFlags;
+
     private S2RangeSatelliteOnDeviceAccessController(
-            @NonNull SatS2RangeFileReader satS2RangeFileReader, int s2Level) {
+            @NonNull SatS2RangeFileReader satS2RangeFileReader,
+            int s2Level,
+            @NonNull FeatureFlags featureFlags) {
         mSatS2RangeFileReader = Objects.requireNonNull(satS2RangeFileReader);
         mS2Level = s2Level;
+        mFeatureFlags = featureFlags;
     }
 
     /**
      * Returns a new {@link S2RangeSatelliteOnDeviceAccessController} using the specified data file.
      *
      * @param file The input file that contains the S2-range-based access restriction information.
-     * @throws IOException in the event of a problem while reading the underlying file.
+     * @throws IOException              in the event of a problem while reading the underlying file.
      * @throws IllegalArgumentException if either the S2 level defined by
-     * {@code config_oem_enabled_satellite_s2cell_level} or the satellite access allow defined by
-     * {@code config_oem_enabled_satellite_access_allow} does not match the values included in the
-     * header of the input file.
+     *                                  {@code config_oem_enabled_satellite_s2cell_level} or the
+     *                                  satellite access allow defined by
+     *                                  {@code config_oem_enabled_satellite_access_allow} does not
+     *                                  match the values included in the
+     *                                  header of the input file.
      */
     public static S2RangeSatelliteOnDeviceAccessController create(
-            @NonNull File file) throws IOException, IllegalArgumentException {
+            @NonNull File file, FeatureFlags featureFlags)
+            throws IOException, IllegalArgumentException {
         SatS2RangeFileReader reader = SatS2RangeFileReader.open(file);
         int s2Level = reader.getS2Level();
-        return new S2RangeSatelliteOnDeviceAccessController(reader, s2Level);
+        return new S2RangeSatelliteOnDeviceAccessController(reader, s2Level, featureFlags);
     }
 
     public static LocationToken createLocationTokenForLatLng(
@@ -84,7 +101,7 @@ final class S2RangeSatelliteOnDeviceAccessController extends SatelliteOnDeviceAc
     }
 
     private boolean isSatCommunicationAllowedAtLocation(long s2CellId) throws IOException {
-        S2LevelRange entry = mSatS2RangeFileReader.findEntryByCellId(s2CellId);
+        SuffixTableRange entry = mSatS2RangeFileReader.findEntryByCellId(s2CellId);
         if (mSatS2RangeFileReader.isAllowedList()) {
             // The file contains an allowed list of S2 cells. Thus, satellite is allowed if an
             // entry is found
@@ -157,5 +174,22 @@ final class S2RangeSatelliteOnDeviceAccessController extends SatelliteOnDeviceAc
         public int hashCode() {
             return Objects.hash(mS2CellId);
         }
+    }
+
+    @Override
+    @Nullable
+    public Integer getRegionalConfigIdForLocation(LocationToken locationToken)
+            throws IOException {
+        if (!mFeatureFlags.carrierRoamingNbIotNtn()) {
+            logd("getAccessControlConfigIdForLocation: carrierRoamingNbIotNtn is disabled");
+            return null;
+        }
+
+        if (!isSatCommunicationAllowedAtLocation(locationToken)) {
+            logd("getRegionalConfigIdForLocation: isSatCommunicationAllowedAtLocation is false");
+            return null;
+        }
+
+        return DEFAULT_REGIONAL_SATELLITE_CONFIG_ID;
     }
 }

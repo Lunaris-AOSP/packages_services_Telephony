@@ -20,7 +20,6 @@ import static com.android.storage.s2.S2Support.cellIdToString;
 import static com.android.storage.s2.S2Support.getS2Level;
 
 import com.android.storage.block.read.BlockData;
-import com.android.storage.s2.S2LevelRange;
 import com.android.storage.table.packed.read.IntValueTypedPackedTable;
 import com.android.storage.util.BitwiseUtils;
 import com.android.storage.util.Visitor;
@@ -180,6 +179,6 @@ public final class SuffixTableBlock {
         public abstract int getIndex();
 
         /** Returns the data for this entry. */
-        public abstract S2LevelRange getSuffixTableRange();
+        public abstract SuffixTableRange getSuffixTableRange();
     }
 }

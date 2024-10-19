@@ -145,6 +145,8 @@ public class SatelliteAccessController extends Handler {
     protected static final int EVENT_COUNTRY_CODE_CHANGED = 5;
     protected static final int EVENT_LOCATION_SETTINGS_ENABLED = 6;
 
+    public static final int DEFAULT_REGIONAL_SATELLITE_CONFIG_ID = 0;
+
     private static SatelliteAccessController sInstance;
 
     /** Feature flags to control behavior and errors. */
@@ -209,6 +211,9 @@ public class SatelliteAccessController extends Handler {
     @GuardedBy("mLock")
     @Nullable
     private Location mFreshLastKnownLocation = null;
+    @GuardedBy("mLock")
+    @Nullable
+    private Integer mRegionalConfigId = null;
 
     /** These are used for CTS test */
     private Path mCtsSatS2FilePath = null;
@@ -479,7 +484,7 @@ public class SatelliteAccessController extends Handler {
         }
         mAccessControllerMetricsStats.setTriggeringEvent(TRIGGERING_EVENT_EXTERNAL_REQUEST);
         sendRequestAsync(CMD_IS_SATELLITE_COMMUNICATION_ALLOWED,
-                new Pair<>(mSatelliteController.getSatellitePhone().getSubId(), result));
+                new Pair<>(mSatelliteController.getSelectedSatelliteSubId(), result));
     }
 
     /**
@@ -611,7 +616,7 @@ public class SatelliteAccessController extends Handler {
     private boolean isS2CellFileValid(@NonNull File s2CellFile) {
         try {
             SatelliteOnDeviceAccessController satelliteOnDeviceAccessController =
-                    SatelliteOnDeviceAccessController.create(s2CellFile);
+                    SatelliteOnDeviceAccessController.create(s2CellFile, mFeatureFlags);
             int s2Level = satelliteOnDeviceAccessController.getS2Level();
             if (s2Level < MIN_S2_LEVEL || s2Level > MAX_S2_LEVEL) {
                 ploge("isS2CellFileValid: invalid s2 level = " + s2Level);
@@ -1374,7 +1379,7 @@ public class SatelliteAccessController extends Handler {
         }
     }
 
-    private void checkSatelliteAccessRestrictionForLocation(@NonNull Location location) {
+    protected void checkSatelliteAccessRestrictionForLocation(@NonNull Location location) {
         synchronized (mLock) {
             try {
                 SatelliteOnDeviceAccessController.LocationToken locationToken =
@@ -1393,8 +1398,18 @@ public class SatelliteAccessController extends Handler {
                                 false);
                         return;
                     }
-                    satelliteAllowed = mSatelliteOnDeviceAccessController
-                            .isSatCommunicationAllowedAtLocation(locationToken);
+
+                    if (mFeatureFlags.carrierRoamingNbIotNtn()) {
+                        synchronized (mLock) {
+                            mRegionalConfigId = mSatelliteOnDeviceAccessController
+                                    .getRegionalConfigIdForLocation(locationToken);
+                            plogd("mRegionalConfigId is " + mRegionalConfigId);
+                            satelliteAllowed = (mRegionalConfigId != null);
+                        }
+                    } else {
+                        satelliteAllowed = mSatelliteOnDeviceAccessController
+                                .isSatCommunicationAllowedAtLocation(locationToken);
+                    }
                     updateCachedAccessRestrictionMap(locationToken, satelliteAllowed);
                 }
                 mAccessControllerMetricsStats.setOnDeviceLookupTime(mOnDeviceLookupStartTimeMillis);
@@ -1582,7 +1597,8 @@ public class SatelliteAccessController extends Handler {
 
             try {
                 mSatelliteOnDeviceAccessController =
-                        SatelliteOnDeviceAccessController.create(getSatelliteS2CellFile());
+                        SatelliteOnDeviceAccessController.create(
+                                getSatelliteS2CellFile(), mFeatureFlags);
                 restartKeepOnDeviceAccessControllerResourcesTimer();
                 mS2Level = mSatelliteOnDeviceAccessController.getS2Level();
                 plogd("mS2Level=" + mS2Level);
@@ -2025,7 +2041,7 @@ public class SatelliteAccessController extends Handler {
     /**
      * This API can be used only for test purpose to override the carrier roaming Ntn eligibility
      *
-     * @param state        to update Ntn Eligibility.
+     * @param state         to update Ntn Eligibility.
      * @param resetRequired to reset the overridden flag in satellite controller.
      * @return {@code true} if the shell command is successful, {@code false} otherwise.
      */

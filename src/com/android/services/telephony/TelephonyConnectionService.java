@@ -2164,16 +2164,12 @@ public class TelephonyConnectionService extends ConnectionService {
                 return true;
             } else { // satellite is for emergency
                 if (mFeatureFlags.carrierRoamingNbIotNtn()) {
-                    Phone satellitePhone = mSatelliteController.getSatellitePhone();
-                    if (satellitePhone == null) {
-                        loge("satellite is/being enabled, but satellitePhone is null");
-                        return false;
-                    }
+                    int subId = mSatelliteController.getSelectedSatelliteSubId();
                     SubscriptionInfoInternal info = SubscriptionManagerService.getInstance()
-                            .getSubscriptionInfoInternal(satellitePhone.getSubId());
+                            .getSubscriptionInfoInternal(subId);
                     if (info == null) {
                         loge("satellite is/being enabled, but satellite sub "
-                                + satellitePhone.getSubId() + " is null");
+                                + subId + " is null");
                         return false;
                     }
 

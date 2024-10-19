@@ -16,8 +16,8 @@
 
 package com.android.telephony.tools.sats2;
 
-import com.android.storage.s2.S2LevelRange;
 import com.android.telephony.sats2range.read.SatS2RangeFileFormat;
+import com.android.telephony.sats2range.read.SuffixTableRange;
 import com.android.telephony.sats2range.write.SatS2RangeFileWriter;
 
 import java.io.File;
@@ -42,18 +42,18 @@ public final class CreateTestSatS2File {
         try (SatS2RangeFileWriter satS2RangeFileWriter =
                      SatS2RangeFileWriter.open(file, fileFormat)) {
             // Two ranges that share a prefix.
-            S2LevelRange range1 = new S2LevelRange(
+            SuffixTableRange range1 = new SuffixTableRange(
                     fileFormat.createCellId(0b100_11111111, 1000),
                     fileFormat.createCellId(0b100_11111111, 2000));
-            S2LevelRange range2 = new S2LevelRange(
+            SuffixTableRange range2 = new SuffixTableRange(
                     fileFormat.createCellId(0b100_11111111, 2000),
                     fileFormat.createCellId(0b100_11111111, 3000));
             // This range has a different face, so a different prefix, and will be in a different
             // suffix table.
-            S2LevelRange range3 = new S2LevelRange(
+            SuffixTableRange range3 = new SuffixTableRange(
                     fileFormat.createCellId(0b101_11111111, 1000),
                     fileFormat.createCellId(0b101_11111111, 2000));
-            List<S2LevelRange> allRanges = listOf(range1, range2, range3);
+            List<SuffixTableRange> allRanges = listOf(range1, range2, range3);
             satS2RangeFileWriter.createSortedSuffixBlocks(allRanges.iterator());
         }
     }

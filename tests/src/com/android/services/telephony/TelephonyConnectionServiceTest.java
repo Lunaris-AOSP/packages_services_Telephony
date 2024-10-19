@@ -1509,9 +1509,7 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
 
         // Satellite is for emergency
         doReturn(true).when(mSatelliteController).getRequestIsEmergency();
-        Phone phone = mock(Phone.class);
-        doReturn(1).when(phone).getSubId();
-        doReturn(phone).when(mSatelliteController).getSatellitePhone();
+        doReturn(1).when(mSatelliteController).getSelectedSatelliteSubId();
         SubscriptionManagerService isub = mock(SubscriptionManagerService.class);
         replaceInstance(SubscriptionManagerService.class, "sInstance", null, isub);
         SubscriptionInfoInternal info = mock(SubscriptionInfoInternal.class);
@@ -1548,9 +1546,7 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
 
         // Satellite is for emergency
         doReturn(true).when(mSatelliteController).getRequestIsEmergency();
-        Phone phone = mock(Phone.class);
-        doReturn(1).when(phone).getSubId();
-        doReturn(phone).when(mSatelliteController).getSatellitePhone();
+        doReturn(1).when(mSatelliteController).getSelectedSatelliteSubId();
         SubscriptionManagerService isub = mock(SubscriptionManagerService.class);
         replaceInstance(SubscriptionManagerService.class, "sInstance", null, isub);
         SubscriptionInfoInternal info = mock(SubscriptionInfoInternal.class);

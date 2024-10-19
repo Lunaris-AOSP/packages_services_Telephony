@@ -878,7 +878,9 @@ public class NotificationMgr {
                             + (isManualSelection ? selectedNetworkOperatorName : ""));
                 }
 
-                if (isManualSelection) {
+                if (isManualSelection
+                        && isSubscriptionVisibleToUser(
+                              mSubscriptionManager.getActiveSubscriptionInfo(subId))) {
                     mSelectedNetworkOperatorName.put(subId, selectedNetworkOperatorName);
                     shouldShowNotification(serviceState, subId);
                 } else {
@@ -934,7 +936,9 @@ public class NotificationMgr {
                             + (isManualSelection ? selectedNetworkOperatorName : ""));
                 }
 
-                if (isManualSelection) {
+                if (isManualSelection
+                        && isSubscriptionVisibleToUser(
+                              mSubscriptionManager.getActiveSubscriptionInfo(subId))) {
                     mSelectedNetworkOperatorName.put(subId, selectedNetworkOperatorName);
                     shouldShowNotification(serviceState, subId);
                 } else {
@@ -947,6 +951,12 @@ public class NotificationMgr {
                 dismissNetworkSelectionNotificationForInactiveSubId();
             }
         }
+    }
+
+    // TODO(b/261916533) This should be handled by SubscriptionManager#isSubscriptionVisible(),
+    // but that method doesn't support system callers, so here we are.
+    private boolean isSubscriptionVisibleToUser(SubscriptionInfo subInfo) {
+        return subInfo != null && (!subInfo.isOpportunistic() || subInfo.getGroupUuid() == null);
     }
 
     private void dismissNetworkSelectionNotification(int subId) {

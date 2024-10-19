@@ -59,6 +59,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.res.Resources;
 import android.os.Build;
+import android.os.ParcelUuid;
 import android.os.PersistableBundle;
 import android.os.SystemClock;
 import android.os.UserHandle;
@@ -409,6 +410,35 @@ public class NotificationMgrTest extends TelephonyTestBase {
     }
 
     @Test
+    public void testUpdateNetworkSelection_opportunisticSubscription_notificationNotSent()
+            throws Exception {
+        prepareResourcesForNetworkSelection();
+        when(mSubscriptionManager.getActiveSubscriptionInfo(eq(TEST_SUB_ID))).thenReturn(
+                mSubscriptionInfo);
+
+        when(mTelephonyManager.isManualNetworkSelectionAllowed()).thenReturn(true);
+        PersistableBundle config = new PersistableBundle();
+        config.putBoolean(CarrierConfigManager.KEY_OPERATOR_SELECTION_EXPAND_BOOL, true);
+        config.putBoolean(CarrierConfigManager.KEY_HIDE_CARRIER_NETWORK_SETTINGS_BOOL, false);
+        config.putBoolean(CarrierConfigManager.KEY_CSP_ENABLED_BOOL, false);
+        config.putBoolean(CarrierConfigManager.KEY_WORLD_PHONE_BOOL, true);
+        when(mCarrierConfigManager.getConfigForSubId(TEST_SUB_ID)).thenReturn(config);
+
+        when(mSubscriptionInfo.isOpportunistic()).thenReturn(true);
+        when(mSubscriptionInfo.getGroupUuid()).thenReturn(
+                ParcelUuid.fromString("5be5c5f3-3412-452e-86a0-6f18558ae8c8"));
+
+        mNotificationMgr.updateNetworkSelection(ServiceState.STATE_OUT_OF_SERVICE, TEST_SUB_ID);
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException ignored) {
+        }
+        mNotificationMgr.updateNetworkSelection(ServiceState.STATE_OUT_OF_SERVICE, TEST_SUB_ID);
+
+        verify(mNotificationManager, never()).notify(any(), anyInt(), any());
+    }
+
+    @Test
     public void testUpdateNetworkSelection_worldMode_userSetLTE_notificationNotSent() {
         prepareResourcesForNetworkSelection();
 
@@ -632,6 +662,8 @@ public class NotificationMgrTest extends TelephonyTestBase {
         when(mApp.getString(R.string.mobile_network_settings_class)).thenReturn(
                 MOBILE_NETWORK_SELECTION_CLASS);
         when(mSubscriptionManager.isActiveSubId(anyInt())).thenReturn(true);
+        when(mSubscriptionManager.getActiveSubscriptionInfo(eq(TEST_SUB_ID))).thenReturn(
+                mSubscriptionInfo);
     }
 
     private void moveTimeForward(long seconds) {

@@ -20,7 +20,6 @@ import static com.android.storage.s2.S2Support.MAX_FACE_ID;
 import static com.android.storage.s2.S2Support.cellIdToString;
 import static com.android.storage.util.Conditions.checkStateInRange;
 
-import com.android.storage.s2.S2LevelRange;
 import com.android.storage.table.packed.read.IntValueTypedPackedTable;
 import com.android.storage.table.reader.IntValueTable;
 
@@ -141,7 +140,7 @@ final class PopulatedSuffixTableBlock implements SuffixTableBlock.SuffixTableBlo
 
         private final IntValueTable.TableEntry mSuffixTableEntry;
 
-        private S2LevelRange mSuffixTableRange;
+        private SuffixTableRange mSuffixTableRange;
 
         Entry(IntValueTable.TableEntry suffixTableEntry) {
             mSuffixTableEntry = Objects.requireNonNull(suffixTableEntry);
@@ -154,7 +153,7 @@ final class PopulatedSuffixTableBlock implements SuffixTableBlock.SuffixTableBlo
 
         /** Returns the data for this entry. */
         @Override
-        public S2LevelRange getSuffixTableRange() {
+        public SuffixTableRange getSuffixTableRange() {
             // Creating SuffixTableRange is relatively expensive so it is created lazily and
             // memoized.
             if (mSuffixTableRange == null) {
@@ -190,7 +189,7 @@ final class PopulatedSuffixTableBlock implements SuffixTableBlock.SuffixTableBlo
                     endCellIdSuffix = 0;
                 }
                 long endCellId = mFileFormat.createCellId(endCellPrefixValue, endCellIdSuffix);
-                mSuffixTableRange = new S2LevelRange(startCellId, endCellId);
+                mSuffixTableRange = new SuffixTableRange(startCellId, endCellId);
             }
             return mSuffixTableRange;
         }

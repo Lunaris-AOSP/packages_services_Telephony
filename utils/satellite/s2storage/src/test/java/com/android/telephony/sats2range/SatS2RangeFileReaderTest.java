@@ -18,9 +18,9 @@ package com.android.telephony.sats2range;
 
 import static org.junit.Assert.assertEquals;
 
-import com.android.storage.s2.S2LevelRange;
 import com.android.telephony.sats2range.read.SatS2RangeFileFormat;
 import com.android.telephony.sats2range.read.SatS2RangeFileReader;
+import com.android.telephony.sats2range.read.SuffixTableRange;
 import com.android.telephony.sats2range.utils.TestUtils;
 import com.android.telephony.sats2range.write.SatS2RangeFileWriter;
 
@@ -38,24 +38,24 @@ public class SatS2RangeFileReaderTest {
 
         SatS2RangeFileFormat fileFormat;
         boolean isAllowedList = true;
-        S2LevelRange expectedRange1, expectedRange2, expectedRange3;
+        SuffixTableRange expectedRange1, expectedRange2, expectedRange3;
         try (SatS2RangeFileWriter satS2RangeFileWriter = SatS2RangeFileWriter.open(
                 file, TestUtils.createS2RangeFileFormat(isAllowedList))) {
             fileFormat = satS2RangeFileWriter.getFileFormat();
 
             // Two ranges that share a prefix.
-            expectedRange1 = new S2LevelRange(
+            expectedRange1 = new SuffixTableRange(
                     TestUtils.createCellId(fileFormat, 1, 1000, 1000),
                     TestUtils.createCellId(fileFormat, 1, 1000, 2000));
-            expectedRange2 = new S2LevelRange(
+            expectedRange2 = new SuffixTableRange(
                     TestUtils.createCellId(fileFormat, 1, 1000, 2000),
                     TestUtils.createCellId(fileFormat, 1, 1000, 3000));
             // This range has a different prefix, so will be in a different suffix table.
-            expectedRange3 = new S2LevelRange(
+            expectedRange3 = new SuffixTableRange(
                     TestUtils.createCellId(fileFormat, 1, 1001, 1000),
                     TestUtils.createCellId(fileFormat, 1, 1001, 2000));
 
-            List<S2LevelRange> ranges = new ArrayList<>();
+            List<SuffixTableRange> ranges = new ArrayList<>();
             ranges.add(expectedRange1);
             ranges.add(expectedRange2);
             ranges.add(expectedRange3);
@@ -65,15 +65,15 @@ public class SatS2RangeFileReaderTest {
         try (SatS2RangeFileReader satS2RangeFileReader = SatS2RangeFileReader.open(file)) {
             assertEquals(isAllowedList, satS2RangeFileReader.isAllowedList());
 
-            S2LevelRange range1 = satS2RangeFileReader.findEntryByCellId(
+            SuffixTableRange range1 = satS2RangeFileReader.findEntryByCellId(
                     TestUtils.createCellId(fileFormat, 1, 1000, 1500));
             assertEquals(expectedRange1, range1);
 
-            S2LevelRange range2 = satS2RangeFileReader.findEntryByCellId(
+            SuffixTableRange range2 = satS2RangeFileReader.findEntryByCellId(
                     TestUtils.createCellId(fileFormat, 1, 1000, 2500));
             assertEquals(expectedRange2, range2);
 
-            S2LevelRange range3 = satS2RangeFileReader.findEntryByCellId(
+            SuffixTableRange range3 = satS2RangeFileReader.findEntryByCellId(
                     TestUtils.createCellId(fileFormat, 1, 1001, 1500));
             assertEquals(expectedRange3, range3);
         }
