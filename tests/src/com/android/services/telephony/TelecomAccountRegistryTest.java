@@ -51,6 +51,7 @@ import com.android.TelephonyTestBase;
 import com.android.internal.telephony.Phone;
 import com.android.internal.telephony.PhoneConstants;
 import com.android.internal.telephony.PhoneFactory;
+import com.android.internal.telephony.SimultaneousCallingTracker;
 import com.android.internal.telephony.flags.Flags;
 import com.android.phone.PhoneGlobals;
 import com.android.phone.PhoneInterfaceManager;
@@ -63,6 +64,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 @RunWith(AndroidTestingRunner.class)
@@ -181,6 +183,9 @@ public class TelecomAccountRegistryTest extends TelephonyTestBase {
         mUserSwitchedAndConfigChangedReceiver =
                 broadcastReceiverArgumentCaptor.getAllValues().get(0);
         mLocaleChangedBroadcastReceiver = broadcastReceiverArgumentCaptor.getAllValues().get(1);
+
+        replaceInstance(SimultaneousCallingTracker.class, "sInstance", null,
+                Mockito.mock(SimultaneousCallingTracker.class));
 
         mTestableLooper.processAllMessages();
     }

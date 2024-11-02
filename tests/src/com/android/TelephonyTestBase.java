@@ -51,19 +51,11 @@ public class TelephonyTestBase {
 
     @Before
     public void setUp() throws Exception {
-        mContext = spy(new TestContext());
-        // Set up the looper if it does not exist on the test thread.
         if (Looper.myLooper() == null) {
             Looper.prepare();
-            // Wait until the looper is not null anymore
-            for(int i = 0; i < 5; i++) {
-                if (Looper.myLooper() != null) {
-                    break;
-                }
-                Looper.prepare();
-                Thread.sleep(100);
-            }
         }
+
+        mContext = spy(new TestContext());
     }
 
     @After

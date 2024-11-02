@@ -85,7 +85,6 @@ import android.telephony.ims.ImsRcsManager;
 import android.telephony.ims.ProvisioningManager;
 import android.telephony.ims.feature.MmTelFeature;
 import android.telephony.ims.stub.ImsRegistrationImplBase;
-import android.telephony.satellite.EnableRequestAttributes;
 import android.telephony.satellite.SatelliteManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -2142,9 +2141,8 @@ public class RadioInfo extends AppCompatActivity {
      * Enable modem satellite for non-emergency mode.
      */
     private void enableSatelliteNonEmergencyMode() {
-        SatelliteManager sm = getSystemService(SatelliteManager.class);
         CarrierConfigManager cm = getSystemService(CarrierConfigManager.class);
-        if (sm == null || cm == null) {
+        if (cm == null) {
             loge("enableSatelliteNonEmergencyMode: sm or cm is null");
             return;
         }
@@ -2155,10 +2153,38 @@ public class RadioInfo extends AppCompatActivity {
             return;
         }
         log("enableSatelliteNonEmergencyMode: requestEnabled");
-        sm.requestEnabled(new EnableRequestAttributes.Builder(true)
-                        .setDemoMode(false).setEmergencyMode(false).build(),
-                Runnable::run, res -> log("enableSatelliteNonEmergencyMode: " + res)
-        );
+        sendBroadCastForSatelliteNonEmergencyMode();
+    }
+
+    private void sendBroadCastForSatelliteNonEmergencyMode() {
+        String packageName = getStringFromOverlayConfig(
+                com.android.internal.R.string.config_satellite_gateway_service_package);
+
+        String className = getStringFromOverlayConfig(com.android.internal.R.string
+                .config_satellite_carrier_roaming_non_emergency_session_class);
+        if (packageName == null || className == null
+                || packageName.isEmpty() || className.isEmpty()) {
+            Log.d(TAG, "sendBroadCastForSatelliteNonEmergencyMode:"
+                    + " packageName or className is null or empty.");
+            return;
+        }
+        String action  = SatelliteManager.ACTION_SATELLITE_START_NON_EMERGENCY_SESSION;
+
+        Intent intent = new Intent(action);
+        intent.setComponent(new ComponentName(packageName, className));
+        sendBroadcast(intent);
+        Log.d(TAG, "sendBroadCastForSatelliteNonEmergencyMode" + intent);
+    }
+
+    private String getStringFromOverlayConfig(int resourceId) {
+        String name;
+        try {
+            name = getResources().getString(resourceId);
+        } catch (Resources.NotFoundException ex) {
+            loge("getStringFromOverlayConfig: ex=" + ex);
+            name = null;
+        }
+        return name;
     }
 
     private boolean isImsVolteProvisioned() {
