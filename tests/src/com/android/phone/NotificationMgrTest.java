@@ -77,11 +77,8 @@ import android.testing.TestableLooper;
 import com.android.TelephonyTestBase;
 import com.android.internal.telephony.Phone;
 import com.android.internal.telephony.PhoneConstants;
-import com.android.internal.telephony.PhoneFactory;
 import com.android.internal.telephony.ServiceStateTracker;
 import com.android.internal.telephony.SignalStrengthController;
-import com.android.internal.telephony.data.DataConfigManager;
-import com.android.internal.telephony.data.DataNetworkController;
 import com.android.internal.telephony.data.DataSettingsManager;
 import com.android.internal.telephony.util.NotificationChannelController;
 
@@ -90,9 +87,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
-import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -111,13 +106,12 @@ public class NotificationMgrTest extends TelephonyTestBase {
     private static final String MOBILE_NETWORK_SELECTION_CLASS = ".testClass";
     private static final String CARRIER_NAME = "CoolCarrier";
 
-    @Mock PhoneGlobals mApp;
+    PhoneGlobals mApp; // mPhoneGlobals alias
     @Mock StatusBarManager mStatusBarManager;
     @Mock UserManager mUserManager;
     @Mock SubscriptionManager mSubscriptionManager;
     @Mock TelecomManager mTelecomManager;
     @Mock TelephonyManager mTelephonyManager;
-    @Mock Phone mPhone;
     @Mock SharedPreferences mSharedPreferences;
     @Mock NotificationManager mNotificationManager;
     @Mock SubscriptionInfo mSubscriptionInfo;
@@ -126,20 +120,16 @@ public class NotificationMgrTest extends TelephonyTestBase {
     @Mock ServiceStateTracker mServiceStateTracker;
     @Mock ServiceState mServiceState;
     @Mock CarrierConfigManager mCarrierConfigManager;
-    @Mock DataNetworkController mDataNetworkController;
     @Mock DataSettingsManager mDataSettingsManager;
-    @Mock DataConfigManager mDataConfigManager;
     @Mock SignalStrengthController mSignalStrengthController;
 
-    private Phone[] mPhones;
     private NotificationMgr mNotificationMgr;
     private TestableLooper mTestableLooper;
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        mPhones = new Phone[]{mPhone};
-        replaceInstance(PhoneFactory.class, "sPhones", null, mPhones);
+        super.setUp();
+        mApp = mPhoneGlobals;
         when(mPhone.getPhoneType()).thenReturn(PhoneConstants.PHONE_TYPE_GSM);
         when(mPhone.getContext()).thenReturn(mMockedContext);
         when(mMockedContext.getResources()).thenReturn(mResources);
@@ -152,10 +142,6 @@ public class NotificationMgrTest extends TelephonyTestBase {
         when(mPhone.getServiceStateTracker()).thenReturn(mServiceStateTracker);
         mServiceStateTracker.mSS = mServiceState;
         when(mPhone.getSignalStrengthController()).thenReturn(mSignalStrengthController);
-        when(mPhone.getDataNetworkController()).thenReturn(mDataNetworkController);
-        when(mDataNetworkController.getInternetDataDisallowedReasons()).thenReturn(
-                Collections.emptyList());
-        when(mDataNetworkController.getDataConfigManager()).thenReturn(mDataConfigManager);
         when(mPhone.getDataSettingsManager()).thenReturn(mDataSettingsManager);
         when(mDataSettingsManager.isDataEnabledForReason(anyInt())).thenReturn(true);
         when(mApp.getSharedPreferences(anyString(), anyInt())).thenReturn(mSharedPreferences);

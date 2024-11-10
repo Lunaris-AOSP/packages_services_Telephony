@@ -212,6 +212,11 @@ public class TestContext extends MockContext {
     }
 
     @Override
+    public Looper getMainLooper() {
+        return Looper.getMainLooper();
+    }
+
+    @Override
     public Handler getMainThreadHandler() {
         return new Handler(Looper.getMainLooper());
     }

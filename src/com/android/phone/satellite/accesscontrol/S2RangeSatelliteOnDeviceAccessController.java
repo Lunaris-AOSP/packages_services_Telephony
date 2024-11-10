@@ -15,15 +15,11 @@
  */
 package com.android.phone.satellite.accesscontrol;
 
-import static com.android.phone.satellite.accesscontrol.SatelliteAccessController.DEFAULT_REGIONAL_SATELLITE_CONFIG_ID;
-
 import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.telephony.Rlog;
 
 import com.android.internal.telephony.flags.FeatureFlags;
-import com.android.storage.s2.S2LevelRange;
-
 import com.android.telephony.sats2range.read.SatS2RangeFileReader;
 import com.android.telephony.sats2range.read.SuffixTableRange;
 
@@ -178,18 +174,22 @@ final class S2RangeSatelliteOnDeviceAccessController extends SatelliteOnDeviceAc
 
     @Override
     @Nullable
-    public Integer getRegionalConfigIdForLocation(LocationToken locationToken)
+    public Integer getRegionalConfigIdForLocation(@NonNull LocationToken locationToken)
             throws IOException {
         if (!mFeatureFlags.carrierRoamingNbIotNtn()) {
             logd("getAccessControlConfigIdForLocation: carrierRoamingNbIotNtn is disabled");
             return null;
         }
 
-        if (!isSatCommunicationAllowedAtLocation(locationToken)) {
-            logd("getRegionalConfigIdForLocation: isSatCommunicationAllowedAtLocation is false");
-            return null;
+        if (locationToken instanceof LocationTokenImpl locationTokenImpl) {
+            return getRegionalConfigIdForLocation(locationTokenImpl.getS2CellId());
+        } else {
+            throw new IllegalArgumentException("Unknown locationToken=" + locationToken);
         }
+    }
 
-        return DEFAULT_REGIONAL_SATELLITE_CONFIG_ID;
+    private Integer getRegionalConfigIdForLocation(long s2CellId) throws IOException {
+        SuffixTableRange entry = mSatS2RangeFileReader.findEntryByCellId(s2CellId);
+        return (entry == null) ? null : entry.getEntryValue();
     }
 }

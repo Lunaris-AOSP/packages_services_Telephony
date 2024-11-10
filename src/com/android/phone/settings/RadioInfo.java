@@ -367,7 +367,7 @@ public class RadioInfo extends AppCompatActivity {
 
     private String mActionEsos;
     private String mActionEsosDemo;
-
+    private Intent mNonEsosIntent;
     private TelephonyDisplayInfo mDisplayInfo;
 
     private List<PhysicalChannelConfig> mPhysicalChannelConfigs = new ArrayList<>();
@@ -785,33 +785,33 @@ public class RadioInfo extends AppCompatActivity {
         mEsosDemoButton  = (Button) findViewById(R.id.demo_esos_questionnaire);
         mSatelliteEnableNonEmergencyModeButton = (Button) findViewById(
                 R.id.satellite_enable_non_emergency_mode);
-        CarrierConfigManager cm = getSystemService(CarrierConfigManager.class);
-        if (!cm.getConfigForSubId(mSubId,
-                        CarrierConfigManager.KEY_SATELLITE_ATTACH_SUPPORTED_BOOL)
-                .getBoolean(CarrierConfigManager.KEY_SATELLITE_ATTACH_SUPPORTED_BOOL)) {
-            mSatelliteEnableNonEmergencyModeButton.setVisibility(View.GONE);
-        }
-        if (!Build.isDebuggable()) {
-            if (!TextUtils.isEmpty(mActionEsos)) {
-                mEsosButton.setVisibility(View.GONE);
-            }
-            if (!TextUtils.isEmpty(mActionEsosDemo)) {
-                mEsosDemoButton.setVisibility(View.GONE);
-            }
-            mSatelliteEnableNonEmergencyModeButton.setVisibility(View.GONE);
+
+        if (shouldHideButton(mActionEsos)) {
+            mEsosButton.setVisibility(View.GONE);
         } else {
             mEsosButton.setOnClickListener(v -> startActivityAsUser(
                     new Intent(mActionEsos).addFlags(
                             Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK),
                     UserHandle.CURRENT)
             );
+        }
+        if (shouldHideButton(mActionEsosDemo)) {
+            mEsosDemoButton.setVisibility(View.GONE);
+        } else {
             mEsosDemoButton.setOnClickListener(v -> startActivityAsUser(
                     new Intent(mActionEsosDemo).addFlags(
                             Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK),
                     UserHandle.CURRENT)
             );
-            mSatelliteEnableNonEmergencyModeButton.setOnClickListener(v ->
-                    enableSatelliteNonEmergencyMode());
+        }
+        if (shouldHideNonEmergencyMode()) {
+            mSatelliteEnableNonEmergencyModeButton.setVisibility(View.GONE);
+        } else {
+            mSatelliteEnableNonEmergencyModeButton.setOnClickListener(v -> {
+                if (mNonEsosIntent != null) {
+                    sendBroadcast(mNonEsosIntent);
+                }
+            });
         }
 
         mOemInfoButton = (Button) findViewById(R.id.oem_info);
@@ -833,6 +833,21 @@ public class RadioInfo extends AppCompatActivity {
         }).start();
 
         restoreFromBundle(icicle);
+    }
+
+    boolean shouldHideButton(String action) {
+        if (!Build.isDebuggable()) {
+            return true;
+        }
+        if (TextUtils.isEmpty(action)) {
+            return true;
+        }
+        PackageManager pm = getPackageManager();
+        Intent intent = new Intent(action);
+        if (pm.resolveActivity(intent, 0) == null) {
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -2137,26 +2152,36 @@ public class RadioInfo extends AppCompatActivity {
                 }
             };
 
-    /**
-     * Enable modem satellite for non-emergency mode.
-     */
-    private void enableSatelliteNonEmergencyMode() {
+    private boolean shouldHideNonEmergencyMode() {
+        if (!Build.isDebuggable()) {
+            return true;
+        }
+        String action  = SatelliteManager.ACTION_SATELLITE_START_NON_EMERGENCY_SESSION;
+        if (TextUtils.isEmpty(action)) {
+            return true;
+        }
+        if (mNonEsosIntent != null) {
+            mNonEsosIntent = null;
+        }
         CarrierConfigManager cm = getSystemService(CarrierConfigManager.class);
         if (cm == null) {
-            loge("enableSatelliteNonEmergencyMode: sm or cm is null");
-            return;
+            loge("shouldHideNonEmergencyMode: cm is null");
+            return true;
         }
-        if (!cm.getConfigForSubId(mSubId,
-                CarrierConfigManager.KEY_SATELLITE_ATTACH_SUPPORTED_BOOL)
-                .getBoolean(CarrierConfigManager.KEY_SATELLITE_ATTACH_SUPPORTED_BOOL)) {
-            loge("enableSatelliteNonEmergencyMode: KEY_SATELLITE_ATTACH_SUPPORTED_BOOL is false");
-            return;
+        PersistableBundle bundle = cm.getConfigForSubId(mSubId,
+                CarrierConfigManager.KEY_SATELLITE_ATTACH_SUPPORTED_BOOL,
+                CarrierConfigManager.KEY_SATELLITE_ESOS_SUPPORTED_BOOL);
+        if (!bundle.getBoolean(
+                CarrierConfigManager.KEY_SATELLITE_ESOS_SUPPORTED_BOOL, false)) {
+            log("shouldHideNonEmergencyMode: esos_supported false");
+            return true;
         }
-        log("enableSatelliteNonEmergencyMode: requestEnabled");
-        sendBroadCastForSatelliteNonEmergencyMode();
-    }
+        if (!bundle.getBoolean(
+                CarrierConfigManager.KEY_SATELLITE_ATTACH_SUPPORTED_BOOL, false)) {
+            log("shouldHideNonEmergencyMode: attach_supported false");
+            return true;
+        }
 
-    private void sendBroadCastForSatelliteNonEmergencyMode() {
         String packageName = getStringFromOverlayConfig(
                 com.android.internal.R.string.config_satellite_gateway_service_package);
 
@@ -2164,16 +2189,20 @@ public class RadioInfo extends AppCompatActivity {
                 .config_satellite_carrier_roaming_non_emergency_session_class);
         if (packageName == null || className == null
                 || packageName.isEmpty() || className.isEmpty()) {
-            Log.d(TAG, "sendBroadCastForSatelliteNonEmergencyMode:"
+            Log.d(TAG, "shouldHideNonEmergencyMode:"
                     + " packageName or className is null or empty.");
-            return;
+            return true;
         }
-        String action  = SatelliteManager.ACTION_SATELLITE_START_NON_EMERGENCY_SESSION;
-
+        PackageManager pm = getPackageManager();
         Intent intent = new Intent(action);
         intent.setComponent(new ComponentName(packageName, className));
-        sendBroadcast(intent);
-        Log.d(TAG, "sendBroadCastForSatelliteNonEmergencyMode" + intent);
+        if (pm.queryBroadcastReceivers(intent, 0).isEmpty()) {
+            Log.d(TAG, "shouldHideNonEmergencyMode: Broadcast receiver not found for intent: "
+                    + intent);
+            return true;
+        }
+        mNonEsosIntent = intent;
+        return false;
     }
 
     private String getStringFromOverlayConfig(int resourceId) {

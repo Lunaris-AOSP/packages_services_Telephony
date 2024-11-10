@@ -58,7 +58,8 @@ final class PopulatedSuffixTableBlock implements SuffixTableBlock.SuffixTableBlo
             SatS2RangeFileFormat fileFormat, IntValueTypedPackedTable packedTable) {
         mFileFormat = Objects.requireNonNull(fileFormat);
         mPackedTable = Objects.requireNonNull(packedTable);
-        mSuffixTableSharedData = SuffixTableSharedData.fromBytes(packedTable.getSharedData());
+        mSuffixTableSharedData = SuffixTableSharedData.fromTypedData(
+                packedTable.getSharedDataAsTyped(), fileFormat);
 
         // Obtain the prefix. All cellIds in this table will share the same prefix except for end
         // range values (which are exclusive so can be for mPrefix + 1 with a suffix value of 0).
@@ -189,7 +190,8 @@ final class PopulatedSuffixTableBlock implements SuffixTableBlock.SuffixTableBlo
                     endCellIdSuffix = 0;
                 }
                 long endCellId = mFileFormat.createCellId(endCellPrefixValue, endCellIdSuffix);
-                mSuffixTableRange = new SuffixTableRange(startCellId, endCellId);
+                int entryValue = getEntryValue();
+                mSuffixTableRange = new SuffixTableRange(startCellId, endCellId, entryValue);
             }
             return mSuffixTableRange;
         }
@@ -216,6 +218,10 @@ final class PopulatedSuffixTableBlock implements SuffixTableBlock.SuffixTableBlo
             return "Entry{"
                     + "mSuffixTableEntry=" + mSuffixTableEntry
                     + '}';
+        }
+
+        private int getEntryValue() {
+            return mSuffixTableSharedData.getEntryValue(mSuffixTableEntry.getIndex());
         }
     }
 }

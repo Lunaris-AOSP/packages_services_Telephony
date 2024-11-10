@@ -38,6 +38,14 @@ public class TestUtils {
 
     /** Returns a valid {@link SatS2RangeFileFormat}. */
     public static SatS2RangeFileFormat createS2RangeFileFormat(boolean isAllowedList) {
+        return createS2RangeFileFormat(isAllowedList,
+                /* entryValueSizeInBytes */0,
+                /* versionNumber */0);
+    }
+
+    /** Returns a valid {@link SatS2RangeFileFormat}. */
+    public static SatS2RangeFileFormat createS2RangeFileFormat(boolean isAllowedList,
+            int entryValueSizeInBytes, int versionNumber) {
         int dataS2Level = TEST_S2_LEVEL;
         int faceIdBits = 3;
         int bitCountPerLevel = 2;
@@ -48,7 +56,8 @@ public class TestUtils {
         int suffixTableEntryBitCount = 4 * Byte.SIZE;
         int suffixTableBlockIdOffset = 5;
         return new SatS2RangeFileFormat(dataS2Level, prefixBitCount, suffixBitCount,
-                suffixTableBlockIdOffset, suffixTableEntryBitCount, isAllowedList);
+                suffixTableBlockIdOffset, suffixTableEntryBitCount, isAllowedList,
+                entryValueSizeInBytes, versionNumber);
     }
 
     /** Create an S2 cell ID */

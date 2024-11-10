@@ -23,12 +23,12 @@ import com.android.storage.s2.S2LevelRange;
 import java.util.Objects;
 
 public final class SuffixTableRange extends S2LevelRange {
-    private static final int DEAFAULT_ENTRY_VALUE = -1;
+    private static final int DEFAULT_ENTRY_VALUE = -1;
     private final int mEntryValue;
 
     // For backward compatibility
     public SuffixTableRange(long startCellId, long endCellId) {
-        this(startCellId, endCellId, DEAFAULT_ENTRY_VALUE);
+        this(startCellId, endCellId, DEFAULT_ENTRY_VALUE);
     }
 
     public SuffixTableRange(long startCellId, long endCellId, int entryValue) {

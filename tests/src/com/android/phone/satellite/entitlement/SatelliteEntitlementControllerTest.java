@@ -20,6 +20,7 @@ import static com.android.libraries.entitlement.ServiceEntitlementException.ERRO
 import static com.android.phone.satellite.entitlement.SatelliteEntitlementResult.SATELLITE_ENTITLEMENT_STATUS_DISABLED;
 import static com.android.phone.satellite.entitlement.SatelliteEntitlementResult.SATELLITE_ENTITLEMENT_STATUS_ENABLED;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -46,18 +47,16 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.wifi.WifiInfo;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Looper;
-import android.os.Message;
 import android.os.PersistableBundle;
 import android.telephony.CarrierConfigManager;
 import android.telephony.TelephonyManager;
+import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
 import android.util.Log;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.android.TelephonyTestBase;
 import com.android.internal.telephony.ExponentialBackoff;
@@ -74,7 +73,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -87,7 +85,8 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidTestingRunner.class)
+@TestableLooper.RunWithLooper
 public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
     private static final String TAG = "SatelliteEntitlementControllerTest";
     private static final int SUB_ID = 0;
@@ -101,10 +100,8 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
     private static final int CMD_RETRY_QUERY_ENTITLEMENT = 2;
     private static final int CMD_SIM_REFRESH = 3;
     private static final int MAX_RETRY_COUNT = 5;
-    @Mock
-    CarrierConfigManager mCarrierConfigManager;
-    @Mock
-    ConnectivityManager mConnectivityManager;
+    @Mock CarrierConfigManager mCarrierConfigManager;
+    @Mock ConnectivityManager mConnectivityManager;
     @Mock Network mNetwork;
     @Mock TelephonyManager mTelephonyManager;
     @Mock SubscriptionManagerService mMockSubscriptionManagerService;
@@ -118,10 +115,10 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
     private TestableLooper mTestableLooper;
     private List<Pair<Executor, CarrierConfigManager.CarrierConfigChangeListener>>
             mCarrierConfigChangedListenerList = new ArrayList<>();
+
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        MockitoAnnotations.initMocks(this);
 
         replaceInstance(SubscriptionManagerService.class, "sInstance", null,
                 mMockSubscriptionManagerService);
@@ -129,14 +126,8 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
         replaceInstance(PhoneFactory.class, "sMetricsCollector", null, mMetricsCollector);
         doReturn(Mockito.mock(PersistAtomsStorage.class)).when(mMetricsCollector).getAtomsStorage();
 
-        HandlerThread handlerThread = new HandlerThread("SatelliteEntitlementController");
-        handlerThread.start();
-        mHandler = new Handler(handlerThread.getLooper()) {
-            @Override
-            public void handleMessage(Message msg) {
-            }
-        };
-        mTestableLooper = new TestableLooper(mHandler.getLooper());
+        mTestableLooper = TestableLooper.get(this);
+        mHandler = new Handler(mTestableLooper.getLooper());
         doReturn(Context.TELEPHONY_SERVICE).when(mContext).getSystemServiceName(
                 TelephonyManager.class);
         doReturn(mTelephonyManager).when(mContext).getSystemService(Context.TELEPHONY_SERVICE);
@@ -167,9 +158,8 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
                 Context.CONNECTIVITY_SERVICE);
         doReturn(mNetwork).when(mConnectivityManager).getActiveNetwork();
         doReturn(ACTIVE_SUB_ID).when(mMockSubscriptionManagerService).getActiveSubIdList(true);
-        mSatelliteEntitlementController = new TestSatelliteEntitlementController(mContext,
-                mHandler.getLooper(), mSatelliteEntitlementApi);
-        mSatelliteEntitlementController = spy(mSatelliteEntitlementController);
+        mSatelliteEntitlementController = spy(new TestSatelliteEntitlementController(mContext,
+                mTestableLooper.getLooper(), mSatelliteEntitlementApi));
         doReturn(mSatelliteEntitlementResult).when(
                 mSatelliteEntitlementApi).checkEntitlementStatus();
     }
@@ -181,7 +171,6 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
 
     @Test
     public void testShouldStartQueryEntitlement() throws Exception {
-        logd("testShouldStartQueryEntitlement");
         doReturn(ACTIVE_SUB_ID).when(mMockSubscriptionManagerService).getActiveSubIdList(true);
 
         // Verify don't start the query when KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL is false.
@@ -256,7 +245,6 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
 
     @Test
     public void testCheckSatelliteEntitlementStatus() throws Exception {
-        logd("testCheckSatelliteEntitlementStatus");
         setIsQueryAvailableTrue();
         // Verify don't call the checkSatelliteEntitlementStatus when getActiveSubIdList is empty.
         doReturn(new int[]{}).when(mMockSubscriptionManagerService).getActiveSubIdList(true);
@@ -347,7 +335,6 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
 
     @Test
     public void testCheckSatelliteEntitlementStatusWhenInternetConnected() throws Exception {
-        logd("testCheckSatelliteEntitlementStatusWhenInternetConnected");
         ConnectivityManager.NetworkCallback networkCallback =
                 (ConnectivityManager.NetworkCallback) getValue("mNetworkCallback");
         Network mockNetwork = mock(Network.class);
@@ -369,7 +356,6 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
 
     @Test
     public void testCheckSatelliteEntitlementStatusWhenCarrierConfigChanged() throws Exception {
-        logd("testCheckSatelliteEntitlementStatusWhenCarrierConfigChanged");
         // Verify the called the checkSatelliteEntitlementStatus when CarrierConfigChanged
         // occurred and Internet is connected.
         setInternetConnected(true);
@@ -386,7 +372,6 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
 
     @Test
     public void testCheckWhenStartCmdIsReceivedDuringRetry() throws Exception {
-        logd("testCheckWhenStartCmdIsReceivedDuringRetry");
         // Verify that start cmd is ignored and retry is performed up to 5 times when start cmd
         // occurs during retries.
         setIsQueryAvailableTrue();
@@ -400,47 +385,47 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
         verify(mSatelliteEntitlementApi, times(1)).checkEntitlementStatus();
         // Verify that the retry count is 0 after receiving a 503 with retry-after header in
         // response.
-        assertTrue(retryCountPerSub.getOrDefault(SUB_ID, 0) == 0);
+        assertEquals(0, retryCountPerSub.getOrDefault(SUB_ID, 0).longValue());
 
         // Verify that the retry count is 1 for the second query when receiving a 503 with
         // retry-after header in response.
         mTestableLooper.moveTimeForward(TimeUnit.SECONDS.toMillis(1));
         mTestableLooper.processAllMessages();
         verify(mSatelliteEntitlementApi, times(2)).checkEntitlementStatus();
-        assertTrue(retryCountPerSub.get(SUB_ID) == 1);
+        assertEquals(1, retryCountPerSub.get(SUB_ID).longValue());
 
         // Verify that the retry count is 2 for the third query when receiving a 503 with
         // retry-after header in response.
         mTestableLooper.moveTimeForward(TimeUnit.SECONDS.toMillis(1));
         mTestableLooper.processAllMessages();
         verify(mSatelliteEntitlementApi, times(3)).checkEntitlementStatus();
-        assertTrue(retryCountPerSub.get(SUB_ID) == 2);
+        assertEquals(2, retryCountPerSub.get(SUB_ID).longValue());
 
         // Verify that start CMD is ignored during retries.
         sendMessage(CMD_START_QUERY_ENTITLEMENT, SUB_ID);
         mTestableLooper.processAllMessages();
         verify(mSatelliteEntitlementApi, times(3)).checkEntitlementStatus();
-        assertTrue(retryCountPerSub.get(SUB_ID) == 2);
+        assertEquals(2, retryCountPerSub.get(SUB_ID).longValue());
 
         // Verify that the retry count is 3 for the forth query when receiving a 503 with
         // retry-after header in response.
         mTestableLooper.moveTimeForward(TimeUnit.SECONDS.toMillis(1));
         mTestableLooper.processAllMessages();
         verify(mSatelliteEntitlementApi, times(4)).checkEntitlementStatus();
-        assertTrue(retryCountPerSub.get(SUB_ID) == 3);
+        assertEquals(3, retryCountPerSub.get(SUB_ID).longValue());
 
         // Verify that the retry count is 4 for the fifth query when receiving a 503 with
         // retry-after header in response.
         mTestableLooper.moveTimeForward(TimeUnit.SECONDS.toMillis(1));
         mTestableLooper.processAllMessages();
         verify(mSatelliteEntitlementApi, times(5)).checkEntitlementStatus();
-        assertTrue(retryCountPerSub.get(SUB_ID) == 4);
+        assertEquals(4, retryCountPerSub.get(SUB_ID).longValue());
 
         // Verify that start CMD is ignored during retries.
         sendMessage(CMD_START_QUERY_ENTITLEMENT, SUB_ID);
         mTestableLooper.processAllMessages();
         verify(mSatelliteEntitlementApi, times(5)).checkEntitlementStatus();
-        assertTrue(retryCountPerSub.get(SUB_ID) == 4);
+        assertEquals(4, retryCountPerSub.get(SUB_ID).longValue());
 
         // Verify that the retry count is 5 for the sixth query when receiving a 503 with
         // retry-after header in response.
@@ -470,7 +455,6 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
 
     @Test
     public void testCheckAfterInternetConnectionChangedDuringRetry() throws Exception {
-        logd("testCheckAfterInternetConnectionChangedDuringRetry");
         // Verify that the retry count is maintained even when internet connection is lost and
         // connected during retries, and that up to 5 retries are performed.
         setIsQueryAvailableTrue();
@@ -484,48 +468,48 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
         verify(mSatelliteEntitlementApi, times(1)).checkEntitlementStatus();
         // Verify that the retry count is 0 after receiving a 503 with retry-after header in
         // response.
-        assertTrue(retryCountPerSub.getOrDefault(SUB_ID, 0) == 0);
+        assertEquals(0, retryCountPerSub.getOrDefault(SUB_ID, 0).longValue());
 
         // Verify that the retry count is 1 for the second query when receiving a 503 with
         // retry-after header in response.
         mTestableLooper.moveTimeForward(TimeUnit.SECONDS.toMillis(1));
         mTestableLooper.processAllMessages();
         verify(mSatelliteEntitlementApi, times(2)).checkEntitlementStatus();
-        assertTrue(retryCountPerSub.get(SUB_ID) == 1);
+        assertEquals(1, retryCountPerSub.get(SUB_ID).longValue());
 
         // Verify that no query is executed and the retry count does not increase when internet
         // connection is lost during the second retry.
         setInternetConnected(false);
-        mTestableLooper.moveTimeForward(TimeUnit.SECONDS.toMillis(1));
+        mTestableLooper.moveTimeForward(TimeUnit.SECONDS.toMillis(2));
         mTestableLooper.processAllMessages();
         verify(mSatelliteEntitlementApi, times(2)).checkEntitlementStatus();
-        assertTrue(retryCountPerSub.get(SUB_ID) == 1);
+        assertEquals(1, retryCountPerSub.get(SUB_ID).longValue());
 
         // Verify that the query is started when internet connection is restored and that the
         // retry count does not increase.
         setInternetConnected(true);
-        logd("internet connected again");
+        Log.d(TAG, "internet connected again");
         sendMessage(CMD_START_QUERY_ENTITLEMENT, SUB_ID);
         mTestableLooper.processAllMessages();
         verify(mSatelliteEntitlementApi, times(3)).checkEntitlementStatus();
-        assertTrue(retryCountPerSub.get(SUB_ID) == 1);
+        assertEquals(1, retryCountPerSub.get(SUB_ID).longValue());
 
         // Verify that the retry count is increases after received a 503 with retry-after header
         // in response.
         mTestableLooper.moveTimeForward(TimeUnit.SECONDS.toMillis(1));
         mTestableLooper.processAllMessages();
         verify(mSatelliteEntitlementApi, times(4)).checkEntitlementStatus();
-        assertTrue(retryCountPerSub.get(SUB_ID) == 2);
+        assertEquals(2, retryCountPerSub.get(SUB_ID).longValue());
 
         mTestableLooper.moveTimeForward(TimeUnit.SECONDS.toMillis(1));
         mTestableLooper.processAllMessages();
         verify(mSatelliteEntitlementApi, times(5)).checkEntitlementStatus();
-        assertTrue(retryCountPerSub.get(SUB_ID) == 3);
+        assertEquals(3, retryCountPerSub.get(SUB_ID).longValue());
 
         mTestableLooper.moveTimeForward(TimeUnit.SECONDS.toMillis(1));
         mTestableLooper.processAllMessages();
         verify(mSatelliteEntitlementApi, times(6)).checkEntitlementStatus();
-        assertTrue(retryCountPerSub.get(SUB_ID) == 4);
+        assertEquals(4, retryCountPerSub.get(SUB_ID).longValue());
 
         mTestableLooper.moveTimeForward(TimeUnit.SECONDS.toMillis(1));
         mTestableLooper.processAllMessages();
@@ -553,7 +537,6 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
 
     @Test
     public void testStartQueryEntitlementStatus_error500() throws Exception {
-        logd("testStartQueryEntitlementStatus_error500");
         setIsQueryAvailableTrue();
         Map<Integer, Integer> retryCountPerSub =
                 (Map<Integer, Integer>) getValue("mRetryCountPerSub");
@@ -569,7 +552,6 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
 
     @Test
     public void testStartQueryEntitlementStatus_error503_retrySuccess() throws Exception {
-        logd("testStartQueryEntitlementStatus_error503_retrySuccess");
         setIsQueryAvailableTrue();
         set503RetryAfterResponse();
         Map<Integer, Integer> retryCountPerSub =
@@ -597,7 +579,6 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
 
     @Test
     public void testStartQueryEntitlementStatus_otherError_retrySuccess() throws Exception {
-        logd("testStartQueryEntitlementStatus_otherError_retrySuccess");
         setIsQueryAvailableTrue();
         Map<Integer, Integer> retryCountPerSub =
                 (Map<Integer, Integer>) getValue("mRetryCountPerSub");
@@ -622,7 +603,7 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
         sendMessage(CMD_RETRY_QUERY_ENTITLEMENT, SUB_ID);
         mTestableLooper.processAllMessages();
         verify(mSatelliteEntitlementApi, times(2)).checkEntitlementStatus();
-        assertTrue(retryCountPerSub.get(SUB_ID) == 1);
+        assertEquals(1, retryCountPerSub.get(SUB_ID).longValue());
         // Verify don't call the onSatelliteEntitlementStatusUpdated.
         verify(mSatelliteController, never()).onSatelliteEntitlementStatusUpdated(anyInt(),
                 anyBoolean(), anyList(), anyList(), any());
@@ -637,14 +618,13 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
         sendMessage(CMD_RETRY_QUERY_ENTITLEMENT, SUB_ID);
         mTestableLooper.processAllMessages();
         verify(mSatelliteEntitlementApi, times(3)).checkEntitlementStatus();
-        assertTrue(retryCountPerSub.get(SUB_ID) == 1);
+        assertEquals(1, retryCountPerSub.get(SUB_ID).longValue());
         verify(mSatelliteController).onSatelliteEntitlementStatusUpdated(eq(SUB_ID), eq(true),
                 eq(PLMN_ALLOWED_LIST), eq(PLMN_BARRED_LIST), any());
     }
 
     @Test
     public void testSatelliteEntitlementSupportedChangedFromSupportToNotSupport() throws Exception {
-        logd("testSatelliteEntitlementSupportedChangedFromSupportToNotSupport");
         setIsQueryAvailableTrue();
 
         // KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL changed from Support(entitlement status
@@ -699,7 +679,6 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
 
     @Test
     public void testStartQueryEntitlementStatus_refreshStatus() throws Exception {
-        logd("testStartQueryEntitlementStatus_refreshStatus");
         setIsQueryAvailableTrue();
         mCarrierConfigBundle.putInt(
                 CarrierConfigManager.KEY_SATELLITE_ENTITLEMENT_STATUS_REFRESH_DAYS_INT, 1);
@@ -729,7 +708,6 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
     @Test
     public void testStartQueryEntitlementStatus_internetDisconnectedAndConnectedAgain()
             throws Exception {
-        logd("testStartQueryEntitlementStatus_internetDisconnectedAndConnectedAgain");
         setIsQueryAvailableTrue();
 
         // Verify the query does not start if there is no internet connection.
@@ -757,7 +735,6 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
 
     @Test
     public void testStartQueryEntitlementStatus_error503_error500() throws Exception {
-        logd("testStartQueryEntitlementStatus_error503_error500");
         setIsQueryAvailableTrue();
         set503RetryAfterResponse();
 
@@ -782,7 +759,6 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
 
     @Test
     public void testStartQueryEntitlementStatus_error503_otherError() throws Exception {
-        logd("testStartQueryEntitlementStatus_error503_otherError");
         setIsQueryAvailableTrue();
         set503RetryAfterResponse();
 
@@ -820,7 +796,6 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
 
     @Test
     public void testStartQueryEntitlementStatus_AfterSimRefresh() throws Exception {
-        logd("testStartQueryEntitlementStatus_AfterSimRefresh");
         setIsQueryAvailableTrue();
 
         // Verify the first query complete.
@@ -959,12 +934,8 @@ public class SatelliteEntitlementControllerTest extends TelephonyTestBase {
 
         @Override
         public SatelliteEntitlementApi getSatelliteEntitlementApi(int subId) {
-            logd("getSatelliteEntitlementApi");
+            Log.d(TAG, "getSatelliteEntitlementApi");
             return mInjectSatelliteEntitlementApi;
         }
-    }
-
-    private static void logd(String log) {
-        Log.d(TAG, log);
     }
 }

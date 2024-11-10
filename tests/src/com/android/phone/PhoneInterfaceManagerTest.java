@@ -47,9 +47,10 @@ import android.platform.test.flag.junit.SetFlagsRule;
 import android.preference.PreferenceManager;
 import android.telephony.RadioAccessFamily;
 import android.telephony.TelephonyManager;
+import android.testing.AndroidTestingRunner;
+import android.testing.TestableLooper;
 
 import androidx.test.annotation.UiThreadTest;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.android.TelephonyTestBase;
@@ -78,7 +79,8 @@ import java.util.Locale;
 /**
  * Unit Test for PhoneInterfaceManager.
  */
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidTestingRunner.class)
+@TestableLooper.RunWithLooper(setAsMainLooper = true)
 public class PhoneInterfaceManagerTest extends TelephonyTestBase {
     @Rule
     public TestRule compatChangeRule = new PlatformCompatChangeRule();
@@ -89,8 +91,6 @@ public class PhoneInterfaceManagerTest extends TelephonyTestBase {
     private static final String sDebugPackageName =
             PhoneInterfaceManagerTest.class.getPackageName();
 
-    @Mock
-    PhoneGlobals mPhoneGlobals;
     @Mock
     Phone mPhone;
     @Mock
@@ -121,6 +121,8 @@ public class PhoneInterfaceManagerTest extends TelephonyTestBase {
         mSharedPreferences.edit().remove(Phone.PREF_NULL_CIPHER_AND_INTEGRITY_ENABLED).commit();
         mSharedPreferences.edit().remove(Phone.PREF_NULL_CIPHER_NOTIFICATIONS_ENABLED).commit();
 
+        // Trigger sInstance restore in tearDown, after PhoneInterfaceManager.init.
+        replaceInstance(PhoneInterfaceManager.class, "sInstance", null, null);
         // Note that PhoneInterfaceManager is a singleton. Calling init gives us a handle to the
         // global singleton, but the context that is passed in is unused if the phone app is already
         // alive on a test devices. You must use the spy to mock behavior. Mocks stemming from the
@@ -503,7 +505,7 @@ public class PhoneInterfaceManagerTest extends TelephonyTestBase {
         doNothing().when(mPhoneInterfaceManager).enforceModifyPermission();
 
         // FEATURE_TELEPHONY_CALLING
-        mPhoneInterfaceManager.handlePinMmiForSubscriber(1, "123456789");
+        mPhoneInterfaceManager.getVoiceActivationState(1, "com.test.package");
 
         // FEATURE_TELEPHONY_RADIO_ACCESS
         mPhoneInterfaceManager.toggleRadioOnOffForSubscriber(1);
