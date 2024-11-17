@@ -35,6 +35,8 @@ import com.android.internal.telephony.PhoneConfigurationManager;
 import com.android.internal.telephony.PhoneFactory;
 import com.android.internal.telephony.data.DataConfigManager;
 import com.android.internal.telephony.data.DataNetworkController;
+import com.android.internal.telephony.metrics.MetricsCollector;
+import com.android.internal.telephony.metrics.PersistAtomsStorage;
 import com.android.phone.PhoneGlobals;
 import com.android.phone.PhoneInterfaceManager;
 
@@ -65,6 +67,7 @@ public class TelephonyTestBase {
     @Mock protected PhoneGlobals mPhoneGlobals;
     @Mock protected GsmCdmaPhone mPhone;
     @Mock protected DataNetworkController mDataNetworkController;
+    @Mock private MetricsCollector mMetricsCollector;
 
     private final HashMap<InstanceKey, Object> mOldInstances = new HashMap<>();
     private final LinkedList<InstanceKey> mInstanceKeys = new LinkedList<>();
@@ -92,6 +95,9 @@ public class TelephonyTestBase {
         replaceInstance(PhoneFactory.class, "sPhone", null, mPhone);
         replaceInstance(PhoneFactory.class, "sPhones", null, new Phone[] {mPhone});
         replaceInstance(PhoneGlobals.class, "sMe", null, mPhoneGlobals);
+        replaceInstance(PhoneFactory.class, "sMetricsCollector", null, mMetricsCollector);
+
+        doReturn(Mockito.mock(PersistAtomsStorage.class)).when(mMetricsCollector).getAtomsStorage();
 
         doReturn(mDataNetworkController).when(mPhone).getDataNetworkController();
         doReturn(Collections.emptyList()).when(mDataNetworkController)

@@ -19,22 +19,26 @@ package com.android.telephony.sats2range.utils;
 import static com.android.storage.s2.S2Support.FACE_BIT_COUNT;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 import com.android.storage.util.BitwiseUtils;
 import com.android.telephony.sats2range.read.SatS2RangeFileFormat;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 
 /** A utility class for satellite tests */
 public class TestUtils {
     public static final int TEST_S2_LEVEL = 12;
+    public static final String TEST_DATA_RESOURCE_DIR = "data/";
 
     /** Returns a valid {@link SatS2RangeFileFormat}. */
     public static SatS2RangeFileFormat createS2RangeFileFormat(boolean isAllowedList) {
@@ -86,6 +90,31 @@ public class TestUtils {
         return fileFormat.createCellId(prefixValue, suffixBits);
     }
 
+    /**
+     * Copy a test resource to the target directory.
+     */
+    public static Path copyTestResource(Class<?> baseClass, String testResource, Path targetDir)
+            throws IOException {
+        Files.createDirectories(targetDir);
+        return copyResource(baseClass, TEST_DATA_RESOURCE_DIR + testResource, targetDir);
+    }
+
+    private static Path copyResource(Class<?> baseClass, String relativeResourcePath,
+            Path targetDir) throws IOException {
+        String fileName = relativeResourcePath;
+        if (relativeResourcePath.contains("/")) {
+            fileName = relativeResourcePath.substring(relativeResourcePath.lastIndexOf('/') + 1);
+        }
+        Path targetResourceFile = targetDir.resolve(fileName);
+        try (InputStream inputStream = baseClass.getResourceAsStream(relativeResourcePath)) {
+            if (inputStream == null) {
+                fail("Resource=" + relativeResourcePath + " not found");
+            }
+            Files.copy(inputStream, targetResourceFile, StandardCopyOption.REPLACE_EXISTING);
+        }
+        return targetResourceFile;
+    }
+
     /** Create a temporary directory */
     public static Path createTempDir(Class<?> testClass) throws IOException {
         return Files.createTempDirectory(testClass.getSimpleName());
@@ -116,21 +145,19 @@ public class TestUtils {
         try (PrintStream printer = new PrintStream(outputFile)) {
             // Range 1
             for (int suffix = 1000; suffix < 2000; suffix++) {
-                printer.println(fileFormat.createCellId(0b100_11111111, suffix));
+                printer.println(fileFormat.createCellId(0b100_11111111, suffix) + ",1");
             }
 
             // Range 2
             for (int suffix = 2001; suffix < 3000; suffix++) {
-                printer.println(fileFormat.createCellId(0b100_11111111, suffix));
+                printer.println(fileFormat.createCellId(0b100_11111111, suffix) + ",2");
             }
 
             // Range 3
             for (int suffix = 1000; suffix < 2000; suffix++) {
-                printer.println(fileFormat.createCellId(0b101_11111111, suffix));
+                printer.println(fileFormat.createCellId(0b101_11111111, suffix) + ",3");
             }
-            printer.print(fileFormat.createCellId(0b101_11111111, 2000));
-
-            printer.close();
+            printer.print(fileFormat.createCellId(0b101_11111111, 2000) + ",3");
         }
     }
 
@@ -139,15 +166,41 @@ public class TestUtils {
             File outputFile, SatS2RangeFileFormat fileFormat) throws Exception {
         try (PrintStream printer = new PrintStream(outputFile)) {
             // Valid line
-            printer.println(fileFormat.createCellId(0b100_11111111, 100));
+            printer.println(fileFormat.createCellId(0b100_11111111, 100) + ",0");
 
             // Invalid line
             printer.print("Invalid line");
 
             // Another valid line
-            printer.println(fileFormat.createCellId(0b100_11111111, 200));
+            printer.println(fileFormat.createCellId(0b100_11111111, 200) + ",1");
+        }
+    }
 
-            printer.close();
+    /** Create a valid test satellite S2 cell file */
+    public static void createValidTestS2CellFileWithValidEntryValue(
+            File outputFile, SatS2RangeFileFormat fileFormat) throws Exception {
+
+        try (PrintStream printer = new PrintStream(outputFile)) {
+            // Range 1
+            for (int suffix = 1000; suffix < 1500; suffix++) {
+                printer.println(fileFormat.createCellId(0b100_11111111, suffix) + ",1");
+            }
+
+            // Range 2
+            for (int suffix = 1500; suffix < 2000; suffix++) {
+                printer.println(fileFormat.createCellId(0b100_11111111, suffix) + ",2");
+            }
+
+            // Range 3
+            for (int suffix = 2001; suffix < 3000; suffix++) {
+                printer.println(fileFormat.createCellId(0b100_11111111, suffix) + ",3");
+            }
+
+            // Range 4
+            for (int suffix = 1000; suffix < 2000; suffix++) {
+                printer.println(fileFormat.createCellId(0b101_11111111, suffix) + ",4");
+            }
+            printer.print(fileFormat.createCellId(0b101_11111111, 2000) + ",4");
         }
     }
 }

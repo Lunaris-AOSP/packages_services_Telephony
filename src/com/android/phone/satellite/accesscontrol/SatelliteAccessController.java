@@ -485,8 +485,9 @@ public class SatelliteAccessController extends Handler {
                 }
             }
         };
-        mSatelliteController.registerForSatelliteSupportedStateChanged(
+        int result = mSatelliteController.registerForSatelliteSupportedStateChanged(
                 mInternalSatelliteSupportedStateCallback);
+        plogd("registerForSatelliteSupportedStateChanged result: " + result);
 
         mInternalSatelliteProvisionStateCallback = new ISatelliteProvisionStateCallback.Stub() {
             @Override
@@ -526,8 +527,9 @@ public class SatelliteAccessController extends Handler {
                         + satelliteSubscriberProvisionStatus);
             }
         };
-        mSatelliteController.registerForSatelliteProvisionStateChanged(
+        result = mSatelliteController.registerForSatelliteProvisionStateChanged(
                 mInternalSatelliteProvisionStateCallback);
+        plogd("registerForSatelliteProvisionStateChanged result: " + result);
 
         // Init the SatelliteOnDeviceAccessController so that the S2 level can be cached
         initSatelliteOnDeviceAccessController();
@@ -756,15 +758,22 @@ public class SatelliteAccessController extends Handler {
         Path targetDir = ctsFile.toPath();
         Path targetSatS2FilePath = targetDir.resolve(sourceFileName);
         try {
-            InputStream inputStream = phoneGlobals.getAssets().open(sourceFileName);
+            var assetManager = phoneGlobals.getAssets();
+            if (assetManager == null) {
+                loge("copyTestSatS2FileToPhoneDirectory: no assets");
+                return null;
+            }
+            InputStream inputStream = assetManager.open(sourceFileName);
             if (inputStream == null) {
                 loge("copyTestSatS2FileToPhoneDirectory: Resource=" + sourceFileName
                         + " not found");
+                return null;
             } else {
                 Files.copy(inputStream, targetSatS2FilePath, StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (IOException ex) {
             loge("copyTestSatS2FileToPhoneDirectory: ex=" + ex);
+            return null;
         }
         return targetSatS2FilePath;
     }

@@ -82,6 +82,12 @@ public final class SuffixTableBlock {
 
         /** Returns the number of entries in the table. */
         int getEntryCount();
+
+        /** Returns the number of entry values from the shared data. */
+        int getEntryValueCount();
+
+        /** Returns the entry value from the shared data for the given index. */
+        int getEntryValue(int index);
     }
 
     private SuffixTableBlock(SatS2RangeFileFormat fileFormat, SuffixTableBlockDelegate delegate) {
@@ -148,6 +154,16 @@ public final class SuffixTableBlock {
     /** Returns the number of entries in the table. */
     public int getEntryCount() {
         return mDelegate.getEntryCount();
+    }
+
+    /** Returns the number of entry values from the shared data. */
+    public int getEntryValueCount() {
+        return mDelegate.getEntryValueCount();
+    }
+
+    /** Returns the entry value from the shared data for the given index. */
+    public int getEntryValue(int index) {
+        return mDelegate.getEntryValue(index);
     }
 
     /** A {@link Visitor} for the {@link SuffixTableBlock}. See {@link #visit} */

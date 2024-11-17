@@ -1425,7 +1425,9 @@ public class RadioInfo extends AppCompatActivity {
     }
 
     private void updateNetworkType() {
-        if (SubscriptionManager.isValidPhoneId(mPhoneId)) {
+        SubscriptionManager mSm = getSystemService(SubscriptionManager.class);
+        if (SubscriptionManager.isValidPhoneId(mPhoneId)
+                && mSm.isActiveSubscriptionId(mSubId)) {
             mDataNetwork.setText(ServiceState.rilRadioTechnologyToString(
                     mTelephonyManager.getServiceStateForSlot(mPhoneId)
                             .getRilDataRadioTechnology()));

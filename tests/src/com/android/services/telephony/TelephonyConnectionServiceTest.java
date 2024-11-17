@@ -61,7 +61,6 @@ import android.net.Uri;
 import android.os.AsyncResult;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.platform.test.flag.junit.SetFlagsRule;
 import android.telecom.Conference;
 import android.telecom.Conferenceable;
@@ -283,7 +282,7 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        doReturn(Looper.getMainLooper()).when(mContext).getMainLooper();
+
         mTestConnectionService = new TestTelephonyConnectionService(mContext);
         mTestConnectionService.setFeatureFlags(mFeatureFlags);
         mTestConnectionService.setPhoneFactoryProxy(mPhoneFactoryProxy);

@@ -88,6 +88,16 @@ final class PopulatedSuffixTableBlock implements SuffixTableBlock.SuffixTableBlo
         return mPackedTable.getEntryCount();
     }
 
+    @Override
+    public int getEntryValueCount() {
+        return mSuffixTableSharedData.getNumberOfEntryValues();
+    }
+
+    @Override
+    public int getEntryValue(int index) {
+        return mSuffixTableSharedData.getEntryValue(index);
+    }
+
     /**
      * Returns an entry that matches the supplied matcher. If multiple entries match, an arbitrary
      * matching entry is returned. If no entries match then {@code null} is returned.

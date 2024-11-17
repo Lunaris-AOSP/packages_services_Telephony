@@ -13767,6 +13767,25 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     }
 
     /**
+     * Request to get the currently selected satellite subscription id.
+     *
+     * @param result The result receiver that returns the currently selected satellite subscription
+     *               id if the request is successful or an error code if the request failed.
+     *
+     * @throws SecurityException if the caller doesn't have the required permission.
+     */
+    @Override
+    public void requestSelectedNbIotSatelliteSubscriptionId(@NonNull ResultReceiver result) {
+        enforceSatelliteCommunicationPermission("requestSelectedNbIotSatelliteSubscriptionId");
+        final long identity = Binder.clearCallingIdentity();
+        try {
+            mSatelliteController.requestSelectedNbIotSatelliteSubscriptionId(result);
+        } finally {
+            Binder.restoreCallingIdentity(identity);
+        }
+    }
+
+    /**
      * Inform whether the device is aligned with the satellite in both real and demo mode.
      *
      * @param isAligned {@code true} Device is aligned with the satellite.
@@ -14748,6 +14767,24 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
         } finally {
             Binder.restoreCallingIdentity(identity);
         }
+    }
+
+
+    /**
+     * Inform whether application supports NTN SMS in satellite mode.
+     *
+     * This method is used by default messaging application to inform framework whether it supports
+     * NTN SMS or not.
+     *
+     * @param ntnSmsSupported {@code true} If application supports NTN SMS, else {@code false}.
+     *
+     * @throws SecurityException if the caller doesn't have required permission.
+     */
+    @Override
+    public void setNtnSmsSupported(boolean ntnSmsSupported) {
+        enforceSatelliteCommunicationPermission("setNtnSmsSupported");
+        enforceSendSmsPermission();
+        mSatelliteController.setNtnSmsSupportedByMessagesApp(ntnSmsSupported);
     }
 
     /**

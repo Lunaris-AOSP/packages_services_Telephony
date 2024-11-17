@@ -93,6 +93,7 @@ public final class SatS2RangeFileWriter implements AutoCloseable {
         List<SuffixTableRange> samePrefixRanges = new ArrayList<>();
         while (pushBackIterator.hasNext()) {
             SuffixTableRange currentRange = pushBackIterator.next();
+            int entryValue = currentRange.getEntryValue();
 
             long startCellId = currentRange.getStartCellId();
             if (mFileFormat.getS2Level() != S2Support.getS2Level(startCellId)) {
@@ -123,7 +124,8 @@ public final class SatS2RangeFileWriter implements AutoCloseable {
                 // Create a range for the current prefix.
                 {
                     long newEndCellId = mFileFormat.createCellId(startCellPrefix + 1, 0);
-                    SuffixTableRange satS2Range = new SuffixTableRange(startCellId, newEndCellId);
+                    SuffixTableRange satS2Range = new SuffixTableRange(startCellId, newEndCellId,
+                            entryValue);
                     samePrefixRanges.add(satS2Range);
                 }
 
@@ -134,7 +136,7 @@ public final class SatS2RangeFileWriter implements AutoCloseable {
                     long newStartCellId = mFileFormat.createCellId(startCellPrefix, 0);
                     long newEndCellId = mFileFormat.createCellId(startCellPrefix + 1, 0);
                     SuffixTableRange satS2Range = new SuffixTableRange(newStartCellId,
-                            newEndCellId);
+                            newEndCellId, entryValue);
                     otherRanges.add(satS2Range);
                     startCellPrefix++;
                 }
@@ -144,7 +146,7 @@ public final class SatS2RangeFileWriter implements AutoCloseable {
                     long newStartCellId = mFileFormat.createCellId(endCellPrefixValue, 0);
                     if (newStartCellId != endCellId) {
                         SuffixTableRange satS2Range = new SuffixTableRange(newStartCellId,
-                                endCellId);
+                                endCellId, entryValue);
                         otherRanges.add(satS2Range);
                     }
                 }

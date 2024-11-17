@@ -127,6 +127,11 @@ public class TestSatelliteWrapper extends Activity {
                 .setOnClickListener(this::provisionSatellite);
         findViewById(R.id.deprovisionSatelliteWrapper)
                 .setOnClickListener(this::deprovisionSatellite);
+        findViewById(R.id.setNtnSmsSupportedTrue)
+                .setOnClickListener(this::setNtnSmsSupportedTrue);
+        findViewById(R.id.setNtnSmsSupportedFalse)
+                .setOnClickListener(this::setNtnSmsSupportedFalse);
+
 
         findViewById(R.id.Back).setOnClickListener(new OnClickListener() {
             @Override
@@ -796,6 +801,31 @@ public class TestSatelliteWrapper extends Activity {
             String errorMessage = "getSatellitePlmnsForCarrier: " + ex.getMessage();
             logd(errorMessage);
             addLogMessage(errorMessage);
+        }
+    }
+
+    private void setNtnSmsSupportedTrue(View view) {
+        setNtnSmsSupported(true);
+    }
+
+    private void setNtnSmsSupportedFalse(View view) {
+        setNtnSmsSupported(false);
+    }
+
+    private void setNtnSmsSupported(boolean ntnSmsSupported) {
+        String msg = "setNtnSmsSupported:" + ntnSmsSupported;
+        addLogMessage(msg);
+        logd(msg);
+
+        try {
+            mSatelliteManagerWrapper.setNtnSmsSupported(ntnSmsSupported);
+            msg = "setNtnSmsSupported=" + ntnSmsSupported + " is successful";
+            logd(msg);
+            addLogMessage(msg);
+        } catch (SecurityException | IllegalStateException ex) {
+            msg = "setNtnSmsSupported=" + ntnSmsSupported + " failed. " + ex.getMessage();
+            logd(msg);
+            addLogMessage(msg);
         }
     }
 
