@@ -203,6 +203,12 @@
             android:layout_height="wrap_content"
             android:paddingRight="4dp"
             android:text="@string/setNtnSmsSupportedFalse"/>
+        <Button
+            android:id="@+id/requestSatelliteAccessConfigurationForCurrentLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingRight="4dp"
+            android:text="@string/requestSatelliteAccessConfigurationForCurrentLocation"/>
 
         <LinearLayout
             android:layout_width="match_parent"

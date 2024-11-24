@@ -109,4 +109,6 @@
 
     <string name="registerForModemStateChanged">registerForModemStateChanged</string>
     <string name="unregisterForModemStateChanged">unregisterForModemStateChanged</string>
+
+    <string name="requestSatelliteAccessConfigurationForCurrentLocation">requestSatelliteAccessConfigurationForCurrentLocation</string>
 </resources>

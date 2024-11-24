@@ -26,6 +26,7 @@ import android.telephony.SubscriptionManager;
 import android.telephony.satellite.wrapper.CarrierRoamingNtnModeListenerWrapper2;
 import android.telephony.satellite.wrapper.NtnSignalStrengthCallbackWrapper;
 import android.telephony.satellite.wrapper.NtnSignalStrengthWrapper;
+import android.telephony.satellite.wrapper.SatelliteAccessConfigurationWrapper;
 import android.telephony.satellite.wrapper.SatelliteCapabilitiesCallbackWrapper;
 import android.telephony.satellite.wrapper.SatelliteCommunicationAllowedStateCallbackWrapper;
 import android.telephony.satellite.wrapper.SatelliteManagerWrapper;
@@ -131,6 +132,9 @@ public class TestSatelliteWrapper extends Activity {
                 .setOnClickListener(this::setNtnSmsSupportedTrue);
         findViewById(R.id.setNtnSmsSupportedFalse)
                 .setOnClickListener(this::setNtnSmsSupportedFalse);
+        findViewById(R.id.requestSatelliteAccessConfigurationForCurrentLocation)
+                .setOnClickListener(this::requestSatelliteAccessConfigurationForCurrentLocation);
+
 
 
         findViewById(R.id.Back).setOnClickListener(new OnClickListener() {
@@ -698,6 +702,47 @@ public class TestSatelliteWrapper extends Activity {
             mSatelliteManagerWrapper.requestIsAttachEnabledForCarrier(mSubId, mExecutor, receiver);
         } catch (SecurityException | IllegalStateException | IllegalArgumentException ex) {
             String errorMessage = "requestIsAttachEnabledForCarrier: " + ex.getMessage();
+            logd(errorMessage);
+            addLogMessage(errorMessage);
+        }
+    }
+
+    private void requestSatelliteAccessConfigurationForCurrentLocation(View view) {
+        addLogMessage("requestSatelliteAccessConfigurationForCurrentLocation");
+        logd("requestSatelliteAccessConfigurationForCurrentLocation");
+        OutcomeReceiver<SatelliteAccessConfigurationWrapper,
+                SatelliteManagerWrapper.SatelliteExceptionWrapper> receiver =
+                new OutcomeReceiver<>() {
+                    @Override
+                    public void onResult(SatelliteAccessConfigurationWrapper result) {
+                        if (result != null) {
+                            addLogMessage("requestSatelliteAccessConfigurationForCurrentLocation: "
+                                    + result.getSatelliteInfos());
+                        } else {
+                            addLogMessage("requestSatelliteAccessConfigurationForCurrentLocation: "
+                                    + "null");
+                        }
+                    }
+
+                    @Override
+                    public void onError(
+                            SatelliteManagerWrapper.SatelliteExceptionWrapper exception) {
+                        if (exception != null) {
+                            String onError = "requestSatelliteAccessConfigurationForCurrentLocation"
+                                    + " exception: "
+                                    + translateResultCodeToString(exception.getErrorCode());
+                            logd(onError);
+                            addLogMessage(onError);
+                        }
+                    }
+                };
+
+        try {
+            mSatelliteManagerWrapper
+                    .requestSatelliteAccessConfigurationForCurrentLocation(mExecutor, receiver);
+        } catch (SecurityException ex) {
+            String errorMessage = "requestSatelliteAccessConfigurationForCurrentLocation: "
+                    + ex.getMessage();
             logd(errorMessage);
             addLogMessage(errorMessage);
         }

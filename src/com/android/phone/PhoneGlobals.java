@@ -571,8 +571,10 @@ public class PhoneGlobals extends ContextWrapper {
                 // Initialize EmergencyStateTracker if domain selection is supported
                 boolean isSuplDdsSwitchRequiredForEmergencyCall = getResources()
                         .getBoolean(R.bool.config_gnss_supl_requires_default_data_for_emergency);
+                int inServiceWaitTimeWhenDialEccInApm = getResources().getInteger(R.integer
+                        .config_in_service_wait_timer_when_dialing_emergency_routing_ecc_in_apm);
                 EmergencyStateTracker.make(this, isSuplDdsSwitchRequiredForEmergencyCall,
-                        mFeatureFlags);
+                        inServiceWaitTimeWhenDialEccInApm, mFeatureFlags);
                 DynamicRoutingController.getInstance().initialize(this);
             }
 

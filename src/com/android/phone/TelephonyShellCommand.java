@@ -232,6 +232,7 @@ public class TelephonyShellCommand extends BasicShellCommandHandler {
             "set-allowed-network-types-for-users";
     private static final String GET_IMEI = "get-imei";
     private static final String GET_SIM_SLOTS_MAPPING = "get-sim-slots-mapping";
+    private static final String COMMAND_DELETE_IMSI_KEY = "delete_imsi_key";
     // Take advantage of existing methods that already contain permissions checks when possible.
     private final ITelephony mInterface;
 
@@ -431,6 +432,8 @@ public class TelephonyShellCommand extends BasicShellCommandHandler {
                 return handleSetSatelliteSubscriberIdListChangedIntentComponent();
             case SET_SATELLITE_ACCESS_RESTRICTION_CHECKING_RESULT:
                 return handleOverrideCarrierRoamingNtnEligibilityChanged();
+            case COMMAND_DELETE_IMSI_KEY:
+                return handleDeleteTestImsiKey();
             default: {
                 return handleDefaultCommands(cmd);
             }
@@ -4131,5 +4134,23 @@ public class TelephonyShellCommand extends BasicShellCommandHandler {
         }
         Log.d(LOG_TAG, "handleSetSatelliteAccessRestrictionCheckingResult(" + state + ")");
         return 0;
+    }
+
+    private int handleDeleteTestImsiKey() {
+        if (!(checkShellUid())) {
+                Log.v(LOG_TAG,
+                    "handleCarrierRestrictionStatusCommand, MockModem service check fails or "
+                            + " checkShellUid fails");
+            return -1;
+        }
+
+        Phone phone = PhoneFactory.getDefaultPhone();
+        if (phone == null) {
+            Log.e(LOG_TAG,
+                    "handleCarrierRestrictionStatusCommand" + "No default Phone available");
+            return SubscriptionManager.INVALID_SUBSCRIPTION_ID;
+        }
+        phone.resetCarrierKeysForImsiEncryption(true);
+        return 1;
     }
 }
