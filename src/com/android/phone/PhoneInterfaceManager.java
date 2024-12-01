@@ -26,6 +26,9 @@ import static android.telephony.TelephonyManager.HAL_SERVICE_RADIO;
 import static android.telephony.satellite.SatelliteManager.KEY_SATELLITE_COMMUNICATION_ALLOWED;
 import static android.telephony.satellite.SatelliteManager.SATELLITE_RESULT_ACCESS_BARRED;
 import static android.telephony.satellite.SatelliteManager.SATELLITE_RESULT_SUCCESS;
+import static android.telephony.satellite.SatelliteManager.SATELLITE_DISALLOWED_REASON_NOT_PROVISIONED;
+import static android.telephony.satellite.SatelliteManager.SATELLITE_DISALLOWED_REASON_NOT_SUPPORTED;
+import static android.telephony.satellite.SatelliteManager.SATELLITE_DISALLOWED_REASON_UNSUPPORTED_DEFAULT_MSG_APP;
 
 import static com.android.internal.telephony.PhoneConstants.PHONE_TYPE_CDMA;
 import static com.android.internal.telephony.PhoneConstants.PHONE_TYPE_GSM;
@@ -13228,6 +13231,15 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
                             result.accept(resultCode);
                             return;
                         }
+                        List<Integer> disallowedReasons =
+                                mSatelliteAccessController.getSatelliteDisallowedReasons();
+                        if (disallowedReasons.stream().anyMatch(r ->
+                                (r == SATELLITE_DISALLOWED_REASON_UNSUPPORTED_DEFAULT_MSG_APP
+                                        || r == SATELLITE_DISALLOWED_REASON_NOT_PROVISIONED
+                                        || r == SATELLITE_DISALLOWED_REASON_NOT_SUPPORTED))) {
+                            result.accept(SATELLITE_RESULT_ACCESS_BARRED);
+                            return;
+                        }
                         if (isAllowed) {
                             ResultReceiver resultReceiver = new ResultReceiver(mMainThreadHandler) {
                                 @Override
@@ -14363,12 +14375,13 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
      */
     public boolean setSatelliteAccessControlOverlayConfigs(boolean reset, boolean isAllowed,
             String s2CellFile, long locationFreshDurationNanos,
-            List<String> satelliteCountryCodes) {
+            List<String> satelliteCountryCodes, String satelliteAccessConfigurationFile) {
         Log.d(LOG_TAG, "setSatelliteAccessControlOverlayConfigs: reset=" + reset
                 + ", isAllowed" + isAllowed + ", s2CellFile=" + s2CellFile
                 + ", locationFreshDurationNanos=" + locationFreshDurationNanos
                 + ", satelliteCountryCodes=" + ((satelliteCountryCodes != null)
-                ? String.join(", ", satelliteCountryCodes) : null));
+                ? String.join(", ", satelliteCountryCodes) : null)
+                + ", satelliteAccessConfigurationFile=" + satelliteAccessConfigurationFile);
         TelephonyPermissions.enforceShellOnly(
                 Binder.getCallingUid(), "setSatelliteAccessControlOverlayConfigs");
         TelephonyPermissions.enforceCallingOrSelfModifyPermissionOrCarrierPrivilege(mApp,
@@ -14377,7 +14390,8 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
         final long identity = Binder.clearCallingIdentity();
         try {
             return mSatelliteAccessController.setSatelliteAccessControlOverlayConfigs(reset,
-                    isAllowed, s2CellFile, locationFreshDurationNanos, satelliteCountryCodes);
+                    isAllowed, s2CellFile, locationFreshDurationNanos, satelliteCountryCodes,
+                    satelliteAccessConfigurationFile);
         } finally {
             Binder.restoreCallingIdentity(identity);
         }

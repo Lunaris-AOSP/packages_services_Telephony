@@ -489,7 +489,8 @@ public class SatelliteEntitlementController extends Handler {
         logd("queryCompleted: updateSatelliteEntitlementStatus");
         updateSatelliteEntitlementStatus(subId, entitlementResult.getEntitlementStatus() ==
                         SatelliteEntitlementResult.SATELLITE_ENTITLEMENT_STATUS_ENABLED,
-                entitlementResult.getAllowedPLMNList(), entitlementResult.getBarredPLMNList());
+                entitlementResult.getAllowedPLMNList(), entitlementResult.getBarredPLMNList(),
+                entitlementResult.getDataPlanInfoForPlmnList());
     }
 
     private boolean shouldStartQueryEntitlement(int subId) {
@@ -546,7 +547,7 @@ public class SatelliteEntitlementController extends Handler {
                 mSatelliteEntitlementResultPerSub.put(subId, enabledResult);
             }
             updateSatelliteEntitlementStatus(subId, true, enabledResult.getAllowedPLMNList(),
-                    enabledResult.getBarredPLMNList());
+                    enabledResult.getBarredPLMNList(), enabledResult.getDataPlanInfoForPlmnList());
         }
         resetEntitlementQueryPerSubId(subId);
     }
@@ -655,9 +656,10 @@ public class SatelliteEntitlementController extends Handler {
      */
     @VisibleForTesting(visibility = VisibleForTesting.Visibility.PRIVATE)
     public void updateSatelliteEntitlementStatus(int subId, boolean enabled,
-            List<String> plmnAllowedList, List<String> plmnBarredList) {
+            List<String> plmnAllowedList, List<String> plmnBarredList,
+            Map<String,Integer> plmnDataPlanMap) {
         SatelliteController.getInstance().onSatelliteEntitlementStatusUpdated(subId, enabled,
-                plmnAllowedList, plmnBarredList, null);
+                plmnAllowedList, plmnBarredList, plmnDataPlanMap, null);
     }
 
     private @SatelliteConstants.SatelliteEntitlementStatus int getEntitlementStatus(

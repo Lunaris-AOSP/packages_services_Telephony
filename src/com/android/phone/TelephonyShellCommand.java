@@ -3593,9 +3593,11 @@ public class TelephonyShellCommand extends BasicShellCommandHandler {
         String s2CellFile = null;
         long locationFreshDurationNanos = 0;
         List<String> satelliteCountryCodes = null;
+        String satelliteAccessConfigurationFile = null;
 
         String opt;
         while ((opt = getNextOption()) != null) {
+            Log.d(LOG_TAG, "handleSetSatelliteAccessControlOverlayConfigs: opt=" + opt);
             switch (opt) {
                 case "-r": {
                     reset = true;
@@ -3618,16 +3620,22 @@ public class TelephonyShellCommand extends BasicShellCommandHandler {
                     satelliteCountryCodes = Arrays.asList(countryCodeStr.split(","));
                     break;
                 }
+                case "-g": {
+                    satelliteAccessConfigurationFile = getNextArgRequired();
+                    break;
+                }
             }
         }
         Log.d(LOG_TAG, "handleSetSatelliteAccessControlOverlayConfigs: reset=" + reset
                 + ", isAllowed=" + isAllowed + ", s2CellFile=" + s2CellFile
                 + ", locationFreshDurationNanos=" + locationFreshDurationNanos
-                + ", satelliteCountryCodes=" + satelliteCountryCodes);
+                + ", satelliteCountryCodes=" + satelliteCountryCodes
+                + ", satelliteAccessConfigurationFile=" + satelliteAccessConfigurationFile);
 
         try {
             boolean result = mInterface.setSatelliteAccessControlOverlayConfigs(reset, isAllowed,
-                    s2CellFile, locationFreshDurationNanos, satelliteCountryCodes);
+                    s2CellFile, locationFreshDurationNanos, satelliteCountryCodes,
+                    satelliteAccessConfigurationFile);
             if (VDBG) {
                 Log.v(LOG_TAG, "setSatelliteAccessControlOverlayConfigs result =" + result);
             }

@@ -16,12 +16,18 @@
 
 package com.android.phone.satellite.entitlement;
 
+import static com.android.internal.telephony.satellite.SatelliteController.SATELLITE_DATA_PLAN_METERED;
+import static com.android.internal.telephony.satellite.SatelliteController.SATELLITE_DATA_PLAN_UNMETERED;
+
 import android.annotation.IntDef;
 
 import com.android.internal.telephony.satellite.SatelliteNetworkInfo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -111,5 +117,23 @@ public class SatelliteEntitlementResult {
     public static SatelliteEntitlementResult getDefaultResult() {
         return new SatelliteEntitlementResult(SATELLITE_ENTITLEMENT_STATUS_DISABLED,
                 new ArrayList<>(), new ArrayList<>());
+    }
+
+    /**
+     * Get the data plan for the plmn List
+     *
+     * @return data plan for the plmn List
+     */
+    public Map<String, Integer> getDataPlanInfoForPlmnList() {
+        Map<String, Integer> dataPlanInfo = new HashMap<>();
+
+        for (SatelliteNetworkInfo plmnInfo :  mAllowedSatelliteNetworkInfoList) {
+            int dataPlan = SATELLITE_DATA_PLAN_METERED; // default metered is available
+            if (plmnInfo.mDataPlanType.equalsIgnoreCase("unmetered")) {
+                dataPlan = SATELLITE_DATA_PLAN_UNMETERED; // overwrite data plan if unmetered
+            }
+            dataPlanInfo.put(plmnInfo.mPlmn, dataPlan);
+        }
+        return dataPlanInfo;
     }
 }
