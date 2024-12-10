@@ -17,6 +17,13 @@
 package com.android.phone.settings;
 
 import static android.net.ConnectivityManager.NetworkCallback;
+import static android.telephony.ims.feature.MmTelFeature.MmTelCapabilities.CAPABILITY_TYPE_VIDEO;
+import static android.telephony.ims.feature.MmTelFeature.MmTelCapabilities.CAPABILITY_TYPE_VOICE;
+import static android.telephony.ims.stub.ImsRegistrationImplBase.REGISTRATION_TECH_CROSS_SIM;
+import static android.telephony.ims.stub.ImsRegistrationImplBase.REGISTRATION_TECH_IWLAN;
+import static android.telephony.ims.stub.ImsRegistrationImplBase.REGISTRATION_TECH_LTE;
+import static android.telephony.ims.stub.ImsRegistrationImplBase.REGISTRATION_TECH_NR;
+import static android.telephony.ims.stub.ImsRegistrationImplBase.REGISTRATION_TECH_3G;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -1751,14 +1758,16 @@ public class RadioInfo extends AppCompatActivity {
                 public boolean onMenuItemClick(MenuItem item) {
                     boolean isSimValid = SubscriptionManager.isValidSubscriptionId(mSubId);
                     boolean isImsRegistered = isSimValid && mTelephonyManager.isImsRegistered();
-                    boolean availableVolte = isSimValid && mTelephonyManager.isVolteAvailable();
-                    boolean availableWfc = isSimValid && mTelephonyManager.isWifiCallingAvailable();
-                    boolean availableVt =
-                            isSimValid && mTelephonyManager.isVideoTelephonyAvailable();
+                    boolean availableVolte = false;
+                    boolean availableWfc = false;
+                    boolean availableVt = false;
                     AtomicBoolean availableUt = new AtomicBoolean(false);
 
                     if (isSimValid) {
                         ImsMmTelManager imsMmTelManager = mImsManager.getImsMmTelManager(mSubId);
+                        availableVolte = isVoiceServiceAvailable(imsMmTelManager);
+                        availableVt = isVideoServiceAvailable(imsMmTelManager);
+                        availableWfc = isWfcServiceAvailable(imsMmTelManager);
                         CountDownLatch latch = new CountDownLatch(1);
                         try {
                             HandlerThread handlerThread = new HandlerThread("RadioInfo");
@@ -1837,7 +1846,7 @@ public class RadioInfo extends AppCompatActivity {
 
     private void setImsVolteProvisionedState(boolean state) {
         Log.d(TAG, "setImsVolteProvisioned state: " + ((state) ? "on" : "off"));
-        setImsConfigProvisionedState(MmTelFeature.MmTelCapabilities.CAPABILITY_TYPE_VOICE,
+        setImsConfigProvisionedState(CAPABILITY_TYPE_VOICE,
                 ImsRegistrationImplBase.REGISTRATION_TECH_LTE, state);
     }
 
@@ -1849,7 +1858,7 @@ public class RadioInfo extends AppCompatActivity {
 
     private void setImsWfcProvisionedState(boolean state) {
         Log.d(TAG, "setImsWfcProvisioned() state: " + ((state) ? "on" : "off"));
-        setImsConfigProvisionedState(MmTelFeature.MmTelCapabilities.CAPABILITY_TYPE_VOICE,
+        setImsConfigProvisionedState(CAPABILITY_TYPE_VOICE,
                 ImsRegistrationImplBase.REGISTRATION_TECH_IWLAN, state);
     }
 
@@ -1891,7 +1900,7 @@ public class RadioInfo extends AppCompatActivity {
 
     private boolean isImsVolteProvisioningRequired() {
         return isImsConfigProvisioningRequired(
-                MmTelFeature.MmTelCapabilities.CAPABILITY_TYPE_VOICE,
+                CAPABILITY_TYPE_VOICE,
                 ImsRegistrationImplBase.REGISTRATION_TECH_LTE);
     }
 
@@ -1903,7 +1912,7 @@ public class RadioInfo extends AppCompatActivity {
 
     private boolean isImsWfcProvisioningRequired() {
         return isImsConfigProvisioningRequired(
-                MmTelFeature.MmTelCapabilities.CAPABILITY_TYPE_VOICE,
+                CAPABILITY_TYPE_VOICE,
                 ImsRegistrationImplBase.REGISTRATION_TECH_IWLAN);
     }
 
@@ -2220,7 +2229,7 @@ public class RadioInfo extends AppCompatActivity {
     }
 
     private boolean isImsVolteProvisioned() {
-        return getImsConfigProvisionedState(MmTelFeature.MmTelCapabilities.CAPABILITY_TYPE_VOICE,
+        return getImsConfigProvisionedState(CAPABILITY_TYPE_VOICE,
                 ImsRegistrationImplBase.REGISTRATION_TECH_LTE);
     }
 
@@ -2244,7 +2253,7 @@ public class RadioInfo extends AppCompatActivity {
     };
 
     private boolean isImsWfcProvisioned() {
-        return getImsConfigProvisionedState(MmTelFeature.MmTelCapabilities.CAPABILITY_TYPE_VOICE,
+        return getImsConfigProvisionedState(CAPABILITY_TYPE_VOICE,
                 ImsRegistrationImplBase.REGISTRATION_TECH_IWLAN);
     }
 
@@ -2631,7 +2640,7 @@ public class RadioInfo extends AppCompatActivity {
 
         ImsMmTelManager imsMmTelManager = mImsManager.getImsMmTelManager(mSubId);
         try {
-            imsMmTelManager.isSupported(MmTelFeature.MmTelCapabilities.CAPABILITY_TYPE_VOICE,
+            imsMmTelManager.isSupported(CAPABILITY_TYPE_VOICE,
                     AccessNetworkConstants.TRANSPORT_TYPE_WWAN, getMainExecutor(), (result) -> {
                         updateVolteProvisionedSwitch(result);
                     });
@@ -2639,7 +2648,7 @@ public class RadioInfo extends AppCompatActivity {
                     AccessNetworkConstants.TRANSPORT_TYPE_WWAN, getMainExecutor(), (result) -> {
                         updateVtProvisionedSwitch(result);
                     });
-            imsMmTelManager.isSupported(MmTelFeature.MmTelCapabilities.CAPABILITY_TYPE_VOICE,
+            imsMmTelManager.isSupported(CAPABILITY_TYPE_VOICE,
                     AccessNetworkConstants.TRANSPORT_TYPE_WLAN, getMainExecutor(), (result) -> {
                         updateWfcProvisionedSwitch(result);
                     });
@@ -2657,5 +2666,82 @@ public class RadioInfo extends AppCompatActivity {
         }
 
         return phone;
+    }
+
+    private boolean isVoiceServiceAvailable(ImsMmTelManager imsMmTelManager) {
+        if (imsMmTelManager == null) {
+            log("isVoiceServiceAvailable: ImsMmTelManager is null");
+            return false;
+        }
+
+        final int[] radioTechs = {
+            REGISTRATION_TECH_LTE,
+            REGISTRATION_TECH_CROSS_SIM,
+            REGISTRATION_TECH_NR,
+            REGISTRATION_TECH_3G
+        };
+
+        boolean isAvailable = false;
+        for (int tech : radioTechs) {
+            try {
+                isAvailable |= imsMmTelManager.isAvailable(CAPABILITY_TYPE_VOICE, tech);
+                if (isAvailable) {
+                    break;
+                }
+            } catch (Exception e) {
+                log("isVoiceServiceAvailable: exception " + e.getMessage());
+            }
+        }
+
+        log("isVoiceServiceAvailable: " + isAvailable);
+        return isAvailable;
+    }
+
+    private boolean isVideoServiceAvailable(ImsMmTelManager imsMmTelManager) {
+        if (imsMmTelManager == null) {
+            log("isVideoServiceAvailable: ImsMmTelManager is null");
+            return false;
+        }
+
+        final int[] radioTechs = {
+            REGISTRATION_TECH_LTE,
+            REGISTRATION_TECH_IWLAN,
+            REGISTRATION_TECH_CROSS_SIM,
+            REGISTRATION_TECH_NR,
+            REGISTRATION_TECH_3G
+        };
+
+        boolean isAvailable = false;
+        for (int tech : radioTechs) {
+            try {
+                isAvailable |= imsMmTelManager.isAvailable(CAPABILITY_TYPE_VIDEO, tech);
+                if (isAvailable) {
+                    break;
+                }
+            } catch (Exception e) {
+                log("isVideoServiceAvailable: exception " + e.getMessage());
+            }
+        }
+
+        log("isVideoServiceAvailable: " + isAvailable);
+        return isAvailable;
+    }
+
+    private boolean isWfcServiceAvailable(ImsMmTelManager imsMmTelManager) {
+        if (imsMmTelManager == null) {
+            log("isWfcServiceAvailable: ImsMmTelManager is null");
+            return false;
+        }
+
+        boolean isAvailable = false;
+        try {
+            isAvailable = imsMmTelManager.isAvailable(CAPABILITY_TYPE_VOICE,
+                    REGISTRATION_TECH_IWLAN);
+        } catch (Exception e) {
+            log("isWfcServiceAvailable: exception " + e.getMessage());
+        }
+
+        log("isWfcServiceAvailable: " + isAvailable);
+        return isAvailable;
     }
 }

@@ -6165,7 +6165,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
         final long identity = Binder.clearCallingIdentity();
         try {
             if (channel <= 0) {
-                return "";
+                return "6881";  // STATUS_CHANNEL_NOT_SUPPORTED
             }
 
             IccIoResult response = (IccIoResult) sendRequest(CMD_TRANSMIT_APDU_LOGICAL_CHANNEL,
