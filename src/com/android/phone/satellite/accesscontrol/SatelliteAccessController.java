@@ -1491,10 +1491,8 @@ public class SatelliteAccessController extends Handler {
                 + String.join(", ", mSatelliteDisallowedReasons.toString()));
         notifySatelliteDisallowedReasonsChanged();
         int subId = mSatelliteController.getSelectedSatelliteSubId();
-        int carrierRoamingNtnConnectType =
-            mSatelliteController.getCarrierRoamingNtnConnectType(subId);
         if (mSatelliteController.isSatelliteSystemNotificationsEnabled(
-                carrierRoamingNtnConnectType)) {
+                CarrierConfigManager.CARRIER_ROAMING_NTN_CONNECT_MANUAL)) {
             showSatelliteSystemNotification();
         }
     }

@@ -490,7 +490,10 @@ public class SatelliteEntitlementController extends Handler {
         updateSatelliteEntitlementStatus(subId, entitlementResult.getEntitlementStatus() ==
                         SatelliteEntitlementResult.SATELLITE_ENTITLEMENT_STATUS_ENABLED,
                 entitlementResult.getAllowedPLMNList(), entitlementResult.getBarredPLMNList(),
-                entitlementResult.getDataPlanInfoForPlmnList());
+                entitlementResult.getDataPlanInfoForPlmnList(),
+                entitlementResult.getAvailableServiceTypeInfoForPlmnList(),
+                entitlementResult.getDataServicePolicyInfoForPlmnList(),
+                entitlementResult.getVoiceServicePolicyInfoForPlmnList());
     }
 
     private boolean shouldStartQueryEntitlement(int subId) {
@@ -547,7 +550,10 @@ public class SatelliteEntitlementController extends Handler {
                 mSatelliteEntitlementResultPerSub.put(subId, enabledResult);
             }
             updateSatelliteEntitlementStatus(subId, true, enabledResult.getAllowedPLMNList(),
-                    enabledResult.getBarredPLMNList(), enabledResult.getDataPlanInfoForPlmnList());
+                    enabledResult.getBarredPLMNList(), enabledResult.getDataPlanInfoForPlmnList(),
+                    enabledResult.getAvailableServiceTypeInfoForPlmnList(),
+                    enabledResult.getDataServicePolicyInfoForPlmnList(),
+                    enabledResult.getVoiceServicePolicyInfoForPlmnList());
         }
         resetEntitlementQueryPerSubId(subId);
     }
@@ -657,9 +663,13 @@ public class SatelliteEntitlementController extends Handler {
     @VisibleForTesting(visibility = VisibleForTesting.Visibility.PRIVATE)
     public void updateSatelliteEntitlementStatus(int subId, boolean enabled,
             List<String> plmnAllowedList, List<String> plmnBarredList,
-            Map<String,Integer> plmnDataPlanMap) {
+            Map<String,Integer> plmnDataPlanMap,
+            Map<String, List<Integer>>plmnAllowedServicesMap,
+            Map<String,Integer>plmnDataServicePolicyMap,
+            Map<String, Integer>plmnVoiceServicePolicyMap) {
         SatelliteController.getInstance().onSatelliteEntitlementStatusUpdated(subId, enabled,
-                plmnAllowedList, plmnBarredList, plmnDataPlanMap, null);
+                plmnAllowedList, plmnBarredList, plmnDataPlanMap, plmnAllowedServicesMap,
+                plmnDataServicePolicyMap, plmnVoiceServicePolicyMap, null);
     }
 
     private @SatelliteConstants.SatelliteEntitlementStatus int getEntitlementStatus(

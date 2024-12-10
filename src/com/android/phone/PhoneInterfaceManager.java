@@ -957,12 +957,14 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
                     break;
 
                 case CMD_NV_WRITE_CDMA_PRL:
+                    if (mFeatureFlags.cleanupCdma()) break;
                     request = (MainThreadRequest) msg.obj;
                     onCompleted = obtainMessage(EVENT_NV_WRITE_CDMA_PRL_DONE, request);
                     defaultPhone.nvWriteCdmaPrl((byte[]) request.argument, onCompleted);
                     break;
 
                 case EVENT_NV_WRITE_CDMA_PRL_DONE:
+                    if (mFeatureFlags.cleanupCdma()) break;
                     handleNullReturnEvent(msg, "nvWriteCdmaPrl");
                     break;
 
@@ -1715,11 +1717,13 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
                     notifyRequester(request);
                     break;
                 case CMD_GET_CDMA_ROAMING_MODE:
+                    if (mFeatureFlags.cleanupCdma()) break;
                     request = (MainThreadRequest) msg.obj;
                     onCompleted = obtainMessage(EVENT_GET_CDMA_ROAMING_MODE_DONE, request);
                     getPhoneFromRequest(request).queryCdmaRoamingPreference(onCompleted);
                     break;
                 case EVENT_GET_CDMA_ROAMING_MODE_DONE:
+                    if (mFeatureFlags.cleanupCdma()) break;
                     ar = (AsyncResult) msg.obj;
                     request = (MainThreadRequest) ar.userObj;
                     if (ar.exception != null) {
@@ -1730,23 +1734,27 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
                     notifyRequester(request);
                     break;
                 case CMD_SET_CDMA_ROAMING_MODE:
+                    if (mFeatureFlags.cleanupCdma()) break;
                     request = (MainThreadRequest) msg.obj;
                     onCompleted = obtainMessage(EVENT_SET_CDMA_ROAMING_MODE_DONE, request);
                     int mode = (int) request.argument;
                     getPhoneFromRequest(request).setCdmaRoamingPreference(mode, onCompleted);
                     break;
                 case EVENT_SET_CDMA_ROAMING_MODE_DONE:
+                    if (mFeatureFlags.cleanupCdma()) break;
                     ar = (AsyncResult) msg.obj;
                     request = (MainThreadRequest) ar.userObj;
                     request.result = ar.exception == null;
                     notifyRequester(request);
                     break;
                 case CMD_GET_CDMA_SUBSCRIPTION_MODE:
+                    if (mFeatureFlags.cleanupCdma()) break;
                     request = (MainThreadRequest) msg.obj;
                     onCompleted = obtainMessage(EVENT_GET_CDMA_SUBSCRIPTION_MODE_DONE, request);
                     getPhoneFromRequest(request).queryCdmaSubscriptionMode(onCompleted);
                     break;
                 case EVENT_GET_CDMA_SUBSCRIPTION_MODE_DONE:
+                    if (mFeatureFlags.cleanupCdma()) break;
                     ar = (AsyncResult) msg.obj;
                     request = (MainThreadRequest) ar.userObj;
                     if (ar.exception != null) {
@@ -1757,6 +1765,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
                     notifyRequester(request);
                     break;
                 case CMD_SET_CDMA_SUBSCRIPTION_MODE:
+                    if (mFeatureFlags.cleanupCdma()) break;
                     request = (MainThreadRequest) msg.obj;
                     onCompleted = obtainMessage(EVENT_SET_CDMA_SUBSCRIPTION_MODE_DONE, request);
                     int subscriptionMode = (int) request.argument;
@@ -1764,6 +1773,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
                             subscriptionMode, onCompleted);
                     break;
                 case EVENT_SET_CDMA_SUBSCRIPTION_MODE_DONE:
+                    if (mFeatureFlags.cleanupCdma()) break;
                     ar = (AsyncResult) msg.obj;
                     request = (MainThreadRequest) ar.userObj;
                     request.result = ar.exception == null;
@@ -1836,7 +1846,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
                 }
                 case CMD_MODEM_REBOOT:
                     request = (MainThreadRequest) msg.obj;
-                    onCompleted = obtainMessage(EVENT_RESET_MODEM_CONFIG_DONE, request);
+                    onCompleted = obtainMessage(EVENT_CMD_MODEM_REBOOT_DONE, request);
                     defaultPhone.rebootModem(onCompleted);
                     break;
                 case EVENT_CMD_MODEM_REBOOT_DONE:
@@ -2577,6 +2587,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     }
 
     private void sendEraseModemConfig(@NonNull Phone phone) {
+        if (mFeatureFlags.cleanupCdma()) return;
         Boolean success = (Boolean) sendRequest(CMD_ERASE_MODEM_CONFIG, null);
         if (DBG) log("eraseModemConfig:" + ' ' + (success ? "ok" : "fail"));
     }
@@ -3731,6 +3742,8 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
 
     @Override
     public String getMeidForSlot(int slotIndex, String callingPackage, String callingFeatureId) {
+        if (mFeatureFlags.cleanupCdma()) return null;
+
         try {
             mAppOps.checkPackage(Binder.getCallingUid(), callingPackage);
         } catch (SecurityException se) {
@@ -3762,6 +3775,8 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
 
     @Override
     public String getManufacturerCodeForSlot(int slotIndex) {
+        if (mFeatureFlags.cleanupCdma()) return null;
+
         enforceTelephonyFeatureWithException(getCurrentPackageName(),
                 PackageManager.FEATURE_TELEPHONY_CDMA, "getManufacturerCodeForSlot");
 
@@ -4032,6 +4047,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
      */
     @Override
     public int getCdmaEriIconIndex(String callingPackage, String callingFeatureId) {
+        if (mFeatureFlags.cleanupCdma()) return -1;
         return getCdmaEriIconIndexForSubscriber(getDefaultSubscription(), callingPackage,
                 callingFeatureId);
     }
@@ -4039,6 +4055,8 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     @Override
     public int getCdmaEriIconIndexForSubscriber(int subId, String callingPackage,
             String callingFeatureId) {
+        if (mFeatureFlags.cleanupCdma()) return -1;
+
         if (!TelephonyPermissions.checkCallingOrSelfReadPhoneState(
                 mApp, subId, callingPackage, callingFeatureId,
                 "getCdmaEriIconIndexForSubscriber")) {
@@ -4069,6 +4087,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
      */
     @Override
     public int getCdmaEriIconMode(String callingPackage, String callingFeatureId) {
+        if (mFeatureFlags.cleanupCdma()) return -1;
         return getCdmaEriIconModeForSubscriber(getDefaultSubscription(), callingPackage,
                 callingFeatureId);
     }
@@ -4076,6 +4095,8 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     @Override
     public int getCdmaEriIconModeForSubscriber(int subId, String callingPackage,
             String callingFeatureId) {
+        if (mFeatureFlags.cleanupCdma()) return -1;
+
         if (!TelephonyPermissions.checkCallingOrSelfReadPhoneState(
                 mApp, subId, callingPackage, callingFeatureId,
                 "getCdmaEriIconModeForSubscriber")) {
@@ -4100,6 +4121,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
      */
     @Override
     public String getCdmaEriText(String callingPackage, String callingFeatureId) {
+        if (mFeatureFlags.cleanupCdma()) return null;
         return getCdmaEriTextForSubscriber(getDefaultSubscription(), callingPackage,
                 callingFeatureId);
     }
@@ -4107,6 +4129,8 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     @Override
     public String getCdmaEriTextForSubscriber(int subId, String callingPackage,
             String callingFeatureId) {
+        if (mFeatureFlags.cleanupCdma()) return null;
+
         if (!TelephonyPermissions.checkCallingOrSelfReadPhoneState(
                 mApp, subId, callingPackage, callingFeatureId,
                 "getCdmaEriIconTextForSubscriber")) {
@@ -4131,6 +4155,8 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
      */
     @Override
     public String getCdmaMdn(int subId) {
+        if (mFeatureFlags.cleanupCdma()) return null;
+
         TelephonyPermissions.enforceCallingOrSelfModifyPermissionOrCarrierPrivilege(
                 mApp, subId, "getCdmaMdn");
 
@@ -4156,6 +4182,8 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
      */
     @Override
     public String getCdmaMin(int subId) {
+        if (mFeatureFlags.cleanupCdma()) return null;
+
         TelephonyPermissions.enforceCallingOrSelfModifyPermissionOrCarrierPrivilege(
                 mApp, subId, "getCdmaMin");
 
@@ -6384,6 +6412,8 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
      */
     @Override
     public String nvReadItem(int itemID) {
+        if (mFeatureFlags.cleanupCdma()) return null;
+
         WorkSource workSource = getWorkSource(Binder.getCallingUid());
         TelephonyPermissions.enforceCallingOrSelfModifyPermissionOrCarrierPrivilege(
                 mApp, getDefaultSubscription(), "nvReadItem");
@@ -6409,6 +6439,8 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
      */
     @Override
     public boolean nvWriteItem(int itemID, String itemValue) {
+        if (mFeatureFlags.cleanupCdma()) return false;
+
         WorkSource workSource = getWorkSource(Binder.getCallingUid());
         TelephonyPermissions.enforceCallingOrSelfModifyPermissionOrCarrierPrivilege(
                 mApp, getDefaultSubscription(), "nvWriteItem");
@@ -6434,6 +6466,8 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
      */
     @Override
     public boolean nvWriteCdmaPrl(byte[] preferredRoamingList) {
+        if (mFeatureFlags.cleanupCdma()) return false;
+
         TelephonyPermissions.enforceCallingOrSelfModifyPermissionOrCarrierPrivilege(
                 mApp, getDefaultSubscription(), "nvWriteCdmaPrl");
 
@@ -6458,6 +6492,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
      */
     @Override
     public boolean resetModemConfig(int slotIndex) {
+        if (mFeatureFlags.cleanupCdma()) return false;
         Phone phone = PhoneFactory.getPhone(slotIndex);
         if (phone != null) {
             TelephonyPermissions.enforceCallingOrSelfModifyPermissionOrCarrierPrivilege(
@@ -9166,10 +9201,12 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
             }
             String aid = null;
             try {
-                aid = UiccController.getInstance().getUiccPort(phone.getPhoneId())
-                        .getApplicationByType(appType).getAid();
+                UiccCardApplication app = UiccController.getInstance()
+                        .getUiccPort(phone.getPhoneId()).getApplicationByType(appType);
+                if (app == null) return null;
+                aid = app.getAid();
             } catch (Exception e) {
-                Log.e(LOG_TAG, "Not getting aid. Exception ex=" + e);
+                Log.e(LOG_TAG, "Not getting aid", e);
             }
             return aid;
         } finally {
@@ -9197,7 +9234,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
             try {
                 esn = phone.getEsn();
             } catch (Exception e) {
-                Log.e(LOG_TAG, "Not getting ESN. Exception ex=" + e);
+                Log.e(LOG_TAG, "Not getting ESN", e);
             }
             return esn;
         } finally {
@@ -9213,6 +9250,8 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
      */
     @Override
     public String getCdmaPrlVersion(int subId) {
+        if (mFeatureFlags.cleanupCdma()) return null;
+
         enforceReadPrivilegedPermission("getCdmaPrlVersion");
 
         enforceTelephonyFeatureWithException(getCurrentPackageName(),
@@ -10324,6 +10363,8 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
 
     @Override
     public int getCdmaRoamingMode(int subId) {
+        if (mFeatureFlags.cleanupCdma()) return TelephonyManager.CDMA_ROAMING_MODE_RADIO_DEFAULT;
+
         TelephonyPermissions
                 .enforceCallingOrSelfReadPrivilegedPhoneStatePermissionOrCarrierPrivilege(
                         mApp, subId, "getCdmaRoamingMode");
@@ -10341,6 +10382,8 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
 
     @Override
     public boolean setCdmaRoamingMode(int subId, int mode) {
+        if (mFeatureFlags.cleanupCdma()) return false;
+
         TelephonyPermissions.enforceCallingOrSelfModifyPermissionOrCarrierPrivilege(
                 mApp, subId, "setCdmaRoamingMode");
 
@@ -10357,6 +10400,8 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
 
     @Override
     public int getCdmaSubscriptionMode(int subId) {
+        if (mFeatureFlags.cleanupCdma()) return TelephonyManager.CDMA_SUBSCRIPTION_UNKNOWN;
+
         TelephonyPermissions
                 .enforceCallingOrSelfReadPrivilegedPhoneStatePermissionOrCarrierPrivilege(
                         mApp, subId, "getCdmaSubscriptionMode");
@@ -10374,6 +10419,8 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
 
     @Override
     public boolean setCdmaSubscriptionMode(int subId, int mode) {
+        if (mFeatureFlags.cleanupCdma()) return false;
+
         TelephonyPermissions.enforceCallingOrSelfModifyPermissionOrCarrierPrivilege(
                 mApp, subId, "setCdmaSubscriptionMode");
 
@@ -13333,12 +13380,9 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
      *
      * @param result The result receiver that returns whether the satellite service is supported on
      *               the device if the request is successful or an error code if the request failed.
-     *
-     * @throws SecurityException if the caller doesn't have the required permission.
      */
     @Override
     public void requestIsSatelliteSupported(@NonNull ResultReceiver result) {
-        enforceSatelliteCommunicationPermission("requestIsSatelliteSupported");
         final long identity = Binder.clearCallingIdentity();
         try {
             mSatelliteController.requestIsSatelliteSupported(result);
@@ -13778,6 +13822,26 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
         final long identity = Binder.clearCallingIdentity();
         try {
             mSatelliteController.requestTimeForNextSatelliteVisibility(result);
+        } finally {
+            Binder.restoreCallingIdentity(identity);
+        }
+    }
+
+    /**
+     * Request to get the name to display for Satellite subscription.
+     *
+     * @param result The result receiver that returns the display name to use for satellite feature
+     *               in the UI for current satellite subscription if the request is successful,
+     *               or an error code if the request failed.
+     *
+     * @throws SecurityException if the caller doesn't have the required permission.
+     */
+    @Override
+    public void requestSatelliteDisplayName(@NonNull ResultReceiver result) {
+        enforceSatelliteCommunicationPermission("requestSatelliteDisplayName");
+        final long identity = Binder.clearCallingIdentity();
+        try {
+            mSatelliteController.requestSatelliteDisplayName(result);
         } finally {
             Binder.restoreCallingIdentity(identity);
         }

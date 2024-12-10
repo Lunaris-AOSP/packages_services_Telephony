@@ -16,6 +16,12 @@
 
 package com.android.phone.satellite.entitlement;
 
+import static android.telephony.CarrierConfigManager.SATELLITE_DATA_SUPPORT_ALL;
+import static android.telephony.CarrierConfigManager.SATELLITE_DATA_SUPPORT_BANDWIDTH_CONSTRAINED;
+import static android.telephony.NetworkRegistrationInfo.SERVICE_TYPE_DATA;
+import static android.telephony.NetworkRegistrationInfo.SERVICE_TYPE_VOICE;
+import static android.telephony.NetworkRegistrationInfo.SERVICE_TYPE_SMS;
+
 import static com.android.internal.telephony.satellite.SatelliteController.SATELLITE_DATA_PLAN_METERED;
 import static com.android.internal.telephony.satellite.SatelliteController.SATELLITE_DATA_PLAN_UNMETERED;
 
@@ -24,7 +30,6 @@ import android.annotation.IntDef;
 import com.android.internal.telephony.satellite.SatelliteNetworkInfo;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -135,5 +140,68 @@ public class SatelliteEntitlementResult {
             dataPlanInfo.put(plmnInfo.mPlmn, dataPlan);
         }
         return dataPlanInfo;
+    }
+
+    /**
+     * Get ServiceType at Allowed Services for the plmn List
+     *
+     * @return The Allowed Services for the plmn List
+     */
+    public Map<String, List<Integer>> getAvailableServiceTypeInfoForPlmnList() {
+        Map<String, List<Integer>> availableServicesInfo = new HashMap<>();
+        for (SatelliteNetworkInfo plmnInfo : mAllowedSatelliteNetworkInfoList) {
+            List<Integer> allowedServicesList = new ArrayList<>();
+            if (plmnInfo.mAllowedServicesInfo != null) {
+                for (String key : plmnInfo.mAllowedServicesInfo.keySet()) {
+                    if (key.equalsIgnoreCase("data")) {
+                        allowedServicesList.add(SERVICE_TYPE_DATA);
+                    } else if (key.equalsIgnoreCase("voice")) {
+                        allowedServicesList.add(SERVICE_TYPE_VOICE);
+                    }
+                }
+                // By default sms is added to the allowed services
+                allowedServicesList.add(SERVICE_TYPE_SMS);
+                availableServicesInfo.put(plmnInfo.mPlmn, allowedServicesList);
+            }
+        }
+        return availableServicesInfo;
+    }
+
+    /**
+     * Get ServicePolicy for data at Allowed Services for the plmn List
+     *
+     * @return The Allowed Services for the plmn List
+     */
+    public Map<String, Integer> getDataServicePolicyInfoForPlmnList() {
+        return getServicePolicyInfoForServiceType("data");
+    }
+
+    /**
+     * Get ServicePolicy for voice at Allowed Services for the plmn List
+     *
+     * @return The Allowed Services for the plmn List
+     */
+    public Map<String, Integer> getVoiceServicePolicyInfoForPlmnList() {
+        return getServicePolicyInfoForServiceType("voice");
+    }
+
+    public Map<String, Integer> getServicePolicyInfoForServiceType(String serviceType) {
+        Map<String, Integer> servicePolicyInfo = new HashMap<>();
+        for (SatelliteNetworkInfo plmnInfo : mAllowedSatelliteNetworkInfoList) {
+            if (plmnInfo.mAllowedServicesInfo != null) {
+                for (String key : plmnInfo.mAllowedServicesInfo.keySet()) {
+                    if (key.equalsIgnoreCase(serviceType)) {
+                        String servicePolicy = plmnInfo.mAllowedServicesInfo.get(key);
+                        if (servicePolicy.equalsIgnoreCase("constrained")) {
+                            servicePolicyInfo.put(plmnInfo.mPlmn,
+                                    SATELLITE_DATA_SUPPORT_BANDWIDTH_CONSTRAINED);
+                        } else if (servicePolicy.equalsIgnoreCase("unconstrained")) {
+                            servicePolicyInfo.put(plmnInfo.mPlmn, SATELLITE_DATA_SUPPORT_ALL);
+                        }
+                    }
+                }
+            }
+        }
+        return servicePolicyInfo;
     }
 }

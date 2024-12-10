@@ -325,7 +325,7 @@ public class SatelliteAccessConfigurationParser {
     }
 
     private static boolean isValidEarfcn(int earfcn) {
-        if (earfcn >= 0 && earfcn <= 65535) {
+        if (earfcn >= 0) {
             return true;
         }
         loge("isValidEarfcn: earfcn value is out of valid range: " + earfcn);
