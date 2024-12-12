@@ -213,8 +213,7 @@ public class RadioInfo extends AppCompatActivity {
             ServiceState.RIL_RADIO_TECHNOLOGY_GSM,
             ServiceState.RIL_RADIO_TECHNOLOGY_TD_SCDMA,
             ServiceState.RIL_RADIO_TECHNOLOGY_LTE_CA,
-            ServiceState.RIL_RADIO_TECHNOLOGY_NR,
-            ServiceState.RIL_RADIO_TECHNOLOGY_NB_IOT_NTN
+            ServiceState.RIL_RADIO_TECHNOLOGY_NR
     };
     private static String[] sPhoneIndexLabels = new String[0];
 
