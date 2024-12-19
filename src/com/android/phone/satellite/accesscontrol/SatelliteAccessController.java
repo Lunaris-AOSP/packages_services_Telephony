@@ -2267,7 +2267,6 @@ public class SatelliteAccessController extends Handler {
                     ploge("cleanupOnDeviceAccessControllerResources: ex=" + ex);
                 }
                 mSatelliteOnDeviceAccessController = null;
-                mSatelliteAccessConfigMap = null;
                 stopKeepOnDeviceAccessControllerResourcesTimer();
             }
         }

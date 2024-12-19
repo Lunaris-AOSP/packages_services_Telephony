@@ -41,6 +41,7 @@ import static com.android.phone.satellite.accesscontrol.SatelliteAccessControlle
 import static com.android.phone.satellite.accesscontrol.SatelliteAccessController.DEFAULT_THROTTLE_INTERVAL_FOR_LOCATION_QUERY_MINUTES;
 import static com.android.phone.satellite.accesscontrol.SatelliteAccessController.EVENT_CONFIG_DATA_UPDATED;
 import static com.android.phone.satellite.accesscontrol.SatelliteAccessController.EVENT_COUNTRY_CODE_CHANGED;
+import static com.android.phone.satellite.accesscontrol.SatelliteAccessController.EVENT_KEEP_ON_DEVICE_ACCESS_CONTROLLER_RESOURCES_TIMEOUT;
 import static com.android.phone.satellite.accesscontrol.SatelliteAccessController.EVENT_WAIT_FOR_CURRENT_LOCATION_TIMEOUT;
 import static com.android.phone.satellite.accesscontrol.SatelliteAccessController.GOOGLE_US_SAN_SAT_S2_FILE_NAME;
 import static com.android.phone.satellite.accesscontrol.SatelliteAccessController.UNKNOWN_REGIONAL_SATELLITE_CONFIG_ID;
@@ -96,7 +97,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
-import android.os.Parcel;
 import android.os.ResultReceiver;
 import android.os.UserHandle;
 import android.telecom.TelecomManager;
@@ -586,7 +586,7 @@ public class SatelliteAccessControllerTest extends TelephonyTestBase {
         ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
         SatelliteAccessConfiguration satelliteAccessConfig = getSatelliteAccessConfiguration();
 
-        // setup satellite communication allwed state as true
+        // setup satellite communication allowed state as true
         setSatelliteCommunicationAllowed();
 
         // setup map data of location and configId.
@@ -624,6 +624,9 @@ public class SatelliteAccessControllerTest extends TelephonyTestBase {
                 .onSatelliteAccessConfigurationChanged(any());
 
         doReturn(true).when(mMockFeatureFlags).carrierRoamingNbIotNtn();
+
+        // Verify if the map is maintained after the cleanup event
+        sendSatelliteDeviceAccessControllerResourcesTimeOutEvent();
 
         // satellite communication allowed state is enabled and
         // regional config id is DEFAULT_REGIONAL_SATELLITE_CONFIG_ID.
@@ -664,16 +667,10 @@ public class SatelliteAccessControllerTest extends TelephonyTestBase {
     }
 
     private SatelliteAccessConfiguration getSatelliteAccessConfiguration() {
-        Parcel satelliteAccessconfigParcel = Parcel.obtain();
-
         List<SatelliteInfo> satelliteInfoList = new ArrayList<>();
         satelliteInfoList.add(mSatelliteInfo);
-        satelliteAccessconfigParcel.writeTypedList(satelliteInfoList);
-
         List<Integer> tagIds = new ArrayList<>(List.of(1, 2));
-        satelliteAccessconfigParcel.writeList(tagIds);
-
-        return new SatelliteAccessConfiguration(satelliteAccessconfigParcel);
+        return new SatelliteAccessConfiguration(satelliteInfoList, tagIds);
     }
 
     @Test
@@ -2059,6 +2056,13 @@ public class SatelliteAccessControllerTest extends TelephonyTestBase {
         Message msg = mSatelliteAccessControllerUT.obtainMessage(
                 CMD_IS_SATELLITE_COMMUNICATION_ALLOWED);
         msg.obj = requestPair;
+        msg.sendToTarget();
+        mTestableLooper.processAllMessages();
+    }
+
+    private void sendSatelliteDeviceAccessControllerResourcesTimeOutEvent() {
+        Message msg = mSatelliteAccessControllerUT
+                .obtainMessage(EVENT_KEEP_ON_DEVICE_ACCESS_CONTROLLER_RESOURCES_TIMEOUT);
         msg.sendToTarget();
         mTestableLooper.processAllMessages();
     }
