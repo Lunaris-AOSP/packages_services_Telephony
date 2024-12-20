@@ -2865,6 +2865,7 @@ public class SatelliteAccessController extends Handler {
                 .setIsAllowed(allowed)
                 .setIsEmergency(isInEmergency())
                 .setResult(resultCode)
+                .setCarrierId(mSatelliteController.getSatelliteCarrierId())
                 .reportAccessControllerMetrics();
         mLocationQueryStartTimeMillis = 0;
         mOnDeviceLookupStartTimeMillis = 0;
