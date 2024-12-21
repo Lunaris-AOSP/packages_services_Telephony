@@ -268,6 +268,14 @@
                 android:layout_height="wrap_content"
                 android:text="@string/mock_carrier_roaming_satellite_string"/>
 
+        <!-- Force to use SIM data in Mock satellite mode -->
+        <Switch android:id="@+id/use_carrier_data_in_satellite"
+            android:textSize="14sp"
+            android:layout_marginTop="8dip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/use_carrier_data_in_satellite_string"/>
+
         <!-- ESOS -->
         <Button android:id="@+id/esos_questionnaire"
                 android:textSize="14sp"

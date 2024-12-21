@@ -315,6 +315,7 @@ public class RadioInfo extends AppCompatActivity {
     private Switch mSimulateOutOfServiceSwitch;
     private Switch mEnforceSatelliteChannel;
     private Switch mMockSatellite;
+    private Switch mMockSatelliteData;
     private Button mPingTestButton;
     private Button mUpdateSmscButton;
     private Button mRefreshSmscButton;
@@ -358,6 +359,7 @@ public class RadioInfo extends AppCompatActivity {
     private boolean mSystemUser = true;
 
     private final PersistableBundle[] mCarrierSatelliteOriginalBundle = new PersistableBundle[2];
+    private final PersistableBundle[] mSatelliteDataOriginalBundle = new PersistableBundle[2];
     private final PersistableBundle[] mOriginalSystemChannels = new PersistableBundle[2];
     private List<CellInfo> mCellInfoResult = null;
     private final boolean[] mSimulateOos = new boolean[2];
@@ -750,9 +752,11 @@ public class RadioInfo extends AppCompatActivity {
         }
 
         mMockSatellite = (Switch) findViewById(R.id.mock_carrier_roaming_satellite);
+        mMockSatelliteData = (Switch) findViewById(R.id.use_carrier_data_in_satellite);
         mEnforceSatelliteChannel = (Switch) findViewById(R.id.enforce_satellite_channel);
         if (!Build.isDebuggable()) {
             mMockSatellite.setVisibility(View.GONE);
+            mMockSatelliteData.setVisibility(View.GONE);
             mEnforceSatelliteChannel.setVisibility(View.GONE);
         }
 
@@ -929,6 +933,8 @@ public class RadioInfo extends AppCompatActivity {
         mSimulateOutOfServiceSwitch.setOnCheckedChangeListener(mSimulateOosOnChangeListener);
         mMockSatellite.setChecked(mCarrierSatelliteOriginalBundle[mPhoneId] != null);
         mMockSatellite.setOnCheckedChangeListener(mMockSatelliteListener);
+        mMockSatelliteData.setChecked(mSatelliteDataOriginalBundle[mPhoneId] != null);
+        mMockSatelliteData.setOnCheckedChangeListener(mMockSatelliteDataListener);
         updateSatelliteChannelDisplay(mPhoneId);
         mEnforceSatelliteChannel.setOnCheckedChangeListener(mForceSatelliteChannelOnChangeListener);
         mImsVolteProvisionedSwitch.setOnCheckedChangeListener(mImsVolteCheckedChangeListener);
@@ -1058,6 +1064,9 @@ public class RadioInfo extends AppCompatActivity {
             }
             if (mCarrierSatelliteOriginalBundle[mPhoneId] != null) {
                 mMockSatelliteListener.onCheckedChanged(mMockSatellite, false);
+            }
+            if (mSatelliteDataOriginalBundle[mPhoneId] != null) {
+                mMockSatelliteDataListener.onCheckedChanged(mMockSatelliteData, false);
             }
             if (mSelectedSignalStrengthIndex[mPhoneId] > 0) {
                 mOnMockSignalStrengthSelectedListener.onItemSelected(null, null, 0/*pos*/, 0);
@@ -2097,6 +2106,57 @@ public class RadioInfo extends AppCompatActivity {
             }
         })).start();
     }
+
+    /**
+     * The method will override the key `KEY_SATELLITE_DATA_SUPPORT_MODE_INT` in carrierConfig to
+     * `SATELLITE_DATA_SUPPORT_ALL` means satellite data support is not restricted.
+     */
+    private final OnCheckedChangeListener mMockSatelliteDataListener = (buttonView, isChecked) -> {
+        if (SubscriptionManager.isValidPhoneId(mPhoneId)) {
+            CarrierConfigManager cm = getSystemService(CarrierConfigManager.class);
+            if (cm == null) return;
+            if (isChecked) {
+                String operatorNumeric = mTelephonyManager
+                        .getNetworkOperatorForPhone(mPhoneId);
+                TelephonyManager tm;
+                if (TextUtils.isEmpty(operatorNumeric)
+                        && (tm = getSystemService(TelephonyManager.class)) != null) {
+                    operatorNumeric = tm.getSimOperatorNumericForPhone(mPhoneId);
+                }
+                if (TextUtils.isEmpty(operatorNumeric)) {
+                    loge("mMockSatelliteDataListener: Can't mock because no operator for phone "
+                            + mPhoneId);
+                    mMockSatelliteData.setChecked(false);
+                    return;
+                }
+                log("mMockSatelliteData Checked");
+                PersistableBundle originalBundle = cm.getConfigForSubId(mSubId,
+                        CarrierConfigManager.KEY_SATELLITE_DATA_SUPPORT_MODE_INT);
+                PersistableBundle overrideBundle = new PersistableBundle();
+                overrideBundle.putInt(CarrierConfigManager.KEY_SATELLITE_DATA_SUPPORT_MODE_INT,
+                        CarrierConfigManager.SATELLITE_DATA_SUPPORT_ALL);
+                log("mMockSatelliteDataListener: new " + overrideBundle);
+                log("mMockSatelliteDataListener: old " + originalBundle);
+                cm.overrideConfig(mSubId, overrideBundle, false);
+                mSatelliteDataOriginalBundle[mPhoneId] = originalBundle;
+            } else {
+                log("mMockSatelliteData UnChecked");
+                try {
+                    cm.overrideConfig(mSubId, mSatelliteDataOriginalBundle[mPhoneId], false);
+                    mSatelliteDataOriginalBundle[mPhoneId] = null;
+                    log("mMockSatelliteDataListener: Successfully cleared data mock for phone "
+                            + mPhoneId);
+                } catch (Exception e) {
+                    loge("mMockSatelliteDataListener: Can't clear mock data because invalid sub Id "
+                            + mSubId + ", insert SIM and use adb shell cmd phone cc clear-values");
+                    // Keep show toggle ON if the view is not destroyed. If destroyed, must
+                    // use cmd to reset, because upon creation the view doesn't remember the
+                    // last toggle state while override mock is still in place.
+                    mMockSatelliteData.setChecked(true);
+                }
+            }
+        }
+    };
 
     private final OnCheckedChangeListener mMockSatelliteListener =
             (buttonView, isChecked) -> {

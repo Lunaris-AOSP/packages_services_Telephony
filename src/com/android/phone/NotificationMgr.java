@@ -817,7 +817,7 @@ public class NotificationMgr {
                 mContext.getString(R.string.mobile_network_settings_class)));
         intent.putExtra(Settings.EXTRA_SUB_ID, subId);
         builder.setContentIntent(
-                PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_IMMUTABLE));
+                PendingIntent.getActivity(mContext, subId, intent, PendingIntent.FLAG_IMMUTABLE));
         notifyAsUser(
                 Integer.toString(subId) /* tag */,
                 SELECTED_OPERATOR_FAIL_NOTIFICATION,
