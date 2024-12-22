@@ -158,6 +158,8 @@ public class SatelliteAccessController extends Handler {
             "3ac767d8-2867-4d60-97c2-ae9d378a5521";
     protected static final long WAIT_FOR_CURRENT_LOCATION_TIMEOUT_MILLIS =
             TimeUnit.SECONDS.toMillis(180);
+    protected static final long WAIT_UNTIL_CURRENT_LOCATION_QUERY_IS_DONE_MILLIS =
+            TimeUnit.SECONDS.toMillis(90);
     protected static final long KEEP_ON_DEVICE_ACCESS_CONTROLLER_RESOURCES_TIMEOUT_MILLIS =
             TimeUnit.MINUTES.toMillis(30);
     protected static final int DEFAULT_S2_LEVEL = 12;
@@ -411,9 +413,12 @@ public class SatelliteAccessController extends Handler {
     private NotificationManager mNotificationManager;
     private final List<Integer> mSatelliteDisallowedReasons = new ArrayList<>();
 
+    private boolean mIsLocationManagerEnabled = false;
+
     protected BroadcastReceiver mLocationModeChangedBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            // Check whether user has turned on/off location manager from settings menu
             if (intent.getAction().equals(LocationManager.MODE_CHANGED_ACTION)) {
                 plogd("LocationManager mode is changed");
                 if (mLocationManager.isLocationEnabled()) {
@@ -422,6 +427,33 @@ public class SatelliteAccessController extends Handler {
                 } else {
                     plogd("Location settings is just enabled");
                     sendRequestAsync(EVENT_LOCATION_SETTINGS_DISABLED, null);
+                }
+            }
+
+            // Check whether location manager has been enabled when boot up
+            if (intent.getAction().equals(LocationManager.PROVIDERS_CHANGED_ACTION)) {
+                plogd("mLocationModeChangedBroadcastReceiver: " + intent.getAction()
+                        + ", mIsLocationManagerEnabled= " + mIsLocationManagerEnabled);
+                if (!mIsLocationManagerEnabled) {
+                    if (mLocationManager.isLocationEnabled()) {
+                        plogd("Location manager is enabled");
+                        mIsLocationManagerEnabled = true;
+                        boolean isResultReceiverEmpty;
+                        synchronized (mLock) {
+                            isResultReceiverEmpty = mSatelliteAllowResultReceivers.isEmpty();
+                        }
+                        if (isResultReceiverEmpty) {
+                            sendRequestAsync(EVENT_LOCATION_SETTINGS_ENABLED, null);
+                        } else {
+                            plogd("delayed EVENT_LOCATION_SETTINGS_ENABLED due to "
+                                    + "requestIsCommunicationAllowedForCurrentLocation is "
+                                    + "already being processed");
+                            sendDelayedRequestAsync(EVENT_LOCATION_SETTINGS_ENABLED, null,
+                                    WAIT_UNTIL_CURRENT_LOCATION_QUERY_IS_DONE_MILLIS);
+                        }
+                    } else {
+                        plogd("Location manager is still disabled, wait until next enabled event");
+                    }
                 }
             }
         }
@@ -662,6 +694,7 @@ public class SatelliteAccessController extends Handler {
                 updateSatelliteConfigData((Context) ar.userObj);
                 break;
             case EVENT_LOCATION_SETTINGS_ENABLED:
+                plogd("EVENT_LOCATION_SETTINGS_ENABLED");
             case EVENT_LOCATION_SETTINGS_DISABLED:
                 // Fall through
             case EVENT_COUNTRY_CODE_CHANGED:
@@ -1343,6 +1376,7 @@ public class SatelliteAccessController extends Handler {
         }
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(LocationManager.MODE_CHANGED_ACTION);
+        intentFilter.addAction(LocationManager.PROVIDERS_CHANGED_ACTION);
         context.registerReceiver(mLocationModeChangedBroadcastReceiver, intentFilter);
     }
 
@@ -2636,9 +2670,9 @@ public class SatelliteAccessController extends Handler {
      * @param command  command to be executed on the main thread
      * @param argument additional parameters required to perform of the operation
      */
-    private void sendDelayedRequestAsync(int command, @NonNull Object argument, long dealyMillis) {
+    private void sendDelayedRequestAsync(int command, @Nullable Object argument, long delayMillis) {
         Message msg = this.obtainMessage(command, argument);
-        sendMessageDelayed(msg, dealyMillis);
+        sendMessageDelayed(msg, delayMillis);
     }
 
     /**
@@ -2647,7 +2681,7 @@ public class SatelliteAccessController extends Handler {
      * @param command  command to be executed on the main thread
      * @param argument additional parameters required to perform of the operation
      */
-    private void sendRequestAsync(int command, @NonNull Object argument) {
+    private void sendRequestAsync(int command, @Nullable Object argument) {
         Message msg = this.obtainMessage(command, argument);
         msg.sendToTarget();
     }
