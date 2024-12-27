@@ -847,6 +847,8 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"ຈໍາລອງເຫດການບໍ່ພ້ອມໃຫ້ບໍລິການ (ສໍາລັບ Build ດີບັກເທົ່ານັ້ນ)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"ບັງຄັບໃຫ້ໃຊ້ຊ່ອງສັນຍານດາວທຽມ LTE ຂອງຄ້າຍ (ສຳລັບ Build ດີບັກເທົ່ານັ້ນ)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"ຈຳລອງໂໝດດາວທຽມຂອງຜູ້ໃຫ້ບໍລິການ (ສຳລັບ Build ດີບັກເທົ່ານັ້ນ)"</string>
+    <!-- no translation found for use_carrier_data_in_satellite_string (1460114135929826786) -->
+    <skip />
     <string name="esos_satellite_string" msgid="7274794226125968657">"ທົດສອບໂໝດ eSOS ດາວທຽມແທ້ (ສຳລັບ Build ດີບັກເທົ່ານັ້ນ)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"ທົດສອບໂໝດດາວທຽມແທ້ທີ່ບໍ່ແມ່ນ eSOS (ສຳລັບ Build ດີບັກເທົ່ານັ້ນ)"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"ທົດສອບໂໝດ eSOS ຂອງດາວທຽມເດໂມ (ສຳລັບ Build ດີບັກເທົ່ານັ້ນ)"</string>

@@ -847,6 +847,8 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"Simulacija nedelovanja (samo za gradnjo za odpravljanje napak)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"Satelitski kanal LTE za Force Camp (samo gradnja za odpravljanje napak)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"Lažni satelitski način operaterja (samo gradnja za odpravljanje napak)"</string>
+    <!-- no translation found for use_carrier_data_in_satellite_string (1460114135929826786) -->
+    <skip />
     <string name="esos_satellite_string" msgid="7274794226125968657">"Preizkus pravega satelitskega načina eSOS (samo gradnja za odpravljanje napak)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"Preizkus pravega satelitskega (nenujnega) načina eSOS (samo gradnja za odpravljanje napak)"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"Preizkus predstavitvenega satelitskega načina eSOS (samo gradnja za odpravljanje napak)"</string>

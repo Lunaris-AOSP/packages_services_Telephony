@@ -770,7 +770,7 @@
     <string name="clh_callFailed_protocol_Error_unspecified_txt" msgid="9203320572562697755">"कल पूरा गर्न सकिएन। त्रुटिको कोड: १११।"</string>
     <string name="clh_callFailed_interworking_unspecified_txt" msgid="7969686413930847182">"कल पूरा गर्न सकिएन। त्रुटिको कोड: १२७।"</string>
     <string name="labelCallBarring" msgid="4180377113052853173">"कल ब्यारिङ"</string>
-    <string name="sum_call_barring_enabled" msgid="5184331188926370824">"सक्रिय छ"</string>
+    <string name="sum_call_barring_enabled" msgid="5184331188926370824">"अन छ"</string>
     <string name="sum_call_barring_disabled" msgid="5699448000600153096">"अफ छ"</string>
     <string name="call_barring_baoc" msgid="7400892586336429326">"सबै बहिर्गमन"</string>
     <string name="call_barring_baoc_enabled" msgid="3131509193386668182">"सबै बहिर्गमन कलहरूमाथिको रोक असक्षम पार्ने हो?"</string>
@@ -847,6 +847,8 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"\"सेवा उपलब्ध छैन\" सिमुलेट गर्नुहोस् (डिबग बिल्डमा मात्र सिमुलेट गर्न मिल्छ)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"Force Camp Satellite LTE च्यानल (डिबग बिल्ड मात्र)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"सेवा प्रदायकको स्याटेलाइट मोडको परीक्षण गर्नुहोस् (डिबग बिल्ड मात्र)"</string>
+    <!-- no translation found for use_carrier_data_in_satellite_string (1460114135929826786) -->
+    <skip />
     <string name="esos_satellite_string" msgid="7274794226125968657">"वास्तविक स्याटेलाइट eSOS मोड परीक्षण गर्नुहोस् (डिबग बिल्ड मात्र)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"वास्तविक स्याटेलाइट eSOS बाहेकका मोड (डिबग बिल्ड मात्र) परीक्षण गर्नुहोस्"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"डेमो स्याटेलाइट eSOS मोडको परीक्षण गर्नुहोस् (डिबग बिल्ड मात्र)"</string>

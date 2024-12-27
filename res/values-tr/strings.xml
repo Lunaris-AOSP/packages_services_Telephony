@@ -847,6 +847,8 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"Hizmet Dışı Simülasyonu (Yalnızca Hata Ayıklama Derlemesi)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"Kamp uydusu LTE kanalını zorunlu kılma (yalnızca hata ayıklama derlemesi)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"Örnek operatör uydu modu (yalnızca hata ayıklama derlemesi)"</string>
+    <!-- no translation found for use_carrier_data_in_satellite_string (1460114135929826786) -->
+    <skip />
     <string name="esos_satellite_string" msgid="7274794226125968657">"Gerçek uydu eSOS modunu test et (yalnızca hata ayıklama derlemesi)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"Gerçek uydu üzerinde eSOS olmayan modu test et (yalnızca hata ayıklama derlemesi)"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"Demo uydu üzerinde eSOS modunu test et (yalnızca hata ayıklama derlemesi)"</string>
