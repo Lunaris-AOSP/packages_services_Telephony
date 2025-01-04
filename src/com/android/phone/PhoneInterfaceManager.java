@@ -159,7 +159,7 @@ import android.telephony.ims.stub.ImsConfigImplBase;
 import android.telephony.ims.stub.ImsRegistrationImplBase;
 import android.telephony.satellite.INtnSignalStrengthCallback;
 import android.telephony.satellite.ISatelliteCapabilitiesCallback;
-import android.telephony.satellite.ISatelliteCommunicationAllowedStateCallback;
+import android.telephony.satellite.ISatelliteCommunicationAccessStateCallback;
 import android.telephony.satellite.ISatelliteDatagramCallback;
 import android.telephony.satellite.ISatelliteDisallowedReasonsCallback;
 import android.telephony.satellite.ISatelliteModemStateCallback;
@@ -2586,8 +2586,8 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     }
 
     private void sendEraseModemConfig(@NonNull Phone phone) {
-        if (mFeatureFlags.cleanupCdma()) return;
-        Boolean success = (Boolean) sendRequest(CMD_ERASE_MODEM_CONFIG, null);
+        int cmd = mFeatureFlags.cleanupCdma() ? CMD_MODEM_REBOOT : CMD_ERASE_MODEM_CONFIG;
+        Boolean success = (Boolean) sendRequest(cmd, null);
         if (DBG) log("eraseModemConfig:" + ' ' + (success ? "ok" : "fail"));
     }
 
@@ -6502,7 +6502,8 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
 
             final long identity = Binder.clearCallingIdentity();
             try {
-                Boolean success = (Boolean) sendRequest(CMD_RESET_MODEM_CONFIG, null);
+                int cmd = mFeatureFlags.cleanupCdma() ? CMD_MODEM_REBOOT : CMD_RESET_MODEM_CONFIG;
+                Boolean success = (Boolean) sendRequest(cmd, null);
                 if (DBG) log("resetModemConfig:" + ' ' + (success ? "ok" : "fail"));
                 return success;
             } finally {
@@ -14783,12 +14784,12 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
      * @throws SecurityException if the caller doesn't have the required permission.
      */
     @Override
-    @SatelliteManager.SatelliteResult public int registerForCommunicationAllowedStateChanged(
-            int subId, @NonNull ISatelliteCommunicationAllowedStateCallback callback) {
-        enforceSatelliteCommunicationPermission("registerForCommunicationAllowedStateChanged");
+    @SatelliteManager.SatelliteResult public int registerForCommunicationAccessStateChanged(
+            int subId, @NonNull ISatelliteCommunicationAccessStateCallback callback) {
+        enforceSatelliteCommunicationPermission("registerForCommunicationAccessStateChanged");
         final long identity = Binder.clearCallingIdentity();
         try {
-            return mSatelliteAccessController.registerForCommunicationAllowedStateChanged(
+            return mSatelliteAccessController.registerForCommunicationAccessStateChanged(
                     subId, callback);
         } finally {
             Binder.restoreCallingIdentity(identity);
@@ -14802,17 +14803,17 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
      * @param subId    The subId of the subscription to unregister for the satellite communication
      *                 allowed state changed.
      * @param callback The callback that was passed to
-     *                 {@link #registerForCommunicationAllowedStateChanged(int,
-     *                 ISatelliteCommunicationAllowedStateCallback)}.     *
+     *                 {@link #registerForCommunicationAccessStateChanged(int,
+     *                 ISatelliteCommunicationAccessStateCallback)}.     *
      * @throws SecurityException if the caller doesn't have the required permission.
      */
     @Override
-    public void unregisterForCommunicationAllowedStateChanged(
-            int subId, @NonNull ISatelliteCommunicationAllowedStateCallback callback) {
-        enforceSatelliteCommunicationPermission("unregisterForCommunicationAllowedStateChanged");
+    public void unregisterForCommunicationAccessStateChanged(
+            int subId, @NonNull ISatelliteCommunicationAccessStateCallback callback) {
+        enforceSatelliteCommunicationPermission("unregisterForCommunicationAccessStateChanged");
         final long identity = Binder.clearCallingIdentity();
         try {
-            mSatelliteAccessController.unregisterForCommunicationAllowedStateChanged(subId,
+            mSatelliteAccessController.unregisterForCommunicationAccessStateChanged(subId,
                     callback);
         } finally {
             Binder.restoreCallingIdentity(identity);

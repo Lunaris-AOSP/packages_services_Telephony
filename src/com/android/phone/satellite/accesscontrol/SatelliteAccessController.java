@@ -82,7 +82,7 @@ import android.telephony.Rlog;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.satellite.EarfcnRange;
-import android.telephony.satellite.ISatelliteCommunicationAllowedStateCallback;
+import android.telephony.satellite.ISatelliteCommunicationAccessStateCallback;
 import android.telephony.satellite.ISatelliteDisallowedReasonsCallback;
 import android.telephony.satellite.ISatelliteProvisionStateCallback;
 import android.telephony.satellite.SatelliteAccessConfiguration;
@@ -387,8 +387,8 @@ public class SatelliteAccessController extends Handler {
      * Map key: binder of the callback, value: callback to receive the satellite communication
      * allowed state changed events.
      */
-    private final ConcurrentHashMap<IBinder, ISatelliteCommunicationAllowedStateCallback>
-            mSatelliteCommunicationAllowedStateChangedListeners = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<IBinder, ISatelliteCommunicationAccessStateCallback>
+            mSatelliteCommunicationAccessStateChangedListeners = new ConcurrentHashMap<>();
     protected final Object mSatelliteCommunicationAllowStateLock = new Object();
     @GuardedBy("mSatelliteCommunicationAllowStateLock")
     protected boolean mCurrentSatelliteAllowedState = false;
@@ -2696,22 +2696,21 @@ public class SatelliteAccessController extends Handler {
      * @return The {@link SatelliteManager.SatelliteResult} result of the operation.
      */
     @SatelliteManager.SatelliteResult
-    public int registerForCommunicationAllowedStateChanged(int subId,
-            @NonNull ISatelliteCommunicationAllowedStateCallback callback) {
+    public int registerForCommunicationAccessStateChanged(int subId,
+            @NonNull ISatelliteCommunicationAccessStateCallback callback) {
         if (!mFeatureFlags.oemEnabledSatelliteFlag()) {
-            plogd("registerForCommunicationAllowedStateChanged: oemEnabledSatelliteFlag is "
+            plogd("registerForCommunicationAccessStateChanged: oemEnabledSatelliteFlag is "
                     + "disabled");
             return SatelliteManager.SATELLITE_RESULT_REQUEST_NOT_SUPPORTED;
         }
 
-        mSatelliteCommunicationAllowedStateChangedListeners.put(callback.asBinder(), callback);
+        mSatelliteCommunicationAccessStateChangedListeners.put(callback.asBinder(), callback);
 
         this.post(() -> {
             try {
                 synchronized (mSatelliteCommunicationAllowStateLock) {
-                    callback.onSatelliteCommunicationAllowedStateChanged(
-                            mCurrentSatelliteAllowedState);
-                    logd("registerForCommunicationAllowedStateChanged: "
+                    callback.onAccessAllowedStateChanged(mCurrentSatelliteAllowedState);
+                    logd("registerForCommunicationAccessStateChanged: "
                             + "mCurrentSatelliteAllowedState " + mCurrentSatelliteAllowedState);
                 }
                 synchronized (mLock) {
@@ -2719,13 +2718,13 @@ public class SatelliteAccessController extends Handler {
                             Optional.ofNullable(mSatelliteAccessConfigMap)
                                     .map(map -> map.get(mRegionalConfigId))
                                     .orElse(null);
-                    callback.onSatelliteAccessConfigurationChanged(satelliteAccessConfig);
-                    logd("registerForCommunicationAllowedStateChanged: satelliteAccessConfig: "
+                    callback.onAccessConfigurationChanged(satelliteAccessConfig);
+                    logd("registerForCommunicationAccessStateChanged: satelliteAccessConfig: "
                             + satelliteAccessConfig + " of mRegionalConfigId: "
                             + mRegionalConfigId);
                 }
             } catch (RemoteException ex) {
-                ploge("registerForCommunicationAllowedStateChanged: RemoteException ex=" + ex);
+                ploge("registerForCommunicationAccessStateChanged: RemoteException ex=" + ex);
             }
         });
 
@@ -2739,18 +2738,18 @@ public class SatelliteAccessController extends Handler {
      * @param subId    The subId of the subscription to unregister for the satellite communication
      *                 allowed state changed.
      * @param callback The callback that was passed to
-     *                 {@link #registerForCommunicationAllowedStateChanged(int,
-     *                 ISatelliteCommunicationAllowedStateCallback)}.
+     *                 {@link #registerForCommunicationAccessStateChanged(int,
+     *                 ISatelliteCommunicationAccessStateCallback)}.
      */
-    public void unregisterForCommunicationAllowedStateChanged(
-            int subId, @NonNull ISatelliteCommunicationAllowedStateCallback callback) {
+    public void unregisterForCommunicationAccessStateChanged(
+            int subId, @NonNull ISatelliteCommunicationAccessStateCallback callback) {
         if (!mFeatureFlags.oemEnabledSatelliteFlag()) {
-            plogd("unregisterForCommunicationAllowedStateChanged: "
+            plogd("unregisterForCommunicationAccessStateChanged: "
                     + "oemEnabledSatelliteFlag is disabled");
             return;
         }
 
-        mSatelliteCommunicationAllowedStateChangedListeners.remove(callback.asBinder());
+        mSatelliteCommunicationAccessStateChangedListeners.remove(callback.asBinder());
     }
 
     /**
@@ -2874,17 +2873,17 @@ public class SatelliteAccessController extends Handler {
     private void notifySatelliteCommunicationAllowedStateChanged(boolean allowState) {
         plogd("notifySatelliteCommunicationAllowedStateChanged: allowState=" + allowState);
 
-        List<ISatelliteCommunicationAllowedStateCallback> deadCallersList = new ArrayList<>();
-        mSatelliteCommunicationAllowedStateChangedListeners.values().forEach(listener -> {
+        List<ISatelliteCommunicationAccessStateCallback> deadCallersList = new ArrayList<>();
+        mSatelliteCommunicationAccessStateChangedListeners.values().forEach(listener -> {
             try {
-                listener.onSatelliteCommunicationAllowedStateChanged(allowState);
+                listener.onAccessAllowedStateChanged(allowState);
             } catch (RemoteException e) {
                 plogd("handleEventNtnSignalStrengthChanged RemoteException: " + e);
                 deadCallersList.add(listener);
             }
         });
         deadCallersList.forEach(listener -> {
-            mSatelliteCommunicationAllowedStateChangedListeners.remove(listener.asBinder());
+            mSatelliteCommunicationAccessStateChangedListeners.remove(listener.asBinder());
         });
     }
 
@@ -2913,17 +2912,17 @@ public class SatelliteAccessController extends Handler {
         plogd("notifyRegionalSatelliteConfigurationChanged : satelliteAccessConfig is "
                 + satelliteAccessConfig);
 
-        List<ISatelliteCommunicationAllowedStateCallback> deadCallersList = new ArrayList<>();
-        mSatelliteCommunicationAllowedStateChangedListeners.values().forEach(listener -> {
+        List<ISatelliteCommunicationAccessStateCallback> deadCallersList = new ArrayList<>();
+        mSatelliteCommunicationAccessStateChangedListeners.values().forEach(listener -> {
             try {
-                listener.onSatelliteAccessConfigurationChanged(satelliteAccessConfig);
+                listener.onAccessConfigurationChanged(satelliteAccessConfig);
             } catch (RemoteException e) {
                 plogd("handleEventNtnSignalStrengthChanged RemoteException: " + e);
                 deadCallersList.add(listener);
             }
         });
         deadCallersList.forEach(listener -> {
-            mSatelliteCommunicationAllowedStateChangedListeners.remove(listener.asBinder());
+            mSatelliteCommunicationAccessStateChangedListeners.remove(listener.asBinder());
         });
     }
 

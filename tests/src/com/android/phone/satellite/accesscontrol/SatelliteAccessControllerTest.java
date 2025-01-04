@@ -103,7 +103,7 @@ import android.telecom.TelecomManager;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.telephony.satellite.EarfcnRange;
-import android.telephony.satellite.ISatelliteCommunicationAllowedStateCallback;
+import android.telephony.satellite.ISatelliteCommunicationAccessStateCallback;
 import android.telephony.satellite.SatelliteAccessConfiguration;
 import android.telephony.satellite.SatelliteInfo;
 import android.telephony.satellite.SatelliteManager;
@@ -233,7 +233,7 @@ public class SatelliteAccessControllerTest extends TelephonyTestBase {
     @Mock
     private ResultReceiver mMockResultReceiver;
     @Mock
-    private ConcurrentHashMap<IBinder, ISatelliteCommunicationAllowedStateCallback>
+    private ConcurrentHashMap<IBinder, ISatelliteCommunicationAccessStateCallback>
             mSatelliteCommunicationAllowedStateCallbackMap;
     private SatelliteInfo mSatelliteInfo;
 
@@ -270,7 +270,7 @@ public class SatelliteAccessControllerTest extends TelephonyTestBase {
     @Captor
     private ArgumentCaptor<Bundle> mResultDataBundleCaptor;
     @Captor
-    private ArgumentCaptor<ISatelliteCommunicationAllowedStateCallback> mAllowedStateCallbackCaptor;
+    private ArgumentCaptor<ISatelliteCommunicationAccessStateCallback> mAllowedStateCallbackCaptor;
 
     private boolean mQueriedSatelliteAllowed = false;
     private int mQueriedSatelliteAllowedResultCode = SATELLITE_RESULT_SUCCESS;
@@ -598,15 +598,15 @@ public class SatelliteAccessControllerTest extends TelephonyTestBase {
                 .get(eq(UNKNOWN_REGIONAL_SATELLITE_CONFIG_ID));
 
         // setup callback
-        ISatelliteCommunicationAllowedStateCallback mockSatelliteAllowedStateCallback = mock(
-                ISatelliteCommunicationAllowedStateCallback.class);
+        ISatelliteCommunicationAccessStateCallback mockSatelliteAllowedStateCallback = mock(
+                ISatelliteCommunicationAccessStateCallback.class);
         ArgumentCaptor<SatelliteAccessConfiguration> satelliteAccessConfigurationCaptor =
                 ArgumentCaptor.forClass(SatelliteAccessConfiguration.class);
 
         when(mSatelliteCommunicationAllowedStateCallbackMap.values())
                 .thenReturn(List.of(mockSatelliteAllowedStateCallback));
         replaceInstance(SatelliteAccessController.class,
-                "mSatelliteCommunicationAllowedStateChangedListeners", mSatelliteAccessControllerUT,
+                "mSatelliteCommunicationAccessStateChangedListeners", mSatelliteAccessControllerUT,
                 mSatelliteCommunicationAllowedStateCallbackMap);
 
         // Test when the featureFlags.carrierRoamingNbIotNtn() is false
@@ -621,7 +621,7 @@ public class SatelliteAccessControllerTest extends TelephonyTestBase {
         assertEquals(SATELLITE_RESULT_REQUEST_NOT_SUPPORTED, (int) resultCodeCaptor.getValue());
         assertNull(bundleCaptor.getValue());
         verify(mockSatelliteAllowedStateCallback, never())
-                .onSatelliteAccessConfigurationChanged(any());
+                .onAccessConfigurationChanged(any());
 
         doReturn(true).when(mMockFeatureFlags).carrierRoamingNbIotNtn();
 
@@ -642,7 +642,7 @@ public class SatelliteAccessControllerTest extends TelephonyTestBase {
         assertSame(bundleCaptor.getValue().getParcelable(KEY_SATELLITE_ACCESS_CONFIGURATION,
                 SatelliteAccessConfiguration.class), satelliteAccessConfig);
         verify(mockSatelliteAllowedStateCallback, times(1))
-                .onSatelliteAccessConfigurationChanged(
+                .onAccessConfigurationChanged(
                         satelliteAccessConfigurationCaptor.capture());
         assertEquals(satelliteAccessConfigurationCaptor.getValue(), satelliteAccessConfig);
 
@@ -661,7 +661,7 @@ public class SatelliteAccessControllerTest extends TelephonyTestBase {
         assertNull(bundleCaptor.getValue());
 
         verify(mockSatelliteAllowedStateCallback, times(1))
-                .onSatelliteAccessConfigurationChanged(
+                .onAccessConfigurationChanged(
                         satelliteAccessConfigurationCaptor.capture());
         assertNull(satelliteAccessConfigurationCaptor.getValue());
     }
@@ -675,52 +675,52 @@ public class SatelliteAccessControllerTest extends TelephonyTestBase {
 
     @Test
     public void testRegisterForCommunicationAllowedStateChanged() throws Exception {
-        ISatelliteCommunicationAllowedStateCallback mockSatelliteAllowedStateCallback = mock(
-                ISatelliteCommunicationAllowedStateCallback.class);
+        ISatelliteCommunicationAccessStateCallback mockSatelliteAllowedStateCallback = mock(
+                ISatelliteCommunicationAccessStateCallback.class);
         doReturn(true).when(mSatelliteCommunicationAllowedStateCallbackMap)
-                .put(any(IBinder.class), any(ISatelliteCommunicationAllowedStateCallback.class));
+                .put(any(IBinder.class), any(ISatelliteCommunicationAccessStateCallback.class));
         replaceInstance(SatelliteAccessController.class,
-                "mSatelliteCommunicationAllowedStateChangedListeners", mSatelliteAccessControllerUT,
+                "mSatelliteCommunicationAccessStateChangedListeners", mSatelliteAccessControllerUT,
                 mSatelliteCommunicationAllowedStateCallbackMap);
 
         doReturn(false).when(mMockFeatureFlags).oemEnabledSatelliteFlag();
-        int result = mSatelliteAccessControllerUT.registerForCommunicationAllowedStateChanged(
+        int result = mSatelliteAccessControllerUT.registerForCommunicationAccessStateChanged(
                 DEFAULT_SUBSCRIPTION_ID, mockSatelliteAllowedStateCallback);
         mTestableLooper.processAllMessages();
         assertEquals(SATELLITE_RESULT_REQUEST_NOT_SUPPORTED, result);
         verify(mockSatelliteAllowedStateCallback, never())
-                .onSatelliteCommunicationAllowedStateChanged(anyBoolean());
+                .onAccessAllowedStateChanged(anyBoolean());
         verify(mockSatelliteAllowedStateCallback, never())
-                .onSatelliteAccessConfigurationChanged(any(SatelliteAccessConfiguration.class));
+                .onAccessConfigurationChanged(any(SatelliteAccessConfiguration.class));
 
         doReturn(true).when(mMockFeatureFlags).oemEnabledSatelliteFlag();
-        result = mSatelliteAccessControllerUT.registerForCommunicationAllowedStateChanged(
+        result = mSatelliteAccessControllerUT.registerForCommunicationAccessStateChanged(
                 DEFAULT_SUBSCRIPTION_ID, mockSatelliteAllowedStateCallback);
         mTestableLooper.processAllMessages();
         assertEquals(SATELLITE_RESULT_SUCCESS, result);
         verify(mockSatelliteAllowedStateCallback, times(1))
-                .onSatelliteCommunicationAllowedStateChanged(anyBoolean());
+                .onAccessAllowedStateChanged(anyBoolean());
         verify(mockSatelliteAllowedStateCallback, times(1))
-                .onSatelliteAccessConfigurationChanged(
+                .onAccessConfigurationChanged(
                         nullable(SatelliteAccessConfiguration.class));
     }
 
     @Test
     public void testNotifyRegionalSatelliteConfigurationChanged() throws Exception {
         // setup test
-        ISatelliteCommunicationAllowedStateCallback mockSatelliteAllowedStateCallback = mock(
-                ISatelliteCommunicationAllowedStateCallback.class);
+        ISatelliteCommunicationAccessStateCallback mockSatelliteAllowedStateCallback = mock(
+                ISatelliteCommunicationAccessStateCallback.class);
         ArgumentCaptor<SatelliteAccessConfiguration> satelliteAccessConfigurationCaptor =
                 ArgumentCaptor.forClass(SatelliteAccessConfiguration.class);
 
         when(mSatelliteCommunicationAllowedStateCallbackMap.values())
                 .thenReturn(List.of(mockSatelliteAllowedStateCallback));
         replaceInstance(SatelliteAccessController.class,
-                "mSatelliteCommunicationAllowedStateChangedListeners", mSatelliteAccessControllerUT,
+                "mSatelliteCommunicationAccessStateChangedListeners", mSatelliteAccessControllerUT,
                 mSatelliteCommunicationAllowedStateCallbackMap);
 
         // register callback
-        mSatelliteAccessControllerUT.registerForCommunicationAllowedStateChanged(
+        mSatelliteAccessControllerUT.registerForCommunicationAccessStateChanged(
                 DEFAULT_SUBSCRIPTION_ID, mockSatelliteAllowedStateCallback);
 
         // verify if the callback is
@@ -737,7 +737,7 @@ public class SatelliteAccessControllerTest extends TelephonyTestBase {
                 .notifyRegionalSatelliteConfigurationChanged(satelliteAccessConfig);
 
         // verify if the satelliteAccessConfig is the same instance with the captured one.
-        verify(mockSatelliteAllowedStateCallback).onSatelliteAccessConfigurationChanged(
+        verify(mockSatelliteAllowedStateCallback).onAccessConfigurationChanged(
                 satelliteAccessConfigurationCaptor.capture());
         assertSame(satelliteAccessConfig, satelliteAccessConfigurationCaptor.getValue());
     }

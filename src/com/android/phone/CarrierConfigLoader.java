@@ -877,14 +877,16 @@ public class CarrierConfigLoader extends ICarrierConfigLoader.Stub {
     }
 
     private int getSimApplicationStateForPhone(int phoneId) {
-        int simApplicationState = TelephonyManager.SIM_STATE_UNKNOWN;
         int subId = SubscriptionManager.getSubscriptionId(phoneId);
-        if (SubscriptionManager.isValidSubscriptionId(subId)) {
-            TelephonyManager telMgr = TelephonyManager.from(mContext)
-                    .createForSubscriptionId(subId);
-            simApplicationState = telMgr.getSimApplicationState();
+        if (!SubscriptionManager.isValidSubscriptionId(subId)) {
+            return TelephonyManager.SIM_STATE_UNKNOWN;
         }
-        return simApplicationState;
+        TelephonyManager telMgr = TelephonyManager.from(mContext)
+                .createForSubscriptionId(subId);
+        if (telMgr == null) {
+            return TelephonyManager.SIM_STATE_UNKNOWN;
+        }
+        return telMgr.getSimApplicationState();
     }
 
     /** Binds to the default or carrier config app. */
