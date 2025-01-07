@@ -71,6 +71,7 @@ import android.telephony.ims.stub.ImsRegistrationImplBase;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.android.ims.ImsManager;
 import com.android.internal.annotations.VisibleForTesting;
@@ -2557,6 +2558,10 @@ public class TelephonyConnectionService extends ConnectionService {
             }
         } catch (CallStateException e) {
             Log.e(this, e, "Call placeOutgoingCallConnection, phone.dial exception: " + e);
+            if (e.getError() == CallStateException.ERROR_FDN_BLOCKED) {
+                Toast.makeText(getApplicationContext(), R.string.fdn_blocked_mmi,
+                        Toast.LENGTH_SHORT).show();
+            }
             mNormalCallConnection.unregisterForCallEvents();
             handleCallStateException(e, mNormalCallConnection, phone);
         } catch (Exception e) {
