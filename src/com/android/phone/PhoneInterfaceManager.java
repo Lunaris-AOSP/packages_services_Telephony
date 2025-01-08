@@ -12936,12 +12936,18 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
 
         if (mTelecomFeatureFlags.telecomMainUserInGetRespondMessageApp()){
             UserHandle mainUser = null;
-            Context userContext = null;
+            Context userContext = context;
             final long identity = Binder.clearCallingIdentity();
             try {
                 mainUser = mUserManager.getMainUser();
-                userContext = context.createContextAsUser(mainUser, 0);
-                Log.d(LOG_TAG, "getDefaultRespondViaMessageApplication: mainUser = " + mainUser);
+                if (mainUser != null) {
+                    userContext = context.createContextAsUser(mainUser, 0);
+                } else {
+                    // If getting the main user is null, then fall back to legacy behavior:
+                    mainUser = TelephonyUtils.getSubscriptionUserHandle(context, subId);
+                }
+                Log.d(LOG_TAG, "getDefaultRespondViaMessageApplication: mainUser = "
+                        + mainUser);
             } finally {
                 Binder.restoreCallingIdentity(identity);
             }
