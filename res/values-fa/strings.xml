@@ -481,6 +481,8 @@
     <string name="fdn_invalid_number" msgid="9067189814657840439">"‏FDN به‌روزرسانی نشد، زیرا شماره از <xliff:g id="FDN_NUMBER_LIMIT_LENGTH">%d</xliff:g> رقم بیشتر است."</string>
     <string name="pin2_or_fdn_invalid" msgid="7542639487955868181">"‏FDN به‌روز نشد. پین۲ اشتباه بود یا شماره تلفن رد شد."</string>
     <string name="fdn_failed" msgid="216592346853420250">"‏عملیات FDN ناموفق بود."</string>
+    <!-- no translation found for fdn_blocked_mmi (3218296901316119797) -->
+    <skip />
     <string name="simContacts_emptyLoading" msgid="4989040293858675483">"در حال خواندن سیم کارت..."</string>
     <string name="simContacts_empty" msgid="1135632055473689521">"مخاطبی در سیم‌کارت شما نیست."</string>
     <string name="simContacts_title" msgid="2714029230160136647">"انتخاب مخاطبین برای وارد کردن"</string>
@@ -847,8 +849,7 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"شبیه‌سازی از کار افتادن (فقط ساخت اشکال‌زدایی)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"‏اجباری کردن کانال Camp Satellite LTE (فقط ساخت اشکال‌زدایی)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"حالت ماهواره‌ای شرکت مخابراتی ساختگی (فقط ساخت اشکال‌زدایی)"</string>
-    <!-- no translation found for use_carrier_data_in_satellite_string (1460114135929826786) -->
-    <skip />
+    <string name="use_carrier_data_in_satellite_string" msgid="1460114135929826786">"فعال کردن داده ماهواره‌ای نامحدود (فقط «ساخت اشکال‌زدایی»)"</string>
     <string name="esos_satellite_string" msgid="7274794226125968657">"آزمایش کردن حالت واقعی درخواست کمک اضطراری ماهواره‌ای (فقط ساخت اشکال‌زدایی)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"آزمایش کردن حالت واقعی درخواست کمک غیراضطراری ماهواره‌ای (فقط ساخت اشکال‌زدایی)"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"آزمایش کردن نسخه نمایشی درخواست کمک اضطراری ماهواره‌ای (فقط ساخت اشکال‌زدایی)"</string>

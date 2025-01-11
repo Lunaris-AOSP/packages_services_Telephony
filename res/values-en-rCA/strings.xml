@@ -481,6 +481,7 @@
     <string name="fdn_invalid_number" msgid="9067189814657840439">"FDN wasn\'t updated because the number exceeds <xliff:g id="FDN_NUMBER_LIMIT_LENGTH">%d</xliff:g> digits."</string>
     <string name="pin2_or_fdn_invalid" msgid="7542639487955868181">"FDN wasn\'t updated. The PIN2 was incorrect, or the phone number was rejected."</string>
     <string name="fdn_failed" msgid="216592346853420250">"FDN operation failed."</string>
+    <string name="fdn_blocked_mmi" msgid="3218296901316119797">"Cannot dial MMI code because FDN is enabled."</string>
     <string name="simContacts_emptyLoading" msgid="4989040293858675483">"Reading from SIM card…"</string>
     <string name="simContacts_empty" msgid="1135632055473689521">"No contacts on your SIM card."</string>
     <string name="simContacts_title" msgid="2714029230160136647">"Select contacts to import"</string>

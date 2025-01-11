@@ -481,6 +481,7 @@
     <string name="fdn_invalid_number" msgid="9067189814657840439">"FDN is niet geüpdatet omdat het nummer langer is dan <xliff:g id="FDN_NUMBER_LIMIT_LENGTH">%d</xliff:g> tekens."</string>
     <string name="pin2_or_fdn_invalid" msgid="7542639487955868181">"FDN is niet bijgewerkt. De PIN2 was onjuist of het telefoonnummer is geweigerd."</string>
     <string name="fdn_failed" msgid="216592346853420250">"FDN-bewerking mislukt."</string>
+    <string name="fdn_blocked_mmi" msgid="3218296901316119797">"Kan geen MMI-code kiezen omdat FDN aanstaat."</string>
     <string name="simContacts_emptyLoading" msgid="4989040293858675483">"Lezen vanaf simkaart..."</string>
     <string name="simContacts_empty" msgid="1135632055473689521">"Geen contacten op je simkaart."</string>
     <string name="simContacts_title" msgid="2714029230160136647">"Contacten selecteren om te importeren"</string>
@@ -847,8 +848,7 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"\'Niet in gebruik\' simuleren (alleen in foutopsporingsbuild)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"Camp Satellite LTE-kanaal afdwingen (alleen in foutopsporingsbuild)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"Satellietmodus voor testprovider (alleen in foutopsporingsbuild)"</string>
-    <!-- no translation found for use_carrier_data_in_satellite_string (1460114135929826786) -->
-    <skip />
+    <string name="use_carrier_data_in_satellite_string" msgid="1460114135929826786">"Onbeperkte satellietgegevens aanzetten (alleen in foutopsporingsbuild)"</string>
     <string name="esos_satellite_string" msgid="7274794226125968657">"Echte e-SOS via satellietmodus testen (alleen in foutopsporingsbuild)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"Echte niet-noodoproep via satellietmodus testen (alleen in foutopsporingsbuild)"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"Demo e-SOS via satellietmodus testen (alleen in foutopsporingsbuild)"</string>
