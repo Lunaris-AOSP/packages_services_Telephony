@@ -269,12 +269,41 @@
                 android:text="@string/mock_carrier_roaming_satellite_string"/>
 
         <!-- Force to use SIM data in Mock satellite mode -->
-        <Switch android:id="@+id/use_carrier_data_in_satellite"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:textSize="14sp"
             android:layout_marginTop="8dip"
-            android:layout_width="match_parent"
+            android:textStyle="bold"
+            android:text="@string/choose_satellite_data_mode"/>
+
+        <RadioGroup
+            android:id="@+id/satellite_data_controller"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/use_carrier_data_in_satellite_string"/>
+            android:layout_marginTop="8dip"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/satellite_data_restricted"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="4dip"
+                android:text="@string/satellite_data_restricted_string" />
+
+            <RadioButton
+                android:id="@+id/satellite_data_constrained"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="4dip"
+                android:text="@string/satellite_data_constrained_string" />
+
+            <RadioButton
+                android:id="@+id/satellite_data_unConstrained"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/satellite_data_unConstrained_string" />
+        </RadioGroup>
 
         <!-- ESOS -->
         <Button android:id="@+id/esos_questionnaire"
