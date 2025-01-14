@@ -2153,6 +2153,11 @@ public class TelephonyConnectionService extends ConnectionService {
         }
 
         if (isEmergencyNumber) {
+            if (!shouldTurnOffNonEmergencyNbIotNtnSessionForEmergencyCall()) {
+                // Carrier
+                return false;
+            }
+
             if (mSatelliteController.isDemoModeEnabled()) {
                 // If user makes emergency call in demo mode, end the satellite session
                 return true;
@@ -4870,6 +4875,18 @@ public class TelephonyConnectionService extends ConnectionService {
                     R.bool.config_turn_off_oem_enabled_satellite_during_emergency_call);
         } catch (Resources.NotFoundException ex) {
             Log.e(this, ex, "getTurnOffOemEnabledSatelliteDuringEmergencyCall: ex=" + ex);
+        }
+        return turnOffSatellite;
+    }
+
+    private boolean shouldTurnOffNonEmergencyNbIotNtnSessionForEmergencyCall() {
+        boolean turnOffSatellite = false;
+        try {
+            turnOffSatellite = getApplicationContext().getResources().getBoolean(R.bool
+                    .config_turn_off_non_emergency_nb_iot_ntn_satellite_for_emergency_call);
+        } catch (Resources.NotFoundException ex) {
+            Log.e(this, ex,
+                    "shouldTurnOffNonEmergencyNbIotNtnSessionForEmergencyCall: ex=" + ex);
         }
         return turnOffSatellite;
     }
