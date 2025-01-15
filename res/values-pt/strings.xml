@@ -481,8 +481,7 @@
     <string name="fdn_invalid_number" msgid="9067189814657840439">"O FDN não foi atualizado porque o número excede <xliff:g id="FDN_NUMBER_LIMIT_LENGTH">%d</xliff:g> dígitos."</string>
     <string name="pin2_or_fdn_invalid" msgid="7542639487955868181">"O FDN não foi atualizado. O PIN2 estava incorreto, ou o número de telefone foi rejeitado."</string>
     <string name="fdn_failed" msgid="216592346853420250">"Falha na operação de FDN."</string>
-    <!-- no translation found for fdn_blocked_mmi (3218296901316119797) -->
-    <skip />
+    <string name="fdn_blocked_mmi" msgid="3218296901316119797">"Não é possível discar o código MMI porque o FDN está ativado."</string>
     <string name="simContacts_emptyLoading" msgid="4989040293858675483">"Lendo a partir do chip…"</string>
     <string name="simContacts_empty" msgid="1135632055473689521">"Não há contatos no seu chip."</string>
     <string name="simContacts_title" msgid="2714029230160136647">"Selecione os contatos a serem importados"</string>
@@ -849,7 +848,14 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"Simular o modo fora de serviço (somente build de depuração)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"Forçar o canal LTE de satélite do grupo (somente build de depuração)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"Simulação de modo satélite da operadora (somente build de depuração)"</string>
-    <string name="use_carrier_data_in_satellite_string" msgid="1460114135929826786">"Ativar dados de satélite sem restrições (somente build de depuração)"</string>
+    <!-- no translation found for choose_satellite_data_mode (6560390801660626218) -->
+    <skip />
+    <!-- no translation found for satellite_data_restricted_string (8729402021843670205) -->
+    <skip />
+    <!-- no translation found for satellite_data_constrained_string (4594481912792241881) -->
+    <skip />
+    <!-- no translation found for satellite_data_unConstrained_string (3957333012703408141) -->
+    <skip />
     <string name="esos_satellite_string" msgid="7274794226125968657">"Testar o modo eSOS por satélite (somente build de depuração)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"Testar o modo sem emergência de satélite real (somente build de depuração)"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"Testar a demonstração do modo eSOS por satélite (somente build de depuração)"</string>

@@ -481,8 +481,7 @@
     <string name="fdn_invalid_number" msgid="9067189814657840439">"Ez da eguneratu markatze finkoko zenbakia, zenbakiak <xliff:g id="FDN_NUMBER_LIMIT_LENGTH">%d</xliff:g> digitu baino gehiago dituelako."</string>
     <string name="pin2_or_fdn_invalid" msgid="7542639487955868181">"Ez da eguneratu markatze finkoko zenbakia. PIN2 kodea ez da zuzena edo telefono-zenbakia baztertu da."</string>
     <string name="fdn_failed" msgid="216592346853420250">"Markatze finkoko zenbakiaren eragiketak huts egin du."</string>
-    <!-- no translation found for fdn_blocked_mmi (3218296901316119797) -->
-    <skip />
+    <string name="fdn_blocked_mmi" msgid="3218296901316119797">"Ezin da markatu MMI kodea FDN gaituta dagoelako."</string>
     <string name="simContacts_emptyLoading" msgid="4989040293858675483">"SIM txarteletik irakurtzen…"</string>
     <string name="simContacts_empty" msgid="1135632055473689521">"Ez duzu kontakturik SIM txartelean."</string>
     <string name="simContacts_title" msgid="2714029230160136647">"Aukeratu inportatu beharreko kontaktuak"</string>
@@ -545,9 +544,9 @@
     <string name="incall_error_ecm_emergency_only" msgid="5622379058883722080">"Larrialdikoak ez diren deiak egiteko, irten larrialdi-zerbitzuen deiak jasotzeko modutik."</string>
     <string name="incall_error_emergency_only" msgid="8786127461027964653">"Ez dago sarean erregistratuta."</string>
     <string name="incall_error_out_of_service" msgid="1927265196942672791">"Sare mugikorra ez dago erabilgarri."</string>
-    <string name="incall_error_out_of_service_2g" msgid="904434080740846116">"Sare mugikorra ez dago erabilgarri.\n\nDeia egiteko, konektatu hari gabeko sare batera.\n\n2G desgaituta dago gailuan, eta baliteke horrek konexioan eragina izatea. Aurrera egiteko, joan ezarpenetara eta eman 2G erabiltzeko baimena."</string>
+    <string name="incall_error_out_of_service_2g" msgid="904434080740846116">"Sare mugikorra ez dago erabilgarri.\n\nDeia egiteko, konektatu hari gabeko sare batera.\n\n2G desgaituta dago gailuan, eta baliteke horrek konexioan eragina izatea. Aurrera egiteko, joan Ezarpenak atalera eta eman 2G erabiltzeko baimena."</string>
     <string name="incall_error_out_of_service_wfc" msgid="4497663185857190885">"Sare mugikorra ez dago erabilgarri. Deia egiteko, konektatu haririk gabeko sare batera."</string>
-    <string name="incall_error_out_of_service_wfc_2g_user" msgid="8218768986365299663">"Sare mugikorra ez dago erabilgarri.\n\nDeia egiteko, konektatu hari gabeko sare batera.\n\n2G desgaituta dago gailuan, eta baliteke horrek konexioan eragina izatea. Aurrera egiteko, joan ezarpenetara eta eman 2G erabiltzeko baimena."</string>
+    <string name="incall_error_out_of_service_wfc_2g_user" msgid="8218768986365299663">"Sare mugikorra ez dago erabilgarri.\n\nDeia egiteko, konektatu hari gabeko sare batera.\n\n2G desgaituta dago gailuan, eta baliteke horrek konexioan eragina izatea. Aurrera egiteko, joan Ezarpenak atalera eta eman 2G erabiltzeko baimena."</string>
     <string name="incall_error_no_phone_number_supplied" msgid="8680831089508851894">"Deitzeko, idatzi balio duen zenbaki bat."</string>
     <string name="incall_error_call_failed" msgid="393508653582682539">"Ezin izan da deitu."</string>
     <string name="incall_error_cannot_add_call" msgid="5425764862628655443">"Une honetan, ezin da egin deia. Deitu ordez, mezu bat bidaltzen saia zaitezke."</string>
@@ -849,7 +848,14 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"Simulatu gailua ez dabilela (arazketa-konpilazioa soilik)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"Force Camp Satellite LTE kanala (arazte-konpilazioa bakarrik)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"Simulatu operadorearen satelite modua (arazketa-konpilazioa soilik)"</string>
-    <string name="use_carrier_data_in_satellite_string" msgid="1460114135929826786">"Gaitu satelite-datu mugagabeak (arazketa-konpilazioa soilik)"</string>
+    <!-- no translation found for choose_satellite_data_mode (6560390801660626218) -->
+    <skip />
+    <!-- no translation found for satellite_data_restricted_string (8729402021843670205) -->
+    <skip />
+    <!-- no translation found for satellite_data_constrained_string (4594481912792241881) -->
+    <skip />
+    <!-- no translation found for satellite_data_unConstrained_string (3957333012703408141) -->
+    <skip />
     <string name="esos_satellite_string" msgid="7274794226125968657">"Probatu satelite bidezko SOS larrialdien modua (arazketa-konpilazioa soilik)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"Probatu satelite bidezko SOS larrialdien modua ez dena (arazketa-konpilazioa soilik)"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"Probatu satelite bidezko SOS larrialdien moduaren demo-bertsioa (arazketa-konpilazioa soilik)"</string>

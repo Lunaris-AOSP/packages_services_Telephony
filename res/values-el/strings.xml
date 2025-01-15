@@ -481,8 +481,7 @@
     <string name="fdn_invalid_number" msgid="9067189814657840439">"Το FDN δεν ενημερώθηκε, επειδή ο αριθμός υπερβαίνει τα <xliff:g id="FDN_NUMBER_LIMIT_LENGTH">%d</xliff:g> ψηφία."</string>
     <string name="pin2_or_fdn_invalid" msgid="7542639487955868181">"Δεν έγινε ενημέρωση του FDN. Το PIN2 ήταν λανθασμένο ή ο αριθμός του τηλεφώνου απορρίφθηκε."</string>
     <string name="fdn_failed" msgid="216592346853420250">"Αποτυχία λειτουργίας FDN."</string>
-    <!-- no translation found for fdn_blocked_mmi (3218296901316119797) -->
-    <skip />
+    <string name="fdn_blocked_mmi" msgid="3218296901316119797">"Δεν είναι δυνατή η κλήση κωδικού MMI, επειδή το FDN είναι ενεργοποιημένο."</string>
     <string name="simContacts_emptyLoading" msgid="4989040293858675483">"Ανάγνωση από κάρτα SIM…"</string>
     <string name="simContacts_empty" msgid="1135632055473689521">"Δεν υπάρχουν επαφές στην κάρτα SIM."</string>
     <string name="simContacts_title" msgid="2714029230160136647">"Επιλέξτε επαφές για εισαγωγή"</string>
@@ -849,7 +848,14 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"Η προσομοίωση δεν λειτουργεί (μόνο έκδοση εντοπισμού σφαλμάτων)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"Επιβολή καναλιού Camp Satellite LTE (μόνο έκδοση εντοπισμού σφαλμάτων)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"Εικονική λειτουργία δορυφόρου εταιρείας κινητής τηλεφωνίας (μόνο έκδοση εντοπισμού σφαλμάτων)"</string>
-    <string name="use_carrier_data_in_satellite_string" msgid="1460114135929826786">"Ενεργοποίηση απεριόριστων δεδομένων μέσω δορυφόρου (μόνο έκδοση εντοπισμού σφαλμάτων)"</string>
+    <!-- no translation found for choose_satellite_data_mode (6560390801660626218) -->
+    <skip />
+    <!-- no translation found for satellite_data_restricted_string (8729402021843670205) -->
+    <skip />
+    <!-- no translation found for satellite_data_constrained_string (4594481912792241881) -->
+    <skip />
+    <!-- no translation found for satellite_data_unConstrained_string (3957333012703408141) -->
+    <skip />
     <string name="esos_satellite_string" msgid="7274794226125968657">"Δοκιμή πραγματικής δορυφορικής λειτουργίας eSOS (μόνο έκδοση εντοπισμού σφαλμάτων)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"Δοκιμή πραγματικής δορυφορικής λειτουργίας εκτός eSOS (μόνο έκδοση εντοπισμού σφαλμάτων)"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"Έλεγχος δοκιμαστικής δορυφορικής λειτουργίας eSOS (μόνο έκδοση εντοπισμού σφαλμάτων)"</string>

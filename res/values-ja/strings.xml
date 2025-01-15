@@ -481,8 +481,7 @@
     <string name="fdn_invalid_number" msgid="9067189814657840439">"この電話番号の桁数が <xliff:g id="FDN_NUMBER_LIMIT_LENGTH">%d</xliff:g> 桁を超えているため、FDN を更新できませんでした。"</string>
     <string name="pin2_or_fdn_invalid" msgid="7542639487955868181">"発信番号制限は更新されませんでした。PIN2が正しくないか、電話番号が拒否されました。"</string>
     <string name="fdn_failed" msgid="216592346853420250">"発信番号制限操作に失敗しました。"</string>
-    <!-- no translation found for fdn_blocked_mmi (3218296901316119797) -->
-    <skip />
+    <string name="fdn_blocked_mmi" msgid="3218296901316119797">"FDN が有効になっているため、MMI コードをダイヤルできません。"</string>
     <string name="simContacts_emptyLoading" msgid="4989040293858675483">"SIMカードから読み取り中..."</string>
     <string name="simContacts_empty" msgid="1135632055473689521">"SIMカードに連絡先がありません。"</string>
     <string name="simContacts_title" msgid="2714029230160136647">"インポートする連絡先の選択"</string>
@@ -849,7 +848,14 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"圏外状態のシミュレート（デバッグビルドのみ）"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"Force Camp Satellite LTE チャンネル（デバッグビルドのみ）"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"携帯通信会社の疑似航空写真モード（デバッグビルドのみ）"</string>
-    <string name="use_carrier_data_in_satellite_string" msgid="1460114135929826786">"無制限の衛星データを有効にする（デバッグビルドのみ）"</string>
+    <!-- no translation found for choose_satellite_data_mode (6560390801660626218) -->
+    <skip />
+    <!-- no translation found for satellite_data_restricted_string (8729402021843670205) -->
+    <skip />
+    <!-- no translation found for satellite_data_constrained_string (4594481912792241881) -->
+    <skip />
+    <!-- no translation found for satellite_data_unConstrained_string (3957333012703408141) -->
+    <skip />
     <string name="esos_satellite_string" msgid="7274794226125968657">"実際に衛星経由の緊急 SOS モードをテストする（デバッグビルドのみ）"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"実際に衛星経由の非緊急 SOS モードをテストする（デバッグビルドのみ）"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"デモ用の衛星による緊急 SOS モードをテストする（デバッグビルドのみ）"</string>

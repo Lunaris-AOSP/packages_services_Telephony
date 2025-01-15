@@ -286,8 +286,8 @@
     <string name="roaming" msgid="1576180772877858949">"נדידה"</string>
     <string name="roaming_enable" msgid="6853685214521494819">"יש להתחבר לשירותי נתונים בעת נדידה"</string>
     <string name="roaming_disable" msgid="8856224638624592681">"יש להתחבר לשירותי נתונים בעת נדידה"</string>
-    <string name="roaming_reenable_message" msgid="1951802463885727915">"הנדידה מושבתת. אפשר להקיש כדי להפעיל אותה."</string>
-    <string name="roaming_enabled_message" msgid="9022249120750897">"ייתכנו חיובי נדידה. יש להקיש כדי לשנות."</string>
+    <string name="roaming_reenable_message" msgid="1951802463885727915">"הנדידה מושבתת. אפשר ללחוץ כדי להפעיל אותה."</string>
+    <string name="roaming_enabled_message" msgid="9022249120750897">"ייתכנו חיובי נדידה. יש ללחוץ כדי לשנות."</string>
     <string name="roaming_notification_title" msgid="3590348480688047320">"המכשיר התנתק מחבילת הגלישה"</string>
     <string name="roaming_on_notification_title" msgid="7451473196411559173">"נדידה מופעלת"</string>
     <string name="roaming_warning" msgid="7855681468067171971">"ייתכנו שיעורי חיוב גבוהים."</string>
@@ -481,8 +481,7 @@
     <string name="fdn_invalid_number" msgid="9067189814657840439">"‏מספר ה-FDN לא עודכן כי הוא מכיל יותר מ-<xliff:g id="FDN_NUMBER_LIMIT_LENGTH">%d</xliff:g> ספרות."</string>
     <string name="pin2_or_fdn_invalid" msgid="7542639487955868181">"רשימת מספרי החיוג הקבועים לא עודכנה. קוד הגישה היה שגוי או שמספר הטלפון נדחה."</string>
     <string name="fdn_failed" msgid="216592346853420250">"‏פעולת FDN נכשלה."</string>
-    <!-- no translation found for fdn_blocked_mmi (3218296901316119797) -->
-    <skip />
+    <string name="fdn_blocked_mmi" msgid="3218296901316119797">"‏אי אפשר להתקשר לקודי MMI כי FDN פועל."</string>
     <string name="simContacts_emptyLoading" msgid="4989040293858675483">"‏קריאה מכרטיס SIM מתבצעת…"</string>
     <string name="simContacts_empty" msgid="1135632055473689521">"‏אין אנשי קשר בכרטיס ה-SIM."</string>
     <string name="simContacts_title" msgid="2714029230160136647">"בחירת אנשי קשר לייבוא"</string>
@@ -566,11 +565,11 @@
     <string name="incall_error_carrier_roaming_satellite_mode" msgid="678603203562886361">"‏אפשר לשלוח ולקבל הודעות ללא חיבור לרשת סלולרית או לרשת Wi-Fi"</string>
     <string name="emergency_information_hint" msgid="9208897544917793012">"מידע למקרה חירום"</string>
     <string name="emergency_information_owner_hint" msgid="6256909888049185316">"בעלים"</string>
-    <string name="emergency_information_confirm_hint" msgid="5109017615894918914">"אפשר להקיש שוב כדי להציג את הפרטים"</string>
+    <string name="emergency_information_confirm_hint" msgid="5109017615894918914">"אפשר ללחוץ שוב כדי להציג את הפרטים"</string>
     <string name="emergency_enable_radio_dialog_title" msgid="2667568200755388829">"שיחת חירום"</string>
     <string name="single_emergency_number_title" msgid="8413371079579067196">"מספר חירום"</string>
     <string name="numerous_emergency_numbers_title" msgid="8972398932506755510">"מספרי חירום"</string>
-    <string name="emergency_call_shortcut_hint" msgid="1290485125107779500">"אפשר להקיש שוב כדי להתקשר אל <xliff:g id="EMERGENCY_NUMBER">%s</xliff:g>"</string>
+    <string name="emergency_call_shortcut_hint" msgid="1290485125107779500">"אפשר ללחוץ שוב כדי להתקשר אל <xliff:g id="EMERGENCY_NUMBER">%s</xliff:g>"</string>
     <string name="emergency_enable_radio_dialog_message" msgid="1695305158151408629">"הפעלת הרדיו מתבצעת…"</string>
     <string name="emergency_enable_radio_dialog_retry" msgid="4329131876852608587">"אין שירות. ניסיון חוזר מתבצע..."</string>
     <string name="radio_off_during_emergency_call" msgid="8011154134040481609">"אי אפשר לעבור למצב טיסה בזמן שיחת חירום."</string>
@@ -850,7 +849,14 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"‏סימולציה של המצב \'לא בשירות\' (גרסת build לניפוי באגים בלבד)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"‏ערוץ Force Camp Satellite LTE (רק גרסת build לניפוי באגים)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"‏מצב שמדמה תקשורת לוויינית דרך ספק הסלולר (גרסת build לניפוי באגים בלבד)"</string>
-    <string name="use_carrier_data_in_satellite_string" msgid="1460114135929826786">"‏גלישה באמצעות תקשורת לוויינית ללא הגבלה (גרסת build לניפוי באגים בלבד)"</string>
+    <!-- no translation found for choose_satellite_data_mode (6560390801660626218) -->
+    <skip />
+    <!-- no translation found for satellite_data_restricted_string (8729402021843670205) -->
+    <skip />
+    <!-- no translation found for satellite_data_constrained_string (4594481912792241881) -->
+    <skip />
+    <!-- no translation found for satellite_data_unConstrained_string (3957333012703408141) -->
+    <skip />
     <string name="esos_satellite_string" msgid="7274794226125968657">"‏מצב בדיקה שמדמה תקשורת לוויינית eSOS (גרסת build לניפוי באגים בלבד)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"‏מצב בדיקה שמדמה תקשורת לוויינית לא במצב eSOS (גרסת build לניפוי באגים בלבד)"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"‏מצב בדיקה שמדמה תקשורת לוויינית eSOS (גרסת build לניפוי באגים בלבד)"</string>

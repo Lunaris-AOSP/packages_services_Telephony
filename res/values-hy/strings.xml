@@ -481,8 +481,7 @@
     <string name="fdn_invalid_number" msgid="9067189814657840439">"FDN-ը չթարմացվեց, քանի որ համարը գերազանցում է <xliff:g id="FDN_NUMBER_LIMIT_LENGTH">%d</xliff:g> նիշը:"</string>
     <string name="pin2_or_fdn_invalid" msgid="7542639487955868181">"FDN-ը չի թարմացվել: PIN2-ը սխալ է կամ հեռախոսահամարը մերժված է:"</string>
     <string name="fdn_failed" msgid="216592346853420250">"FDN գործողությունը ձախողվեց:"</string>
-    <!-- no translation found for fdn_blocked_mmi (3218296901316119797) -->
-    <skip />
+    <string name="fdn_blocked_mmi" msgid="3218296901316119797">"Հնարավոր չէ հավաքել MMI կոդը, քանի որ FDN-ը միացված է։"</string>
     <string name="simContacts_emptyLoading" msgid="4989040293858675483">"Ընթերցում է SIM քարտից..."</string>
     <string name="simContacts_empty" msgid="1135632055473689521">"Ձեր SIM քարտում կոնտակտներ չկան:"</string>
     <string name="simContacts_title" msgid="2714029230160136647">"Ընտրեք կոնտակտները ներմուծման համար"</string>
@@ -849,7 +848,14 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"Սպասարկման գոտուց դուրս գտնվելու սիմուլյացիա (միայն վրիպազերծման կառուցում)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"Force Camp արբանյակային LTE ալիք (միայն վրիպազերծման կառուցման մեջ)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"Օպերատորի արբանյակի ռեժիմի սիմուլյացիա (միայն վրիպազերծման կառուցում)"</string>
-    <string name="use_carrier_data_in_satellite_string" msgid="1460114135929826786">"Միացրեք արբանյակային ինտերնետի անսահմանափակ օգտագործումը (միայն վրիպազերծման կառուցման մեջ)"</string>
+    <!-- no translation found for choose_satellite_data_mode (6560390801660626218) -->
+    <skip />
+    <!-- no translation found for satellite_data_restricted_string (8729402021843670205) -->
+    <skip />
+    <!-- no translation found for satellite_data_constrained_string (4594481912792241881) -->
+    <skip />
+    <!-- no translation found for satellite_data_unConstrained_string (3957333012703408141) -->
+    <skip />
     <string name="esos_satellite_string" msgid="7274794226125968657">"Փորձարկել իրական արբանյակային eSOS ռեժիմը (միայն վրիպազերծման կառուցման մեջ)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"Փորձարկել իրական արբանյակային ոչ eSOS ռեժիմը (միայն վրիպազերծման կառուցման մեջ)"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"Փորձարկել արբանյակային eSOS ռեժիմը դեմո տարբերակով (միայն վրիպազերծման կառուցման մեջ)"</string>

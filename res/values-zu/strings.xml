@@ -481,8 +481,7 @@
     <string name="fdn_invalid_number" msgid="9067189814657840439">"I-FDN ayizange ibuyekezwe ngoba inombolo idlula amadijithi angu-<xliff:g id="FDN_NUMBER_LIMIT_LENGTH">%d</xliff:g>."</string>
     <string name="pin2_or_fdn_invalid" msgid="7542639487955868181">"I-FDN ayibuyekeziwe. I-PIN2 kade ingalungile, noma inombolo yefoni yenqatshelwe."</string>
     <string name="fdn_failed" msgid="216592346853420250">"Umsebenzi we-FDN wehlulekile."</string>
-    <!-- no translation found for fdn_blocked_mmi (3218296901316119797) -->
-    <skip />
+    <string name="fdn_blocked_mmi" msgid="3218296901316119797">"Ayikwazi ukudayela ikhodi ye-MMI ngoba i-FDN inikwe amandla."</string>
     <string name="simContacts_emptyLoading" msgid="4989040293858675483">"Ifunda ekhadini le-SIM..."</string>
     <string name="simContacts_empty" msgid="1135632055473689521">"Abekho othintana nabo ekhadini lakho le-SIM"</string>
     <string name="simContacts_title" msgid="2714029230160136647">"Khetha othintana nabo ozobangenisa"</string>
@@ -849,7 +848,14 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"Lingisa okuthi Ayikho Isevisi (Umakhiwo Wokususa Iphutha kuphela)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"Isiteshi se-Force Camp Satellite LTE (Ukwakhiwa Kokususa Iphutha kuphela)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"Imodi Yesethelayithi Yenkampani Yenethiwekhi ye-Mock (Susa Iphutha Esakhiweni kuphela)"</string>
-    <string name="use_carrier_data_in_satellite_string" msgid="1460114135929826786">"Vumela Idatha Yesathelayithi Engenamkhawulo (Ukwakhiwa Kokususa Iphutha kuphela)"</string>
+    <!-- no translation found for choose_satellite_data_mode (6560390801660626218) -->
+    <skip />
+    <!-- no translation found for satellite_data_restricted_string (8729402021843670205) -->
+    <skip />
+    <!-- no translation found for satellite_data_constrained_string (4594481912792241881) -->
+    <skip />
+    <!-- no translation found for satellite_data_unConstrained_string (3957333012703408141) -->
+    <skip />
     <string name="esos_satellite_string" msgid="7274794226125968657">"Hlola imodi yesathelayithi yangempela ye-eSOS (Ukwakhiwa Kokususa Iphutha kuphela)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"Hlola imodi yesathelayithi yangempela ekungesiyo ye-eSOS (Ukwakhiwa Kokususa Iphutha kuphela)"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"Hlola imodi yesathelayithi yedemo ye-eSOS (Ukwakhiwa Kokususa Iphutha kuphela)"</string>

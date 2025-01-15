@@ -481,8 +481,7 @@
     <string name="fdn_invalid_number" msgid="9067189814657840439">"ନମ୍ବରରେ <xliff:g id="FDN_NUMBER_LIMIT_LENGTH">%d</xliff:g>ଟିରୁ ଅଧିକ ଅଙ୍କ ଥିବା ଯୋଗୁଁ FDN ଅପ୍‌ଡେଟ୍ କରାଯାଇନଥିଲା।"</string>
     <string name="pin2_or_fdn_invalid" msgid="7542639487955868181">"FDN ଅପଡେଟ୍ ହୋ‌ଇନଥିଲା। PIN2 ଭୁଲ୍ ଥିଲା କିମ୍ବା ଫୋନ୍ ନମ୍ବର୍‌କୁ ଗ୍ରହଣ କରାଗଲା ନାହିଁ।"</string>
     <string name="fdn_failed" msgid="216592346853420250">"FDN ଅପରେଶନ୍ ବିଫଳ ହେଲା।"</string>
-    <!-- no translation found for fdn_blocked_mmi (3218296901316119797) -->
-    <skip />
+    <string name="fdn_blocked_mmi" msgid="3218296901316119797">"FDNକୁ ସକ୍ଷମ କରାଯାଇଥିବା ଯୋଗୁଁ MMI କୋଡକୁ ଡାଏଲ କରାଯାଇପାରିବ ନାହିଁ।"</string>
     <string name="simContacts_emptyLoading" msgid="4989040293858675483">"SIM କାର୍ଡରୁ ପଢ଼ାଯାଉଛି…"</string>
     <string name="simContacts_empty" msgid="1135632055473689521">"ଆପଣଙ୍କ SIM କାର୍ଡରେ କୌଣସି ଯୋଗାଯୋଗ ନାହିଁ।"</string>
     <string name="simContacts_title" msgid="2714029230160136647">"ଇମ୍ପୋର୍ଟ କରିବା ପାଇଁ ଯୋଗାଯୋଗକୁ ଚୟନ କରନ୍ତୁ"</string>
@@ -849,7 +848,14 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"\"କାମ କରୁନାହିଁ\"ରେ ସିମୁଲେଟ କରନ୍ତୁ (କେବଳ ଡିବଗ ବିଲ୍ଡ)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"ଫୋର୍ସ କେମ୍ପ ସେଟେଲାଇଟ LTE ଚେନେଲ (କେବଳ ଡିବଗ ବିଲ୍ଡ)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"ମକ କେରିଅର ସେଟେଲାଇଟ ମୋଡ (କେବଳ ଡିବଗ ବିଲ୍ଡ)"</string>
-    <string name="use_carrier_data_in_satellite_string" msgid="1460114135929826786">"ଅପ୍ରତିବନ୍ଧିତ ସେଟେଲାଇଟ ଡାଟାକୁ ସକ୍ଷମ କରନ୍ତୁ (କେବଳ ଡିବଗ ବିଲ୍ଡ)"</string>
+    <!-- no translation found for choose_satellite_data_mode (6560390801660626218) -->
+    <skip />
+    <!-- no translation found for satellite_data_restricted_string (8729402021843670205) -->
+    <skip />
+    <!-- no translation found for satellite_data_constrained_string (4594481912792241881) -->
+    <skip />
+    <!-- no translation found for satellite_data_unConstrained_string (3957333012703408141) -->
+    <skip />
     <string name="esos_satellite_string" msgid="7274794226125968657">"ପ୍ରକୃତ ସେଟେଲାଇଟର eSOS ମୋଡ ପରୀକ୍ଷା କରନ୍ତୁ (କେବଳ ଡିବଗ ବିଲ୍ଡ)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"ପ୍ରକୃତ ସେଟେଲାଇଟର ଅଣ-eSOS ମୋଡ ପରୀକ୍ଷା କରନ୍ତୁ (କେବଳ ଡିବଗ ବିଲ୍ଡ)"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"ଡେମୋ ସେଟେଲାଇଟର eSOS ମୋଡ ପରୀକ୍ଷା କରନ୍ତୁ (କେବଳ ଡିବଗ ବିଲ୍ଡ)"</string>

@@ -848,7 +848,14 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"Xizmatdan tashqari simulyatsiya (faqat nosozliklarni aniqlash dasturi uchun)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"Majburiy Camp sputnik LTE kanali (faqat debag nashrida)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"Soxta operator sputnik rejimi (faqat debag nashrida)"</string>
-    <string name="use_carrier_data_in_satellite_string" msgid="1460114135929826786">"Cheklanmagan Sputnik maʼlumotlarini yoqish (faqat debag nashri)"</string>
+    <!-- no translation found for choose_satellite_data_mode (6560390801660626218) -->
+    <skip />
+    <!-- no translation found for satellite_data_restricted_string (8729402021843670205) -->
+    <skip />
+    <!-- no translation found for satellite_data_constrained_string (4594481912792241881) -->
+    <skip />
+    <!-- no translation found for satellite_data_unConstrained_string (3957333012703408141) -->
+    <skip />
     <string name="esos_satellite_string" msgid="7274794226125968657">"Haqiqiy sputnik eSOS rejimini sinash (faqat debag nashrida)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"Haqiqiy sputnik non-eSOS rejimini sinash (faqat debag nashrida)"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"Demo sputnik eSOS rejimini sinash (faqat debag nashrida)"</string>

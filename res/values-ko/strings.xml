@@ -481,8 +481,7 @@
     <string name="fdn_invalid_number" msgid="9067189814657840439">"숫자가 <xliff:g id="FDN_NUMBER_LIMIT_LENGTH">%d</xliff:g>자리를 초과하여 FDN을 업데이트하지 못했습니다."</string>
     <string name="pin2_or_fdn_invalid" msgid="7542639487955868181">"FDN이 업데이트되지 않았습니다. PIN2가 잘못되었거나 전화번호가 거부되었습니다."</string>
     <string name="fdn_failed" msgid="216592346853420250">"FDN 작업이 실패했습니다."</string>
-    <!-- no translation found for fdn_blocked_mmi (3218296901316119797) -->
-    <skip />
+    <string name="fdn_blocked_mmi" msgid="3218296901316119797">"FDN이 사용 설정되어 있으므로 MMI 코드를 다이얼할 수 없습니다."</string>
     <string name="simContacts_emptyLoading" msgid="4989040293858675483">"SIM 카드에서 읽는 중..."</string>
     <string name="simContacts_empty" msgid="1135632055473689521">"SIM 카드에 연락처가 없습니다."</string>
     <string name="simContacts_title" msgid="2714029230160136647">"가져올 주소록 선택"</string>
@@ -849,7 +848,14 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"\'서비스 지역 벗어남\' 시뮬레이션(디버그 빌드만 해당)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"캠프 위성 LTE 채널 강제(디버그 빌드만 해당)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"모의 이동통신사 위성 모드(디버그 빌드만 해당)"</string>
-    <string name="use_carrier_data_in_satellite_string" msgid="1460114135929826786">"제한 없는 위성 데이터 사용 설정(디버그 빌드만 해당)"</string>
+    <!-- no translation found for choose_satellite_data_mode (6560390801660626218) -->
+    <skip />
+    <!-- no translation found for satellite_data_restricted_string (8729402021843670205) -->
+    <skip />
+    <!-- no translation found for satellite_data_constrained_string (4594481912792241881) -->
+    <skip />
+    <!-- no translation found for satellite_data_unConstrained_string (3957333012703408141) -->
+    <skip />
     <string name="esos_satellite_string" msgid="7274794226125968657">"실제 위성 eSOS 모드 테스트(디버그 빌드만 해당)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"실제 위성 비eSOS 모드 테스트(디버그 빌드만 해당)"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"데모 위성 eSOS 모드 테스트(디버그 빌드만 해당)"</string>

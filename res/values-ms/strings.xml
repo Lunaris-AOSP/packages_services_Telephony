@@ -481,8 +481,7 @@
     <string name="fdn_invalid_number" msgid="9067189814657840439">"FDN tidak dikemas kini kerana nombornya melebihi <xliff:g id="FDN_NUMBER_LIMIT_LENGTH">%d</xliff:g> digit."</string>
     <string name="pin2_or_fdn_invalid" msgid="7542639487955868181">"FDN tidak dikemaskini. PIN2 salah atau nombor telefon telah ditolak."</string>
     <string name="fdn_failed" msgid="216592346853420250">"Operasi FDN gagal."</string>
-    <!-- no translation found for fdn_blocked_mmi (3218296901316119797) -->
-    <skip />
+    <string name="fdn_blocked_mmi" msgid="3218296901316119797">"Tidak dapat mendail kod MMI kerana FDN didayakan."</string>
     <string name="simContacts_emptyLoading" msgid="4989040293858675483">"Membaca daripada kad SIM..."</string>
     <string name="simContacts_empty" msgid="1135632055473689521">"Tiada kenalan pada kad SIM anda."</string>
     <string name="simContacts_title" msgid="2714029230160136647">"Pilih kenalan untuk diimport"</string>
@@ -849,7 +848,14 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"Simulasi Rosak (Binaan Penyahpepijatan sahaja)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"Paksa Saluran LTE Satelit Kem (Binaan Nyahpepijat sahaja)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"Contoh Mod Satelit Pembawa (Binaan Penyahpepijatan sahaja)"</string>
-    <string name="use_carrier_data_in_satellite_string" msgid="1460114135929826786">"Dayakan Data Satelit Tanpa Had (Binaan Nyahpepijat sahaja)"</string>
+    <!-- no translation found for choose_satellite_data_mode (6560390801660626218) -->
+    <skip />
+    <!-- no translation found for satellite_data_restricted_string (8729402021843670205) -->
+    <skip />
+    <!-- no translation found for satellite_data_constrained_string (4594481912792241881) -->
+    <skip />
+    <!-- no translation found for satellite_data_unConstrained_string (3957333012703408141) -->
+    <skip />
     <string name="esos_satellite_string" msgid="7274794226125968657">"Uji mod sSOS satelit sebenar (Binaan Penyahpepijatan sahaja)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"Uji mod bukan eSOS satelit sebenar (Binaan Penyahpepijatan sahaja)"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"Uji mod eSOS satelit demo (Binaan Penyahpepijatan sahaja)"</string>
