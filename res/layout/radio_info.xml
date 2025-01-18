@@ -269,19 +269,18 @@
                 android:text="@string/mock_carrier_roaming_satellite_string"/>
 
         <!-- Force to use SIM data in Mock satellite mode -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <Switch android:id="@+id/satellite_data_controller_switch"
             android:textSize="14sp"
             android:layout_marginTop="8dip"
-            android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:text="@string/choose_satellite_data_mode"/>
-
         <RadioGroup
             android:id="@+id/satellite_data_controller"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dip"
+            android:visibility="gone"
             android:orientation="horizontal">
 
             <RadioButton

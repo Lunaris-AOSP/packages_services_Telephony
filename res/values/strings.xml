@@ -2036,7 +2036,7 @@
     <!-- Title for simulating SIM capable of satellite. -->
     <string name="mock_carrier_roaming_satellite_string">Mock Carrier Satellite Mode (Debug Build only)</string>
     <!-- Title for simulating SIM Data in satellite Mode. -->
-    <string name="choose_satellite_data_mode">Choose Satellite Data Mode below (Debug Build only)</string>
+    <string name="choose_satellite_data_mode">Mock Satellite Data mode (Debug only)</string>
     <string name="satellite_data_restricted_string">Restricted</string>
     <string name="satellite_data_constrained_string">Limited</string>
     <string name="satellite_data_unConstrained_string">UnLimited</string>

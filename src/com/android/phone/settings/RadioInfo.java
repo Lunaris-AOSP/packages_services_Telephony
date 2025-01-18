@@ -17,6 +17,11 @@
 package com.android.phone.settings;
 
 import static android.net.ConnectivityManager.NetworkCallback;
+import static android.telephony.CarrierConfigManager.KEY_CARRIER_ROAMING_SATELLITE_DEFAULT_SERVICES_INT_ARRAY;
+import static android.telephony.CarrierConfigManager.KEY_CARRIER_SUPPORTED_SATELLITE_SERVICES_PER_PROVIDER_BUNDLE;
+import static android.telephony.CarrierConfigManager.KEY_SATELLITE_ATTACH_SUPPORTED_BOOL;
+import static android.telephony.CarrierConfigManager.KEY_SATELLITE_DATA_SUPPORT_MODE_INT;
+import static android.telephony.CarrierConfigManager.KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL;
 import static android.telephony.ims.feature.MmTelFeature.MmTelCapabilities.CAPABILITY_TYPE_VIDEO;
 import static android.telephony.ims.feature.MmTelFeature.MmTelCapabilities.CAPABILITY_TYPE_VOICE;
 import static android.telephony.ims.stub.ImsRegistrationImplBase.REGISTRATION_TECH_3G;
@@ -118,6 +123,7 @@ import com.android.internal.telephony.Phone;
 import com.android.internal.telephony.PhoneFactory;
 import com.android.internal.telephony.RILConstants;
 import com.android.internal.telephony.euicc.EuiccConnector;
+import com.android.internal.telephony.satellite.SatelliteServiceUtils;
 import com.android.phone.R;
 
 import java.io.IOException;
@@ -128,6 +134,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -316,6 +324,7 @@ public class RadioInfo extends AppCompatActivity {
     private Switch mSimulateOutOfServiceSwitch;
     private Switch mEnforceSatelliteChannel;
     private Switch mMockSatellite;
+    private Switch mMockSatelliteDataSwitch;
     private RadioGroup mMockSatelliteData;
     private Button mPingTestButton;
     private Button mUpdateSmscButton;
@@ -753,10 +762,12 @@ public class RadioInfo extends AppCompatActivity {
             mSimulateOutOfServiceSwitch.setVisibility(View.GONE);
         }
         mMockSatellite = (Switch) findViewById(R.id.mock_carrier_roaming_satellite);
+        mMockSatelliteDataSwitch = (Switch) findViewById(R.id.satellite_data_controller_switch);
         mMockSatelliteData = findViewById(R.id.satellite_data_controller);
         mEnforceSatelliteChannel = (Switch) findViewById(R.id.enforce_satellite_channel);
         if (!Build.isDebuggable()) {
             mMockSatellite.setVisibility(View.GONE);
+            mMockSatelliteDataSwitch.setVisibility(View.GONE);
             mMockSatelliteData.setVisibility(View.GONE);
             mEnforceSatelliteChannel.setVisibility(View.GONE);
         }
@@ -933,6 +944,7 @@ public class RadioInfo extends AppCompatActivity {
         mSimulateOutOfServiceSwitch.setOnCheckedChangeListener(mSimulateOosOnChangeListener);
         mMockSatellite.setChecked(mCarrierSatelliteOriginalBundle[mPhoneId] != null);
         mMockSatellite.setOnCheckedChangeListener(mMockSatelliteListener);
+        mMockSatelliteDataSwitch.setOnCheckedChangeListener(mMockSatelliteDataSwitchListener);
         mMockSatelliteData.setOnCheckedChangeListener(mMockSatelliteDataListener);
 
         updateSatelliteChannelDisplay(mPhoneId);
@@ -951,15 +963,6 @@ public class RadioInfo extends AppCompatActivity {
         registerPhoneStateListener();
         mConnectivityManager.registerNetworkCallback(
                 mDefaultNetworkRequest, mNetworkCallback, mHandler);
-
-        if (mSatelliteDataOriginalBundle[mPhoneId] == null) {
-            // It executes only at first time
-            PersistableBundle originalBundle = getCarrierConfig().getConfigForSubId(mSubId,
-                    CarrierConfigManager.KEY_SATELLITE_DATA_SUPPORT_MODE_INT,
-                    CarrierConfigManager.KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL);
-            mSatelliteDataOriginalBundle[mPhoneId] = originalBundle;
-        }
-        updateSatelliteDataButton();
         mSmsc.clearFocus();
     }
 
@@ -1074,9 +1077,7 @@ public class RadioInfo extends AppCompatActivity {
                 mMockSatelliteListener.onCheckedChanged(mMockSatellite, false);
             }
             if (mSatelliteDataOriginalBundle[mPhoneId] != null) {
-                log("Setting originals and Resetting mSatelliteDataOriginalBundle");
-                getCarrierConfig().overrideConfig(mSubId, mSatelliteDataOriginalBundle[mPhoneId],
-                        false);
+                mMockSatelliteDataSwitchListener.onCheckedChanged(mMockSatelliteDataSwitch, false);
                 mSatelliteDataOriginalBundle[mPhoneId] = null;
             }
             if (mSelectedSignalStrengthIndex[mPhoneId] > 0) {
@@ -2019,15 +2020,14 @@ public class RadioInfo extends AppCompatActivity {
                         // Override carrier config
                         PersistableBundle originalBundle = getCarrierConfig().getConfigForSubId(
                                 subId,
-                                CarrierConfigManager.KEY_SATELLITE_ATTACH_SUPPORTED_BOOL,
-                                CarrierConfigManager.KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL,
+                                KEY_SATELLITE_ATTACH_SUPPORTED_BOOL,
+                                KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL,
                                 CarrierConfigManager.KEY_EMERGENCY_MESSAGING_SUPPORTED_BOOL
                         );
                         PersistableBundle overrideBundle = new PersistableBundle();
                         overrideBundle.putBoolean(
-                                CarrierConfigManager.KEY_SATELLITE_ATTACH_SUPPORTED_BOOL, true);
-                        overrideBundle.putBoolean(CarrierConfigManager
-                                .KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL, true);
+                                KEY_SATELLITE_ATTACH_SUPPORTED_BOOL, true);
+                        overrideBundle.putBoolean(KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL, true);
                         overrideBundle.putBoolean(CarrierConfigManager
                                 .KEY_EMERGENCY_MESSAGING_SUPPORTED_BOOL, true);
 
@@ -2119,36 +2119,99 @@ public class RadioInfo extends AppCompatActivity {
     }
 
     /**
+     * This method will check the required carrier config keys which plays role in enabling /
+     * supporting satellite data and update the keys accordingly.
+     * @param bundleToModify : PersistableBundle
+     */
+    private void updateCarrierConfigToSupportData(PersistableBundle bundleToModify) {
+        // KEY_CARRIER_SUPPORTED_SATELLITE_SERVICES_PER_PROVIDER_BUNDLE key info update
+        PersistableBundle providerBundle = bundleToModify.getPersistableBundle(
+                KEY_CARRIER_SUPPORTED_SATELLITE_SERVICES_PER_PROVIDER_BUNDLE);
+        Map<String, Set<Integer>> satServicesBundle =
+                SatelliteServiceUtils.parseSupportedSatelliteServices(providerBundle);
+        String plmn = mTelephonyManager.getSimOperatorNumeric(mSubId);
+        log("satData: currentplmn = " + plmn);
+        if (!satServicesBundle.isEmpty() && satServicesBundle.containsKey(plmn)) {
+            Set<Integer> supportedServices = satServicesBundle.get(plmn);
+            log("satData: BEFORE supportedServices = " + supportedServices);
+            if (!supportedServices.contains(NetworkRegistrationInfo.SERVICE_TYPE_DATA)) {
+                supportedServices.add(NetworkRegistrationInfo.SERVICE_TYPE_DATA);
+                providerBundle.putIntArray(plmn, supportedServices.stream()
+                        .mapToInt(Integer::intValue)
+                        .toArray());
+                log("satData: AFTER supportedServices = " + supportedServices);
+            }
+            bundleToModify.putPersistableBundle(
+                    KEY_CARRIER_SUPPORTED_SATELLITE_SERVICES_PER_PROVIDER_BUNDLE, providerBundle);
+        }
+
+        // KEY_CARRIER_ROAMING_SATELLITE_DEFAULT_SERVICES_INT_ARRAY key info update
+        int[] availableServices = bundleToModify.getIntArray(
+                KEY_CARRIER_ROAMING_SATELLITE_DEFAULT_SERVICES_INT_ARRAY);
+        int[] newServices;
+        if (availableServices != null && availableServices.length > 0) {
+            if (Arrays.stream(availableServices).anyMatch(
+                    element -> element == NetworkRegistrationInfo.SERVICE_TYPE_DATA)) {
+                newServices = new int[availableServices.length];
+                System.arraycopy(availableServices, 0, newServices, 0, availableServices.length);
+            } else {
+                newServices = new int[availableServices.length + 1];
+                System.arraycopy(availableServices, 0, newServices, 0, availableServices.length);
+                newServices[newServices.length - 1] = NetworkRegistrationInfo.SERVICE_TYPE_DATA;
+            }
+        } else {
+            newServices = new int[1];
+            newServices[0] = NetworkRegistrationInfo.SERVICE_TYPE_DATA;
+        }
+        bundleToModify.putIntArray(
+                KEY_CARRIER_ROAMING_SATELLITE_DEFAULT_SERVICES_INT_ARRAY,
+                newServices);
+
+        // KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL setting to false.
+        bundleToModify.putBoolean(KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL,
+                false);
+        bundleToModify.remove(KEY_SATELLITE_DATA_SUPPORT_MODE_INT);
+        log("satData: changing carrierConfig to : " + bundleToModify);
+        getCarrierConfig().overrideConfig(mSubId, bundleToModify, false);
+    }
+
+    /**
      * Method that restore the previous satellite data mode selection.
      */
     private void updateSatelliteDataButton() {
-        if (mSatelliteDataOriginalBundle[mPhoneId] != null && getCarrierConfig() != null) {
+        if (mSatelliteDataOriginalBundle[mPhoneId] == null) {
+            // It executes only at first time
             PersistableBundle originalBundle = getCarrierConfig().getConfigForSubId(mSubId,
-                    CarrierConfigManager.KEY_SATELLITE_DATA_SUPPORT_MODE_INT);
-            int dataMode = originalBundle.getInt(
-                    CarrierConfigManager.KEY_SATELLITE_DATA_SUPPORT_MODE_INT, -1);
-            log("updateSatelliteDataButton dataMode = " +dataMode);
-            if (dataMode != -1) {
-                int checkedId = 0;
-                switch (dataMode) {
-                    case CarrierConfigManager.SATELLITE_DATA_SUPPORT_ONLY_RESTRICTED:
-                        checkedId = R.id.satellite_data_restricted;
-                        break;
-                    case CarrierConfigManager.SATELLITE_DATA_SUPPORT_BANDWIDTH_CONSTRAINED:
-                        checkedId = R.id.satellite_data_constrained;
-                        break;
-                    case CarrierConfigManager.SATELLITE_DATA_SUPPORT_ALL:
-                        checkedId = R.id.satellite_data_unConstrained;
-                        break;
-                }
-                mMockSatelliteData.check(checkedId);
-            }
-            PersistableBundle entitlementBundle = new PersistableBundle();
-            entitlementBundle.putBoolean(
-                    CarrierConfigManager.KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL, false);
-            log("DataListener disabling Entitlement server support : " + entitlementBundle);
-            getCarrierConfig().overrideConfig(mSubId, entitlementBundle, false);
+                    KEY_SATELLITE_DATA_SUPPORT_MODE_INT,
+                    KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL,
+                    KEY_CARRIER_ROAMING_SATELLITE_DEFAULT_SERVICES_INT_ARRAY,
+                    KEY_CARRIER_SUPPORTED_SATELLITE_SERVICES_PER_PROVIDER_BUNDLE);
+            mSatelliteDataOriginalBundle[mPhoneId] = originalBundle;
+            log("satData: OriginalConfig = " + originalBundle);
         }
+        PersistableBundle currentBundle = getCarrierConfig().getConfigForSubId(mSubId,
+                KEY_SATELLITE_DATA_SUPPORT_MODE_INT,
+                KEY_CARRIER_ROAMING_SATELLITE_DEFAULT_SERVICES_INT_ARRAY,
+                KEY_CARRIER_SUPPORTED_SATELLITE_SERVICES_PER_PROVIDER_BUNDLE);
+        int dataMode = currentBundle.getInt(
+                KEY_SATELLITE_DATA_SUPPORT_MODE_INT, -1);
+        log("satData: present dataMode = " + dataMode);
+        if (dataMode != -1) {
+            int checkedId = 0;
+            switch (dataMode) {
+                case CarrierConfigManager.SATELLITE_DATA_SUPPORT_ONLY_RESTRICTED:
+                    checkedId = R.id.satellite_data_restricted;
+                    break;
+                case CarrierConfigManager.SATELLITE_DATA_SUPPORT_BANDWIDTH_CONSTRAINED:
+                    checkedId = R.id.satellite_data_constrained;
+                    break;
+                case CarrierConfigManager.SATELLITE_DATA_SUPPORT_ALL:
+                    checkedId = R.id.satellite_data_unConstrained;
+                    break;
+            }
+            mMockSatelliteData.check(checkedId);
+        }
+        updateCarrierConfigToSupportData(currentBundle);
     }
 
     private final RadioGroup.OnCheckedChangeListener mMockSatelliteDataListener =
@@ -2166,47 +2229,82 @@ public class RadioInfo extends AppCompatActivity {
                         dataMode = CarrierConfigManager.SATELLITE_DATA_SUPPORT_ALL;
                         break;
                 }
-                log("OnCheckedChangeListener setting dataMode = " + dataMode);
+                log("satData: OnCheckedChangeListener setting dataMode = " + dataMode);
                 if (getCarrierConfig() == null) return;
                 PersistableBundle overrideBundle = new PersistableBundle();
-                overrideBundle.putInt(CarrierConfigManager.KEY_SATELLITE_DATA_SUPPORT_MODE_INT,
+                overrideBundle.putInt(KEY_SATELLITE_DATA_SUPPORT_MODE_INT,
                         dataMode);
                 overrideBundle.putBoolean(
-                        CarrierConfigManager.KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL, false);
-                log("mMockSatelliteDataListener: new " + overrideBundle);
+                        KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL, false);
+                log("satData: mMockSatelliteDataListener: new " + overrideBundle);
                 getCarrierConfig().overrideConfig(mSubId, overrideBundle, false);
             };
+
+    private final OnCheckedChangeListener mMockSatelliteDataSwitchListener =
+            (buttonView, isChecked) -> {
+        log("satData: ServiceData enabling = " + isChecked);
+        if (isChecked) {
+            if (!isValidOperator()) {
+                log("satData: Not a valid Operator");
+                mMockSatelliteDataSwitch.setChecked(false);
+                return;
+            }
+            updateSatelliteDataButton();
+        } else {
+            reloadCarrierConfigDefaults();
+        }
+        setDataModeChangeVisibility(isChecked);
+    };
+
+    private void setDataModeChangeVisibility(boolean isChecked) {
+        if (isChecked) {
+            mMockSatelliteData.setVisibility(View.VISIBLE);
+        } else {
+            mMockSatelliteData.setVisibility(View.GONE);
+        }
+    }
+
+    private void reloadCarrierConfigDefaults() {
+        if (mSatelliteDataOriginalBundle[mPhoneId] != null) {
+            log("satData: Setting originalCarrierConfig = "
+                    + mSatelliteDataOriginalBundle[mPhoneId]);
+            getCarrierConfig().overrideConfig(mSubId, mSatelliteDataOriginalBundle[mPhoneId],
+                    false);
+        }
+    }
+
+    private boolean isValidOperator() {
+        String operatorNumeric = mTelephonyManager
+                .getNetworkOperatorForPhone(mPhoneId);
+        TelephonyManager tm;
+        if (TextUtils.isEmpty(operatorNumeric)
+                && (tm = getSystemService(TelephonyManager.class)) != null) {
+            operatorNumeric = tm.getSimOperatorNumericForPhone(mPhoneId);
+        }
+        return !TextUtils.isEmpty(operatorNumeric);
+    }
 
     private final OnCheckedChangeListener mMockSatelliteListener =
             (buttonView, isChecked) -> {
                 if (SubscriptionManager.isValidPhoneId(mPhoneId)) {
                     if (getCarrierConfig() == null) return;
                     if (isChecked) {
-                        String operatorNumeric = mTelephonyManager
-                                .getNetworkOperatorForPhone(mPhoneId);
-                        TelephonyManager tm;
-                        if (TextUtils.isEmpty(operatorNumeric)
-                                && (tm = getSystemService(TelephonyManager.class)) != null) {
-                            operatorNumeric = tm.getSimOperatorNumericForPhone(mPhoneId);
-                        }
-                        if (TextUtils.isEmpty(operatorNumeric)) {
+                        if (!isValidOperator()) {
+                            mMockSatellite.setChecked(false);
                             loge("mMockSatelliteListener: Can't mock because no operator for phone "
                                     + mPhoneId);
-                            mMockSatellite.setChecked(false);
                             return;
                         }
                         PersistableBundle originalBundle = getCarrierConfig().getConfigForSubId(
                                 mSubId,
-                                CarrierConfigManager.KEY_SATELLITE_ATTACH_SUPPORTED_BOOL,
-                                CarrierConfigManager.KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL,
-                                CarrierConfigManager
-                                        .KEY_CARRIER_SUPPORTED_SATELLITE_SERVICES_PER_PROVIDER_BUNDLE
+                                KEY_SATELLITE_ATTACH_SUPPORTED_BOOL,
+                                KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL,
+                                KEY_CARRIER_SUPPORTED_SATELLITE_SERVICES_PER_PROVIDER_BUNDLE
                         );
                         PersistableBundle overrideBundle = new PersistableBundle();
                         overrideBundle.putBoolean(
-                                CarrierConfigManager.KEY_SATELLITE_ATTACH_SUPPORTED_BOOL, true);
-                        overrideBundle.putBoolean(CarrierConfigManager
-                                .KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL, false);
+                                KEY_SATELLITE_ATTACH_SUPPORTED_BOOL, true);
+                        overrideBundle.putBoolean(KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL, false);
                         PersistableBundle capableProviderBundle = new PersistableBundle();
                         capableProviderBundle.putIntArray(mTelephonyManager
                                         .getNetworkOperatorForPhone(mPhoneId),
@@ -2215,8 +2313,8 @@ public class RadioInfo extends AppCompatActivity {
                                         NetworkRegistrationInfo.SERVICE_TYPE_SMS,
                                         NetworkRegistrationInfo.SERVICE_TYPE_EMERGENCY
                         });
-                        overrideBundle.putPersistableBundle(CarrierConfigManager
-                                .KEY_CARRIER_SUPPORTED_SATELLITE_SERVICES_PER_PROVIDER_BUNDLE,
+                        overrideBundle.putPersistableBundle(
+                                KEY_CARRIER_SUPPORTED_SATELLITE_SERVICES_PER_PROVIDER_BUNDLE,
                                 capableProviderBundle);
                         log("mMockSatelliteListener: new " + overrideBundle);
                         log("mMockSatelliteListener: old " + originalBundle);
@@ -2258,7 +2356,7 @@ public class RadioInfo extends AppCompatActivity {
             return true;
         }
         PersistableBundle bundle = getCarrierConfig().getConfigForSubId(mSubId,
-                CarrierConfigManager.KEY_SATELLITE_ATTACH_SUPPORTED_BOOL,
+                KEY_SATELLITE_ATTACH_SUPPORTED_BOOL,
                 CarrierConfigManager.KEY_SATELLITE_ESOS_SUPPORTED_BOOL);
         if (!bundle.getBoolean(
                 CarrierConfigManager.KEY_SATELLITE_ESOS_SUPPORTED_BOOL, false)) {
@@ -2266,7 +2364,7 @@ public class RadioInfo extends AppCompatActivity {
             return true;
         }
         if (!bundle.getBoolean(
-                CarrierConfigManager.KEY_SATELLITE_ATTACH_SUPPORTED_BOOL, false)) {
+                KEY_SATELLITE_ATTACH_SUPPORTED_BOOL, false)) {
             log("shouldHideNonEmergencyMode: attach_supported false");
             return true;
         }
