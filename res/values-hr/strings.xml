@@ -848,14 +848,10 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"Simulacija stanja \"izvan upotrebe\" (samo međuverzija programa za otklanjanje pogrešaka)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"Satelitski LTE kanal za Force Camp (samo međuverzija programa za otklanjanje pogrešaka)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"Lažni način mobilnog operatera za slanje putem satelita (samo međuverzija programa za otklanjanje pogrešaka)"</string>
-    <!-- no translation found for choose_satellite_data_mode (6560390801660626218) -->
-    <skip />
-    <!-- no translation found for satellite_data_restricted_string (8729402021843670205) -->
-    <skip />
-    <!-- no translation found for satellite_data_constrained_string (4594481912792241881) -->
-    <skip />
-    <!-- no translation found for satellite_data_unConstrained_string (3957333012703408141) -->
-    <skip />
+    <string name="choose_satellite_data_mode" msgid="6560390801660626218">"Odaberite način satelitskih podataka u nastavku (samo međuverzija programa za otklanjanje pogrešaka)"</string>
+    <string name="satellite_data_restricted_string" msgid="8729402021843670205">"Ograničeno"</string>
+    <string name="satellite_data_constrained_string" msgid="4594481912792241881">"Ograničeno"</string>
+    <string name="satellite_data_unConstrained_string" msgid="3957333012703408141">"Neograničeno"</string>
     <string name="esos_satellite_string" msgid="7274794226125968657">"Testiranje eSOS načina pravog satelita (samo međuverzija programa za otklanjanje pogrešaka)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"Testiranje načina pravog satelita bez eSOS-a (samo međuverzija programa za otklanjanje pogrešaka)"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"Testiranje pokazne verzije eSOS načina satelita (samo međuverzija programa za otklanjanje pogrešaka)"</string>

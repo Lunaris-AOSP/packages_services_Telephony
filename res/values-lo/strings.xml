@@ -848,14 +848,10 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"ຈໍາລອງເຫດການບໍ່ພ້ອມໃຫ້ບໍລິການ (ສໍາລັບ Build ດີບັກເທົ່ານັ້ນ)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"ບັງຄັບໃຫ້ໃຊ້ຊ່ອງສັນຍານດາວທຽມ LTE ຂອງຄ້າຍ (ສຳລັບ Build ດີບັກເທົ່ານັ້ນ)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"ຈຳລອງໂໝດດາວທຽມຂອງຜູ້ໃຫ້ບໍລິການ (ສຳລັບ Build ດີບັກເທົ່ານັ້ນ)"</string>
-    <!-- no translation found for choose_satellite_data_mode (6560390801660626218) -->
-    <skip />
-    <!-- no translation found for satellite_data_restricted_string (8729402021843670205) -->
-    <skip />
-    <!-- no translation found for satellite_data_constrained_string (4594481912792241881) -->
-    <skip />
-    <!-- no translation found for satellite_data_unConstrained_string (3957333012703408141) -->
-    <skip />
+    <string name="choose_satellite_data_mode" msgid="6560390801660626218">"ເລືອກໂໝດຂໍ້ມູນດາວທຽມຂ້າງລຸ່ມນີ້ (ສ້າງດີບັກເທົ່ານັ້ນ)"</string>
+    <string name="satellite_data_restricted_string" msgid="8729402021843670205">"ຈຳກັດ"</string>
+    <string name="satellite_data_constrained_string" msgid="4594481912792241881">"ຖືກຈຳກັດ"</string>
+    <string name="satellite_data_unConstrained_string" msgid="3957333012703408141">"ບໍ່ໄດ້ຈຳກັດ"</string>
     <string name="esos_satellite_string" msgid="7274794226125968657">"ທົດສອບໂໝດ eSOS ດາວທຽມແທ້ (ສຳລັບ Build ດີບັກເທົ່ານັ້ນ)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"ທົດສອບໂໝດດາວທຽມແທ້ທີ່ບໍ່ແມ່ນ eSOS (ສຳລັບ Build ດີບັກເທົ່ານັ້ນ)"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"ທົດສອບໂໝດ eSOS ຂອງດາວທຽມເດໂມ (ສຳລັບ Build ດີບັກເທົ່ານັ້ນ)"</string>

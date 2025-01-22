@@ -848,14 +848,10 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"شبیه‌سازی از کار افتادن (فقط ساخت اشکال‌زدایی)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"‏اجباری کردن کانال Camp Satellite LTE (فقط ساخت اشکال‌زدایی)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"حالت ماهواره‌ای شرکت مخابراتی ساختگی (فقط ساخت اشکال‌زدایی)"</string>
-    <!-- no translation found for choose_satellite_data_mode (6560390801660626218) -->
-    <skip />
-    <!-- no translation found for satellite_data_restricted_string (8729402021843670205) -->
-    <skip />
-    <!-- no translation found for satellite_data_constrained_string (4594481912792241881) -->
-    <skip />
-    <!-- no translation found for satellite_data_unConstrained_string (3957333012703408141) -->
-    <skip />
+    <string name="choose_satellite_data_mode" msgid="6560390801660626218">"انتخاب «حالت داده ماهواره» در زیر (فقط در ساخت اشکال‌زدایی)"</string>
+    <string name="satellite_data_restricted_string" msgid="8729402021843670205">"محدودشده"</string>
+    <string name="satellite_data_constrained_string" msgid="4594481912792241881">"محدود"</string>
+    <string name="satellite_data_unConstrained_string" msgid="3957333012703408141">"نامحدود"</string>
     <string name="esos_satellite_string" msgid="7274794226125968657">"آزمایش کردن حالت واقعی درخواست کمک اضطراری ماهواره‌ای (فقط ساخت اشکال‌زدایی)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"آزمایش کردن حالت واقعی درخواست کمک غیراضطراری ماهواره‌ای (فقط ساخت اشکال‌زدایی)"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"آزمایش کردن نسخه نمایشی درخواست کمک اضطراری ماهواره‌ای (فقط ساخت اشکال‌زدایی)"</string>

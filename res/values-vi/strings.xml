@@ -848,14 +848,10 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"Mô phỏng thiết bị không hoạt động (chỉ dành cho bản gỡ lỗi)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"Buộc sử dụng kênh LTE vệ tinh khi cắm trại (chỉ dành cho Bản gỡ lỗi)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"Mô phỏng chế độ vệ tinh của nhà mạng (chỉ dành cho Bản gỡ lỗi)"</string>
-    <!-- no translation found for choose_satellite_data_mode (6560390801660626218) -->
-    <skip />
-    <!-- no translation found for satellite_data_restricted_string (8729402021843670205) -->
-    <skip />
-    <!-- no translation found for satellite_data_constrained_string (4594481912792241881) -->
-    <skip />
-    <!-- no translation found for satellite_data_unConstrained_string (3957333012703408141) -->
-    <skip />
+    <string name="choose_satellite_data_mode" msgid="6560390801660626218">"Chọn Chế độ dữ liệu vệ tinh bên dưới (chỉ dành cho bản gỡ lỗi)"</string>
+    <string name="satellite_data_restricted_string" msgid="8729402021843670205">"Bị hạn chế"</string>
+    <string name="satellite_data_constrained_string" msgid="4594481912792241881">"Giới hạn"</string>
+    <string name="satellite_data_unConstrained_string" msgid="3957333012703408141">"Không giới hạn"</string>
     <string name="esos_satellite_string" msgid="7274794226125968657">"Thử nghiệm chế độ eSOS thực tế qua vệ tinh (chỉ bản gỡ lỗi)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"Thử nghiệm chế độ không khẩn cấp thực tế qua vệ tinh (chỉ dành cho bản gỡ lỗi)"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"Thử nghiệm chế độ eSOS minh hoạ qua vệ tinh (chỉ dành cho bản gỡ lỗi)"</string>

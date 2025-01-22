@@ -848,14 +848,10 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"Моделирование нахождения вне зоны обслуживания (только отладочная сборка)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"Принудительно использовать спутниковый канал LTE (только для отладочной сборки)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"Режим спутниковой связи симуляции оператора (только отладочная сборка)"</string>
-    <!-- no translation found for choose_satellite_data_mode (6560390801660626218) -->
-    <skip />
-    <!-- no translation found for satellite_data_restricted_string (8729402021843670205) -->
-    <skip />
-    <!-- no translation found for satellite_data_constrained_string (4594481912792241881) -->
-    <skip />
-    <!-- no translation found for satellite_data_unConstrained_string (3957333012703408141) -->
-    <skip />
+    <string name="choose_satellite_data_mode" msgid="6560390801660626218">"Выберите режим передачи спутниковых данных ниже (только отладочная сборка)"</string>
+    <string name="satellite_data_restricted_string" msgid="8729402021843670205">"Доступ ограничен"</string>
+    <string name="satellite_data_constrained_string" msgid="4594481912792241881">"С ограничениями"</string>
+    <string name="satellite_data_unConstrained_string" msgid="3957333012703408141">"Без ограничений"</string>
     <string name="esos_satellite_string" msgid="7274794226125968657">"Проверка спутникового режима eSOS (только отладочная сборка)"</string>
     <string name="satellite_enable_non_emergency_mode_string" msgid="9005332650950637932">"Проверка спутниковой связи в режиме, отличном от eSOS (только отладочная сборка)"</string>
     <string name="demo_esos_satellite_string" msgid="2941811482168709730">"Проверка демоверсии спутникового режима eSOS (только отладочная сборка)"</string>
