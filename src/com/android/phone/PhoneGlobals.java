@@ -1325,9 +1325,8 @@ public class PhoneGlobals extends ContextWrapper {
         boolean showRoamingNotification = config.getBoolean(
                 CarrierConfigManager.KEY_SHOW_DATA_CONNECTED_ROAMING_NOTIFICATION_BOOL);
 
-        if (TextUtils.isEmpty(roamingNumeric) || !mFeatureFlags.hideRoamingIcon()) {
-            Log.d(LOG_TAG, "shouldShowRoamingNotification: roamingNumeric=" + roamingNumeric
-                    + ", hideRoaming=" + mFeatureFlags.hideRoamingIcon());
+        if (TextUtils.isEmpty(roamingNumeric)) {
+            Log.d(LOG_TAG, "shouldShowRoamingNotification: roamingNumeric=" + roamingNumeric);
             return showRoamingNotification;
         }
 

@@ -848,7 +848,8 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"Імітація знаходження поза зоною обслуговування (лише складання для налагодження)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"Примусово застосувати супутниковий зв’язок із каналом LTE (лише для налагодження)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"Режим супутника оператора Mock (лише складання для налагодження)"</string>
-    <string name="choose_satellite_data_mode" msgid="6560390801660626218">"Виберіть режим передавання супутникових даних нижче (лише складання для налагодження)"</string>
+    <!-- no translation found for choose_satellite_data_mode (7526640708482601423) -->
+    <skip />
     <string name="satellite_data_restricted_string" msgid="8729402021843670205">"Доступ обмежено"</string>
     <string name="satellite_data_constrained_string" msgid="4594481912792241881">"З обмеженнями"</string>
     <string name="satellite_data_unConstrained_string" msgid="3957333012703408141">"Без обмежень"</string>

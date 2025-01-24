@@ -848,7 +848,8 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"സേവനം ലഭ്യമല്ലെന്ന് അനുകരിക്കുക (ഡീബഗ് ബിൽഡ് മാത്രം)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"ഫോഴ്‌സ് ക്യാമ്പ് സാറ്റലൈറ്റ് LTE ചാനൽ(ഡീബഗ് ബിൽഡ് മാത്രം)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"Mock സേവനദാതാവ് ഉപഗ്രഹ മോഡ് (ഡീബഗ് ബിൽഡ് മാത്രം)"</string>
-    <string name="choose_satellite_data_mode" msgid="6560390801660626218">"ചുവടെയുള്ള സാറ്റലൈറ്റ് ഡാറ്റാ മോഡ് തിരഞ്ഞെടുക്കുക (ഡീബഗ് ബിൽഡ് മാത്രം)"</string>
+    <!-- no translation found for choose_satellite_data_mode (7526640708482601423) -->
+    <skip />
     <string name="satellite_data_restricted_string" msgid="8729402021843670205">"നിയന്ത്രിതം"</string>
     <string name="satellite_data_constrained_string" msgid="4594481912792241881">"പരിമിതം"</string>
     <string name="satellite_data_unConstrained_string" msgid="3957333012703408141">"പരിധിയില്ലാത്തത്"</string>

@@ -848,7 +848,8 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"Hizmet Dışı Simülasyonu (Yalnızca Hata Ayıklama Derlemesi)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"Kamp uydusu LTE kanalını zorunlu kılma (yalnızca hata ayıklama derlemesi)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"Örnek operatör uydu modu (yalnızca hata ayıklama derlemesi)"</string>
-    <string name="choose_satellite_data_mode" msgid="6560390801660626218">"Aşağıdan uydu verileri modunu seçin (yalnızca hata ayıklama derlemesi)"</string>
+    <!-- no translation found for choose_satellite_data_mode (7526640708482601423) -->
+    <skip />
     <string name="satellite_data_restricted_string" msgid="8729402021843670205">"Kısıtlı"</string>
     <string name="satellite_data_constrained_string" msgid="4594481912792241881">"Sınırlı"</string>
     <string name="satellite_data_unConstrained_string" msgid="3957333012703408141">"Sınırsız"</string>
