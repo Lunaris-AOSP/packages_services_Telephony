@@ -1460,7 +1460,7 @@ public class SatelliteAccessControllerTest extends TelephonyTestBase {
         assertNull(mSatelliteAccessControllerUT
                 .getSatelliteConfigurationFileNameFromOverlayConfig(mMockContext));
         try {
-            mSatelliteAccessControllerUT.loadSatelliteAccessConfigurationFromDeviceConfig();
+            mSatelliteAccessControllerUT.loadSatelliteAccessConfiguration();
         } catch (Exception e) {
             fail("Unexpected exception thrown: " + e.getMessage());
         }
