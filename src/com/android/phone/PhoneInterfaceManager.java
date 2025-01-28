@@ -11820,7 +11820,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
         if (instance == null) {
             String packageName = mApp.getResources().getString(R.string.config_gba_package);
             int releaseTime = mApp.getResources().getInteger(R.integer.config_gba_release_time);
-            instance = GbaManager.make(mApp, subId, packageName, releaseTime);
+            instance = GbaManager.make(mApp, subId, packageName, releaseTime, mFeatureFlags);
         }
         return instance;
     }
