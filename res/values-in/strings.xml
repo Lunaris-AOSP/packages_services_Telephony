@@ -848,8 +848,7 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"Simulasi Tidak dapat Digunakan (Khusus Build Debug)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"Terapkan Saluran Satelit LTE (khusus Build Debug)."</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"Mode Satelit Operator Tiruan (khusus Build Debug)."</string>
-    <!-- no translation found for choose_satellite_data_mode (7526640708482601423) -->
-    <skip />
+    <string name="choose_satellite_data_mode" msgid="7526640708482601423">"Mode Data Satelit Tiruan (Khusus Debug)"</string>
     <string name="satellite_data_restricted_string" msgid="8729402021843670205">"Dibatasi"</string>
     <string name="satellite_data_constrained_string" msgid="4594481912792241881">"Terbatas"</string>
     <string name="satellite_data_unConstrained_string" msgid="3957333012703408141">"Tidak terbatas"</string>

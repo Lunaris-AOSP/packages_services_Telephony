@@ -848,8 +848,7 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"Mô phỏng thiết bị không hoạt động (chỉ dành cho bản gỡ lỗi)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"Buộc sử dụng kênh LTE vệ tinh khi cắm trại (chỉ dành cho Bản gỡ lỗi)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"Mô phỏng chế độ vệ tinh của nhà mạng (chỉ dành cho Bản gỡ lỗi)"</string>
-    <!-- no translation found for choose_satellite_data_mode (7526640708482601423) -->
-    <skip />
+    <string name="choose_satellite_data_mode" msgid="7526640708482601423">"Mô phỏng dữ liệu ở chế độ vệ tinh (chỉ dành cho bản gỡ lỗi)"</string>
     <string name="satellite_data_restricted_string" msgid="8729402021843670205">"Bị hạn chế"</string>
     <string name="satellite_data_constrained_string" msgid="4594481912792241881">"Giới hạn"</string>
     <string name="satellite_data_unConstrained_string" msgid="3957333012703408141">"Không giới hạn"</string>

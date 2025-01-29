@@ -2340,9 +2340,8 @@ public class TelephonyConnectionService extends ConnectionService {
                                 }
                             }
                             for (Conference c : getAllConferences()) {
-                                if (c.getState() != Connection.STATE_DISCONNECTED
-                                        && c instanceof Conference) {
-                                    ((Conference) c).onDisconnect();
+                                if (c.getState() != Connection.STATE_DISCONNECTED) {
+                                    c.onDisconnect();
                                 }
                             }
                         } else if (!isVideoCallHoldAllowed(phone)) {

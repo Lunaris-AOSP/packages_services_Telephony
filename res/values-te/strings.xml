@@ -583,7 +583,7 @@
     <string name="description_concat_format" msgid="2014471565101724088">"%1$s, %2$s"</string>
     <string name="dialerKeyboardHintText" msgid="1115266533703764049">"డయల్ చేయడానికి కీబోర్డ్‌ను ఉపయోగించండి"</string>
     <string name="onscreenHoldText" msgid="4025348842151665191">"హోల్డ్ చేయి"</string>
-    <string name="onscreenEndCallText" msgid="6138725377654842757">"ముగించు"</string>
+    <string name="onscreenEndCallText" msgid="6138725377654842757">"ముగించండి"</string>
     <string name="onscreenShowDialpadText" msgid="658465753816164079">"డయల్‌ప్యాడ్"</string>
     <string name="onscreenMuteText" msgid="5470306116733843621">"మ్యూట్ చేయి"</string>
     <string name="onscreenAddCallText" msgid="9075675082903611677">"కాల్‌ను జోడించండి"</string>
@@ -848,8 +848,7 @@
     <string name="simulate_out_of_service_string" msgid="7787925611727597193">"పరికరాన్ని సిమ్యులేట్ చేయడం అందుబాటులో లేదు (డీబగ్ బిల్డ్ మోడ్‌లో మాత్రమే)"</string>
     <string name="enforce_satellite_channel_string" msgid="295306734591329892">"ఫోర్స్ క్యాంప్ శాటిలైట్ LTE ఛానెల్ (డీబగ్ బిల్డ్ మోడ్‌లో మాత్రమే)"</string>
     <string name="mock_carrier_roaming_satellite_string" msgid="4796300252858292593">"మాక్ క్యారియర్ శాటిలైట్ మోడ్ (డీబగ్ బిల్డ్ మోడ్‌లో మాత్రమే)"</string>
-    <!-- no translation found for choose_satellite_data_mode (7526640708482601423) -->
-    <skip />
+    <string name="choose_satellite_data_mode" msgid="7526640708482601423">"మాక్ శాటిలైట్ డేటా మోడ్ (డీబగ్ మాత్రమే)"</string>
     <string name="satellite_data_restricted_string" msgid="8729402021843670205">"పరిమితం చేయబడింది"</string>
     <string name="satellite_data_constrained_string" msgid="4594481912792241881">"పరిమితం"</string>
     <string name="satellite_data_unConstrained_string" msgid="3957333012703408141">"అపరిమితం"</string>
