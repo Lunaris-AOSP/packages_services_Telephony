@@ -37,8 +37,7 @@ public class SafetySourceReceiver extends BroadcastReceiver {
 
         // If none of the features that depend on this receiver are enabled, there's no reason
         // to progress.
-        if (!Flags.enableIdentifierDisclosureTransparencyUnsolEvents()
-                || !Flags.enableModemCipherTransparencyUnsolEvents()) {
+        if (!Flags.enableModemCipherTransparencyUnsolEvents()) {
             return;
         }
 
