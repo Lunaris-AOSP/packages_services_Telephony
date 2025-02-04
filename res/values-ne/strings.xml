@@ -271,7 +271,7 @@
     <string name="preferred_network_mode_nr_lte_tdscdma_wcdma_summary" msgid="5912457779733343522">"रुचाइएको नेटवर्क मोड: NR/LTE/TDSCDMA/WCDMA"</string>
     <string name="preferred_network_mode_nr_lte_tdscdma_gsm_wcdma_summary" msgid="6769797110309412576">"रुचाइएको नेटवर्क मोड: NR/LTE/TDSCDMA/GSM/WCDMA"</string>
     <string name="preferred_network_mode_nr_lte_tdscdma_cdma_evdo_gsm_wcdma_summary" msgid="4260661428277578573">"रुचाइएको नेटवर्क मोड: NR/LTE/TDSCDMA/CDMA/EvDo/GSM/WCDMA"</string>
-    <string name="call_category" msgid="4394703838833058138">"कल गर्दै"</string>
+    <string name="call_category" msgid="4394703838833058138">"कल गर्ने सुविधा"</string>
     <string name="network_operator_category" msgid="4992217193732304680">"नेटवर्क"</string>
     <string name="enhanced_4g_lte_mode_title" msgid="4213420368777080540">"Enhanced 4G LTE Mode"</string>
     <!-- no translation found for enhanced_4g_lte_mode_title_variant:0 (7240155150166394308) -->

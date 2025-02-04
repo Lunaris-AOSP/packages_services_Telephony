@@ -153,7 +153,7 @@
     <string name="disable" msgid="1122698860799462116">"બંધ કરો"</string>
     <string name="change_num" msgid="6982164494063109334">"અપડેટ"</string>
   <string-array name="clir_display_values">
-    <item msgid="8477364191403806960">"નેટવર્ક ડિફોલ્ટ"</item>
+    <item msgid="8477364191403806960">"નેટવર્ક ડિફૉલ્ટ"</item>
     <item msgid="6813323051965618926">"નંબર છુપાવો"</item>
     <item msgid="9150034130629852635">"નંબર બતાવો"</item>
   </string-array>
