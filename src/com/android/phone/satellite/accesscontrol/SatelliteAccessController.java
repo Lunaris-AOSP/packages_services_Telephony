@@ -954,6 +954,11 @@ public class SatelliteAccessController extends Handler {
     @Nullable
     private static File copyFileToLocalDirectory(@NonNull File sourceFile,
             @NonNull String targetFileName) {
+        logd(
+                "copyFileToLocalDirectory: Copying sourceFile:"
+                        + sourceFile.getAbsolutePath()
+                        + " to targetFileName:"
+                        + targetFileName);
         PhoneGlobals phoneGlobals = PhoneGlobals.getInstance();
         File satelliteAccessControlDir = phoneGlobals.getDir(
                 SATELLITE_ACCESS_CONTROL_DATA_DIR, Context.MODE_PRIVATE);
@@ -963,6 +968,11 @@ public class SatelliteAccessController extends Handler {
 
         Path targetDir = satelliteAccessControlDir.toPath();
         Path targetFilePath = targetDir.resolve(targetFileName);
+        logd(
+                "copyFileToLocalDirectory: Copying from sourceFile="
+                        + sourceFile.getAbsolutePath()
+                        + " to targetFilePath="
+                        + targetFilePath);
         try {
             InputStream inputStream = new FileInputStream(sourceFile);
             if (inputStream == null) {
@@ -982,6 +992,11 @@ public class SatelliteAccessController extends Handler {
             loge("copyFileToLocalDirectory: targetFile is null or not exist");
             return null;
         }
+        logd(
+                "copyFileToLocalDirectory: Copied from sourceFile="
+                        + sourceFile.getAbsolutePath()
+                        + " to targetFilePath="
+                        + targetFilePath);
         return targetFile;
     }
 
@@ -1314,7 +1329,7 @@ public class SatelliteAccessController extends Handler {
     }
 
     protected void loadSatelliteAccessConfiguration() {
-        logd("loadSatelliteAccessConfiguration:");
+        logd("loadSatelliteAccessConfiguration");
         String satelliteConfigurationFileName;
         File satelliteAccessConfigFile = getSatelliteAccessConfigFile();
         synchronized (mLock) {
@@ -1429,7 +1444,7 @@ public class SatelliteAccessController extends Handler {
     }
 
     @Nullable
-    private File getSatelliteS2CellFile() {
+    protected File getSatelliteS2CellFile() {
         synchronized (mLock) {
             if (mIsOverlayConfigOverridden) {
                 return mOverriddenSatelliteS2CellFile;
@@ -1439,7 +1454,7 @@ public class SatelliteAccessController extends Handler {
     }
 
     @Nullable
-    private File getSatelliteAccessConfigFile() {
+    protected File getSatelliteAccessConfigFile() {
         synchronized (mLock) {
             if (mIsOverlayConfigOverridden) {
                 logd("mIsOverlayConfigOverridden: " + mIsOverlayConfigOverridden);
@@ -2210,6 +2225,14 @@ public class SatelliteAccessController extends Handler {
     protected void checkSatelliteAccessRestrictionForLocation(@NonNull Location location) {
         synchronized (mLock) {
             try {
+                plogd(
+                        "checkSatelliteAccessRestrictionForLocation: "
+                                + "checking satellite access restriction for location: lat - "
+                                + location.getLatitude()
+                                + ", long - "
+                                + location.getLongitude()
+                                + ", mS2Level - "
+                                + mS2Level);
                 SatelliteOnDeviceAccessController.LocationToken locationToken =
                         SatelliteOnDeviceAccessController.createLocationTokenForLatLng(
                                 location.getLatitude(),
@@ -2235,7 +2258,9 @@ public class SatelliteAccessController extends Handler {
                         synchronized (mLock) {
                             mNewRegionalConfigId = mSatelliteOnDeviceAccessController
                                     .getRegionalConfigIdForLocation(locationToken);
-                            plogd("mNewRegionalConfigId is " + mNewRegionalConfigId);
+                            plogd(
+                                    "mNewRegionalConfigId from geofence file lookup is "
+                                            + mNewRegionalConfigId);
                             satelliteAllowed = (mNewRegionalConfigId != null);
                         }
                     } else {
@@ -2243,12 +2268,25 @@ public class SatelliteAccessController extends Handler {
                                 + "carrierRoamingNbIotNtn is disabled");
                         satelliteAllowed = mSatelliteOnDeviceAccessController
                                 .isSatCommunicationAllowedAtLocation(locationToken);
+                        plogd(
+                                "checkSatelliteAccessRestrictionForLocation: satelliteAllowed from "
+                                        + "geofence file lookup: "
+                                        + satelliteAllowed);
                         mNewRegionalConfigId =
                                 satelliteAllowed ? UNKNOWN_REGIONAL_SATELLITE_CONFIG_ID : null;
                     }
                     updateCachedAccessRestrictionMap(locationToken, mNewRegionalConfigId);
                 }
                 mAccessControllerMetricsStats.setOnDeviceLookupTime(mOnDeviceLookupStartTimeMillis);
+                plogd(
+                        "checkSatelliteAccessRestrictionForLocation: "
+                                + (satelliteAllowed ? "Satellite Allowed" : "Satellite NOT Allowed")
+                                + " for location: lat - "
+                                + location.getLatitude()
+                                + ", long - "
+                                + location.getLongitude()
+                                + ", mS2Level - "
+                                + mS2Level);
                 Bundle bundle = new Bundle();
                 bundle.putBoolean(KEY_SATELLITE_COMMUNICATION_ALLOWED, satelliteAllowed);
                 sendSatelliteAllowResultToReceivers(SATELLITE_RESULT_SUCCESS, bundle,
@@ -2264,10 +2302,12 @@ public class SatelliteAccessController extends Handler {
                 if (isCommunicationAllowedCacheValid()) {
                     bundle.putBoolean(KEY_SATELLITE_COMMUNICATION_ALLOWED,
                             mLatestSatelliteCommunicationAllowed);
-                    plogd("checkSatelliteAccessRestrictionForLocation: cache is still valid, "
-                            + "using it");
+                    plogd(
+                            "checkSatelliteAccessRestrictionForLocation: cache is still valid, "
+                                    + "allowing satellite communication");
                 } else {
                     bundle.putBoolean(KEY_SATELLITE_COMMUNICATION_ALLOWED, false);
+                    plogd("satellite communication not allowed");
                 }
                 sendSatelliteAllowResultToReceivers(SATELLITE_RESULT_SUCCESS, bundle,
                         mLatestSatelliteCommunicationAllowed);

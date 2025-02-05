@@ -40,6 +40,13 @@ public final class SatS2LocationLookup {
 
         try (SatS2RangeFileReader satS2RangeFileReader =
                      SatS2RangeFileReader.open(new File(arguments.inputFile))) {
+            System.out.println(
+                    "lat - "
+                            + arguments.latDegrees
+                            + ", long - "
+                            + arguments.lngDegrees
+                            + ", s2Level - "
+                            + satS2RangeFileReader.getS2Level());
             S2CellId s2CellId = getS2CellId(arguments.latDegrees, arguments.lngDegrees,
                     satS2RangeFileReader.getS2Level());
             System.out.println("s2CellId=" + Long.toUnsignedString(s2CellId.id())

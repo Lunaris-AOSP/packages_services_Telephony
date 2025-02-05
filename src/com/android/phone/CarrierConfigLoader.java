@@ -823,7 +823,12 @@ public class CarrierConfigLoader extends ICarrierConfigLoader.Stub {
             configToSend.putAll(config);
         }
 
-        SubscriptionManagerService.getInstance().updateSubscriptionByCarrierConfig(
+        SubscriptionManagerService sm = SubscriptionManagerService.getInstance();
+        if (sm == null) {
+            loge("SubscriptionManagerService missing");
+            return;
+        }
+        sm.updateSubscriptionByCarrierConfig(
                 phoneId, configPackageName, configToSend,
                 () -> mHandler.obtainMessage(EVENT_SUBSCRIPTION_INFO_UPDATED, phoneId, -1)
                         .sendToTarget());
