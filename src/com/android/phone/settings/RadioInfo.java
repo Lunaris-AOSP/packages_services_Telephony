@@ -944,6 +944,7 @@ public class RadioInfo extends AppCompatActivity {
         mSimulateOutOfServiceSwitch.setOnCheckedChangeListener(mSimulateOosOnChangeListener);
         mMockSatellite.setChecked(mCarrierSatelliteOriginalBundle[mPhoneId] != null);
         mMockSatellite.setOnCheckedChangeListener(mMockSatelliteListener);
+        mMockSatelliteDataSwitch.setChecked(mSatelliteDataOriginalBundle[mPhoneId] != null);
         mMockSatelliteDataSwitch.setOnCheckedChangeListener(mMockSatelliteDataSwitchListener);
         mMockSatelliteData.setOnCheckedChangeListener(mMockSatelliteDataListener);
 
@@ -2237,19 +2238,24 @@ public class RadioInfo extends AppCompatActivity {
                 overrideBundle.putBoolean(
                         KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL, false);
                 log("satData: mMockSatelliteDataListener: new " + overrideBundle);
-                getCarrierConfig().overrideConfig(mSubId, overrideBundle, false);
+                if (SubscriptionManager.isValidSubscriptionId(mSubId)) {
+                    getCarrierConfig().overrideConfig(mSubId, overrideBundle, false);
+                } else {
+                    Log.e(TAG, "SubscriptionId is not valid: " + mSubId);
+                }
             };
 
     private final OnCheckedChangeListener mMockSatelliteDataSwitchListener =
             (buttonView, isChecked) -> {
         log("satData: ServiceData enabling = " + isChecked);
         if (isChecked) {
-            if (!isValidOperator()) {
+            if (isValidOperator(mSubId)) {
+                updateSatelliteDataButton();
+            } else {
                 log("satData: Not a valid Operator");
                 mMockSatelliteDataSwitch.setChecked(false);
                 return;
             }
-            updateSatelliteDataButton();
         } else {
             reloadCarrierConfigDefaults();
         }
@@ -2273,30 +2279,36 @@ public class RadioInfo extends AppCompatActivity {
         }
     }
 
-    private boolean isValidOperator() {
-        String operatorNumeric = mTelephonyManager
-                .getNetworkOperatorForPhone(mPhoneId);
-        TelephonyManager tm;
-        if (TextUtils.isEmpty(operatorNumeric)
-                && (tm = getSystemService(TelephonyManager.class)) != null) {
-            operatorNumeric = tm.getSimOperatorNumericForPhone(mPhoneId);
+    private boolean isValidOperator(int subId) {
+        String operatorNumeric = null;
+        if (SubscriptionManager.isValidSubscriptionId(subId)) {
+            operatorNumeric = mTelephonyManager
+                    .getNetworkOperatorForPhone(mPhoneId);
+            TelephonyManager tm;
+            if (TextUtils.isEmpty(operatorNumeric)
+                    && (tm = getSystemService(TelephonyManager.class)) != null) {
+                operatorNumeric = tm.getSimOperatorNumericForPhone(mPhoneId);
+            }
         }
         return !TextUtils.isEmpty(operatorNumeric);
     }
 
     private final OnCheckedChangeListener mMockSatelliteListener =
             (buttonView, isChecked) -> {
-                if (SubscriptionManager.isValidPhoneId(mPhoneId)) {
+                int subId = mSubId;
+                int phoneId = mPhoneId;
+                if (SubscriptionManager.isValidPhoneId(phoneId)
+                        && SubscriptionManager.isValidSubscriptionId(subId)) {
                     if (getCarrierConfig() == null) return;
                     if (isChecked) {
-                        if (!isValidOperator()) {
+                        if (!isValidOperator(subId)) {
                             mMockSatellite.setChecked(false);
                             loge("mMockSatelliteListener: Can't mock because no operator for phone "
-                                    + mPhoneId);
+                                    + phoneId);
                             return;
                         }
                         PersistableBundle originalBundle = getCarrierConfig().getConfigForSubId(
-                                mSubId,
+                                subId,
                                 KEY_SATELLITE_ATTACH_SUPPORTED_BOOL,
                                 KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL,
                                 KEY_CARRIER_SUPPORTED_SATELLITE_SERVICES_PER_PROVIDER_BUNDLE
@@ -2307,7 +2319,7 @@ public class RadioInfo extends AppCompatActivity {
                         overrideBundle.putBoolean(KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL, false);
                         PersistableBundle capableProviderBundle = new PersistableBundle();
                         capableProviderBundle.putIntArray(mTelephonyManager
-                                        .getNetworkOperatorForPhone(mPhoneId),
+                                        .getNetworkOperatorForPhone(phoneId),
                                 new int[]{
                                         // Currently satellite only supports below
                                         NetworkRegistrationInfo.SERVICE_TYPE_SMS,
@@ -2318,18 +2330,18 @@ public class RadioInfo extends AppCompatActivity {
                                 capableProviderBundle);
                         log("mMockSatelliteListener: new " + overrideBundle);
                         log("mMockSatelliteListener: old " + originalBundle);
-                        getCarrierConfig().overrideConfig(mSubId, overrideBundle, false);
-                        mCarrierSatelliteOriginalBundle[mPhoneId] = originalBundle;
+                        getCarrierConfig().overrideConfig(subId, overrideBundle, false);
+                        mCarrierSatelliteOriginalBundle[phoneId] = originalBundle;
                     } else {
                         try {
-                            getCarrierConfig().overrideConfig(mSubId,
-                                    mCarrierSatelliteOriginalBundle[mPhoneId], false);
-                            mCarrierSatelliteOriginalBundle[mPhoneId] = null;
+                            getCarrierConfig().overrideConfig(subId,
+                                    mCarrierSatelliteOriginalBundle[phoneId], false);
+                            mCarrierSatelliteOriginalBundle[phoneId] = null;
                             log("mMockSatelliteListener: Successfully cleared mock for phone "
-                                    + mPhoneId);
+                                    + phoneId);
                         } catch (Exception e) {
                             loge("mMockSatelliteListener: Can't clear mock because invalid sub Id "
-                                    + mSubId
+                                    + subId
                                     + ", insert SIM and use adb shell cmd phone cc clear-values");
                             // Keep show toggle ON if the view is not destroyed. If destroyed, must
                             // use cmd to reset, because upon creation the view doesn't remember the

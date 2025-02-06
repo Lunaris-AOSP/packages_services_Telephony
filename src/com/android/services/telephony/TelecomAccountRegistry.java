@@ -1790,7 +1790,7 @@ public class TelecomAccountRegistry {
                         }
 
                         // Skip the sim for satellite as it does not support call for now
-                        if (Flags.oemEnabledSatelliteFlag() && info.isOnlyNonTerrestrialNetwork()) {
+                        if (info.isOnlyNonTerrestrialNetwork()) {
                             Log.d(this, "setupAccounts: skipping satellite sub id "
                                     + subscriptionId);
                             continue;
