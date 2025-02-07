@@ -1706,7 +1706,8 @@ public class SatelliteAccessControllerTest extends TelephonyTestBase {
         logd("otaSatelliteAccessConfigFileAbsPath: " + otaSatelliteAccessConfigFileAbsPath);
 
         if (onDeviceSats2FileAbsPath.equals(otaSats2FileAbsPath)
-                || onDeviceSatelliteAccessConfigFileAbsPath.equals(otaSatelliteAccessConfigFile)) {
+                || onDeviceSatelliteAccessConfigFileAbsPath.equals(
+                        otaSatelliteAccessConfigFileAbsPath)) {
             return false;
         }
 
