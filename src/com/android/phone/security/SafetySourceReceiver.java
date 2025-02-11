@@ -34,13 +34,6 @@ public class SafetySourceReceiver extends BroadcastReceiver {
     private static final String TAG = "TelephonySafetySourceReceiver";
     @Override
     public void onReceive(Context context, Intent intent) {
-
-        // If none of the features that depend on this receiver are enabled, there's no reason
-        // to progress.
-        if (!Flags.enableModemCipherTransparencyUnsolEvents()) {
-            return;
-        }
-
         String action = intent.getAction();
         if (!ACTION_REFRESH_SAFETY_SOURCES.equals(action)) {
             return;
