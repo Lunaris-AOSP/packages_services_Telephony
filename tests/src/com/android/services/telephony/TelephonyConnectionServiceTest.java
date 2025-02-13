@@ -3894,6 +3894,36 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
     }
 
     @Test
+    public void testNormalCallWhenEligibilityIsTrue() throws Exception {
+        mSetFlagsRule.enableFlags(Flags.FLAG_CARRIER_ENABLED_SATELLITE_FLAG);
+        mSetFlagsRule.enableFlags(Flags.FLAG_CARRIER_ROAMING_NB_IOT_NTN);
+
+        setupForCallTest();
+
+        // Carrier roaming ntn eligibility is true and call is not supported
+        when(mSatelliteController.getLastNotifiedNtnEligibility(any())).thenReturn(true);
+        when(mSatelliteController.getCapabilitiesForCarrierRoamingSatelliteMode(any()))
+                .thenReturn(List.of(NetworkRegistrationInfo.SERVICE_TYPE_DATA));
+
+        mConnection = mTestConnectionService.onCreateOutgoingConnection(PHONE_ACCOUNT_HANDLE_1,
+                createConnectionRequest(PHONE_ACCOUNT_HANDLE_1, "1234", TELECOM_CALL_ID1));
+        DisconnectCause disconnectCause = mConnection.getDisconnectCause();
+        assertEquals(android.telephony.DisconnectCause.SATELLITE_ENABLED,
+                disconnectCause.getTelephonyDisconnectCause());
+        assertEquals(DISCONNECT_REASON_CARRIER_ROAMING_SATELLITE_MODE, disconnectCause.getReason());
+
+        // Carrier roaming ntn eligibility is true and call is supported
+        setupForCallTest();
+        when(mSatelliteController.getCapabilitiesForCarrierRoamingSatelliteMode(any())).thenReturn(
+                List.of(NetworkRegistrationInfo.SERVICE_TYPE_VOICE));
+
+        // UnsupportedOperationException is thrown as we cannot perform actual call
+        assertThrows(UnsupportedOperationException.class, () -> mTestConnectionService
+                .onCreateOutgoingConnection(PHONE_ACCOUNT_HANDLE_1,
+                        createConnectionRequest(PHONE_ACCOUNT_HANDLE_1, "1234", "TC@2")));
+    }
+
+    @Test
     public void testIsAvailableForEmergencyCallsNotForCrossSim() {
         Phone mockPhone = Mockito.mock(Phone.class);
         when(mockPhone.getImsRegistrationTech()).thenReturn(

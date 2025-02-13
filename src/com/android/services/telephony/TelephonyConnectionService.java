@@ -23,7 +23,6 @@ import static android.telephony.ServiceState.STATE_IN_SERVICE;
 import static android.telephony.TelephonyManager.HAL_SERVICE_VOICE;
 
 import static com.android.internal.telephony.PhoneConstants.PHONE_TYPE_GSM;
-import static com.android.internal.telephony.flags.Flags.carrierEnabledSatelliteFlag;
 
 import android.annotation.NonNull;
 import android.app.AlertDialog;
@@ -1318,7 +1317,8 @@ public class TelephonyConnectionService extends ConnectionService {
             }
 
             if (!isEmergencyNumber) {
-                if (isCallDisallowedDueToSatellite(phone)
+                if ((isCallDisallowedDueToSatellite(phone)
+                        || isCallDisallowedDueToNtnEligibility(phone))
                         && (imsPhone == null || !imsPhone.canMakeWifiCall())) {
                     Log.d(this, "onCreateOutgoingConnection, cannot make call "
                             + "when device is connected to carrier roaming satellite network");
@@ -4843,28 +4843,58 @@ public class TelephonyConnectionService extends ConnectionService {
      * else {@code false}.
      */
     private boolean isCallDisallowedDueToSatellite(Phone phone) {
-        if (!carrierEnabledSatelliteFlag()) {
-            return false;
-        }
-
         if (phone == null) {
             return false;
         }
 
         if (!mSatelliteController.isInSatelliteModeForCarrierRoaming(phone)) {
-            // Device is not connected to satellite
+            // Phone is not connected to carrier roaming ntn
             return false;
         }
 
-        List<Integer> capabilities =
-                mSatelliteController.getCapabilitiesForCarrierRoamingSatelliteMode(phone);
-        if (capabilities.contains(NetworkRegistrationInfo.SERVICE_TYPE_VOICE)) {
-            // Call is supported while using satellite
+        if (isVoiceSupportedInSatelliteMode(phone)) {
+            // Call is supported in satellite mode
             return false;
         }
 
         // Call is disallowed while using satellite
         return true;
+    }
+
+    private boolean isCallDisallowedDueToNtnEligibility(@Nullable Phone phone) {
+        if (phone == null) {
+            Log.d(this, "isCallDisallowedDueToNtnEligibility: phone is null");
+            return false;
+        }
+
+        if (!mSatelliteController.getLastNotifiedNtnEligibility(phone)) {
+            // Phone is not carrier roaming ntn eligible
+            Log.d(this, "isCallDisallowedDueToNtnEligibility: eligibility is false");
+            return false;
+        }
+
+        if (isVoiceSupportedInSatelliteMode(phone)) {
+            // Call is supported in satellite mode
+            Log.d(this, "isCallDisallowedDueToNtnEligibility: voice is supported");
+            return false;
+        }
+
+        // Call is disallowed while eligibility is true
+        Log.d(this, "isCallDisallowedDueToNtnEligibility: return true");
+        return true;
+    }
+
+    private boolean isVoiceSupportedInSatelliteMode(@NonNull Phone phone) {
+        List<Integer> capabilities =
+                mSatelliteController.getCapabilitiesForCarrierRoamingSatelliteMode(phone);
+        if (capabilities.contains(NetworkRegistrationInfo.SERVICE_TYPE_VOICE)) {
+            // Call is supported in satellite mode
+            Log.d(this, "isVoiceSupportedInSatelliteMode: voice is supported");
+            return true;
+        }
+
+        Log.d(this, "isVoiceSupportedInSatelliteMode: voice is not supported");
+        return false;
     }
 
     private boolean getTurnOffOemEnabledSatelliteDuringEmergencyCall() {
