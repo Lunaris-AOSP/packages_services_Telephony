@@ -2282,9 +2282,9 @@ public class SatelliteAccessController extends Handler {
                 plogd(
                         "checkSatelliteAccessRestrictionForLocation: "
                                 + "checking satellite access restriction for location: lat - "
-                                + location.getLatitude()
+                                + Rlog.pii(TAG, location.getLatitude())
                                 + ", long - "
-                                + location.getLongitude()
+                                + Rlog.pii(TAG, location.getLongitude())
                                 + ", mS2Level - "
                                 + mS2Level);
                 SatelliteOnDeviceAccessController.LocationToken locationToken =
@@ -2336,9 +2336,9 @@ public class SatelliteAccessController extends Handler {
                         "checkSatelliteAccessRestrictionForLocation: "
                                 + (satelliteAllowed ? "Satellite Allowed" : "Satellite NOT Allowed")
                                 + " for location: lat - "
-                                + location.getLatitude()
+                                + Rlog.pii(TAG, location.getLatitude())
                                 + ", long - "
-                                + location.getLongitude()
+                                + Rlog.pii(TAG, location.getLongitude())
                                 + ", mS2Level - "
                                 + mS2Level);
                 Bundle bundle = new Bundle();
