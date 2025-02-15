@@ -3148,6 +3148,9 @@ public class SatelliteAccessController extends Handler {
             mControllerMetricsStats.reportFailedSatelliteAccessCheckCount();
         }
 
+        mControllerMetricsStats.reportCurrentVersionOfSatelliteAccessConfig(
+                mSatelliteAccessConfigVersion);
+
         mAccessControllerMetricsStats
                 .setLocationQueryTime(mLocationQueryStartTimeMillis)
                 .setTotalCheckingTime(mTotalCheckingStartTimeMillis)

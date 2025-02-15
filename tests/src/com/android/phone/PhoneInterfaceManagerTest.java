@@ -46,6 +46,7 @@ import android.permission.flags.Flags;
 import android.platform.test.flag.junit.SetFlagsRule;
 import android.preference.PreferenceManager;
 import android.telephony.RadioAccessFamily;
+import android.telephony.Rlog;
 import android.telephony.TelephonyManager;
 import android.testing.AndroidTestingRunner;
 import android.testing.TestableLooper;
@@ -74,6 +75,7 @@ import org.mockito.Mockito;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -84,6 +86,8 @@ import java.util.Locale;
 public class PhoneInterfaceManagerTest extends TelephonyTestBase {
     @Rule
     public TestRule compatChangeRule = new PlatformCompatChangeRule();
+
+    private static final String TAG = "PhoneInterfaceManagerTest";
 
     private PhoneInterfaceManager mPhoneInterfaceManager;
     private SharedPreferences mSharedPreferences;
@@ -322,6 +326,10 @@ public class PhoneInterfaceManagerTest extends TelephonyTestBase {
                 mPhoneInterfaceManager).getDefaultPhone();
     }
 
+    private static void loge(String message) {
+        Rlog.e(TAG, message);
+    }
+
     @Test
     public void setNullCipherNotificationsEnabled_allReqsMet_successfullyEnabled() {
         setModemSupportsNullCipherNotification(true);
@@ -550,4 +558,25 @@ public class PhoneInterfaceManagerTest extends TelephonyTestBase {
         String packageName = mPhoneInterfaceManager.getCurrentPackageName();
         assertEquals(null, packageName);
     }
+
+    @Test
+    public void testGetSatelliteDataOptimizedApps() throws Exception {
+        doReturn(true).when(mFeatureFlags).carrierRoamingNbIotNtn();
+        mPhoneInterfaceManager.setFeatureFlags(mFeatureFlags);
+        loge("FeatureFlagApi is set to return true");
+
+        boolean containsCtsApp = false;
+        String ctsPackageName = "android.telephony.cts";
+        List<String> listSatelliteApplications =
+                mPhoneInterfaceManager.getSatelliteDataOptimizedApps();
+
+        for (String packageName : listSatelliteApplications) {
+            if (ctsPackageName.equals(packageName)) {
+                containsCtsApp = true;
+            }
+        }
+
+        assertFalse(containsCtsApp);
+    }
+
 }

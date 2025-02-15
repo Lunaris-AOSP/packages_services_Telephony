@@ -15017,4 +15017,25 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
             Binder.restoreCallingIdentity(identity);
         }
     }
+
+    /**
+     * Get list of applications that are optimized for low bandwidth satellite data.
+     *
+     * @return List of Application Name with data optimized network property.
+     * {@link #PROPERTY_SATELLITE_DATA_OPTIMIZED}
+     */
+    @Override
+    public List<String> getSatelliteDataOptimizedApps() {
+        enforceSatelliteCommunicationPermission("getSatelliteDataOptimizedApps");
+        List<String> appNames = new ArrayList<>();
+        int userId = Binder.getCallingUserHandle().getIdentifier();
+        final long identity = Binder.clearCallingIdentity();
+        try {
+            appNames = mSatelliteController.getSatelliteDataOptimizedApps(userId);
+        } finally {
+            Binder.restoreCallingIdentity(identity);
+        }
+
+        return appNames;
+    }
 }

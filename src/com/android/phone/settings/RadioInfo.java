@@ -2004,7 +2004,8 @@ public class RadioInfo extends AppCompatActivity {
     private static final int SATELLITE_CHANNEL = 8665;
     private final OnCheckedChangeListener mForceSatelliteChannelOnChangeListener =
             (buttonView, isChecked) -> {
-                if (!SubscriptionManager.isValidSubscriptionId(mSubId)) {
+
+                if (!isValidSubscription(mSubId)) {
                     loge("Force satellite channel invalid subId " + mSubId);
                     return;
                 }
@@ -2237,11 +2238,9 @@ public class RadioInfo extends AppCompatActivity {
                         dataMode);
                 overrideBundle.putBoolean(
                         KEY_SATELLITE_ENTITLEMENT_SUPPORTED_BOOL, false);
-                log("satData: mMockSatelliteDataListener: new " + overrideBundle);
-                if (SubscriptionManager.isValidSubscriptionId(mSubId)) {
+                if (isValidSubscription(mSubId)) {
                     getCarrierConfig().overrideConfig(mSubId, overrideBundle, false);
-                } else {
-                    Log.e(TAG, "SubscriptionId is not valid: " + mSubId);
+                    log("satData: mMockSatelliteDataListener: Updated new config" + overrideBundle);
                 }
             };
 
@@ -2271,7 +2270,7 @@ public class RadioInfo extends AppCompatActivity {
     }
 
     private void reloadCarrierConfigDefaults() {
-        if (mSatelliteDataOriginalBundle[mPhoneId] != null) {
+        if (mSatelliteDataOriginalBundle[mPhoneId] != null && isValidSubscription(mSubId)) {
             log("satData: Setting originalCarrierConfig = "
                     + mSatelliteDataOriginalBundle[mPhoneId]);
             getCarrierConfig().overrideConfig(mSubId, mSatelliteDataOriginalBundle[mPhoneId],
@@ -2281,16 +2280,32 @@ public class RadioInfo extends AppCompatActivity {
 
     private boolean isValidOperator(int subId) {
         String operatorNumeric = null;
-        if (SubscriptionManager.isValidSubscriptionId(subId)) {
-            operatorNumeric = mTelephonyManager
-                    .getNetworkOperatorForPhone(mPhoneId);
+        if (isValidSubscription(subId)) {
+            operatorNumeric = mTelephonyManager.getNetworkOperatorForPhone(mPhoneId);
             TelephonyManager tm;
-            if (TextUtils.isEmpty(operatorNumeric)
-                    && (tm = getSystemService(TelephonyManager.class)) != null) {
+            if (TextUtils.isEmpty(operatorNumeric) && (tm = getSystemService(
+                    TelephonyManager.class)) != null) {
                 operatorNumeric = tm.getSimOperatorNumericForPhone(mPhoneId);
             }
         }
         return !TextUtils.isEmpty(operatorNumeric);
+    }
+
+    /**
+     * This method will do extra check to validate the subId.
+     * <p>
+     * In case user opens the radioInfo when sim is active and enable some checks and go to the
+     * SIM settings screen and disabled the screen. Upon return to radioInfo screen subId is still
+     * valid but not in active state any more.
+     */
+    private boolean isValidSubscription(int subId) {
+        boolean isValidSubId = false;
+        if (SubscriptionManager.isValidSubscriptionId(subId)) {
+            SubscriptionManager mSm = getSystemService(SubscriptionManager.class);
+            isValidSubId = mSm.isActiveSubscriptionId(subId);
+        }
+        log("isValidSubscription, subId [ " + subId + " ] = " + isValidSubId);
+        return isValidSubId;
     }
 
     private final OnCheckedChangeListener mMockSatelliteListener =
@@ -2298,7 +2313,7 @@ public class RadioInfo extends AppCompatActivity {
                 int subId = mSubId;
                 int phoneId = mPhoneId;
                 if (SubscriptionManager.isValidPhoneId(phoneId)
-                        && SubscriptionManager.isValidSubscriptionId(subId)) {
+                        && isValidSubscription(subId)) {
                     if (getCarrierConfig() == null) return;
                     if (isChecked) {
                         if (!isValidOperator(subId)) {
