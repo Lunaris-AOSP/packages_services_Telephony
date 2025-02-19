@@ -118,10 +118,6 @@ public class SatelliteEntitlementController extends Handler {
      * @param featureFlags The feature flag.
      */
     public static void make(@NonNull Context context, @NonNull FeatureFlags featureFlags) {
-        if (!featureFlags.carrierEnabledSatelliteFlag()) {
-            logd("carrierEnabledSatelliteFlag is disabled. don't created this.");
-            return;
-        }
         if (sInstance == null) {
             HandlerThread handlerThread = new HandlerThread(TAG);
             handlerThread.start();

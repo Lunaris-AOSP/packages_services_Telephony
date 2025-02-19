@@ -337,7 +337,6 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
         mTestConnectionService.setTelephonyManagerProxy(mTelephonyManagerProxy);
 
         mBinderStub = (IConnectionService.Stub) mTestConnectionService.onBind(null);
-        mSetFlagsRule.disableFlags(Flags.FLAG_CARRIER_ENABLED_SATELLITE_FLAG);
         mSetFlagsRule.enableFlags(Flags.FLAG_DO_NOT_OVERRIDE_PRECISE_LABEL);
         mSetFlagsRule.enableFlags(Flags.FLAG_CALL_EXTRA_FOR_NON_HOLD_SUPPORTED_CARRIERS);
     }
@@ -3805,8 +3804,6 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
 
     @Test
     public void testNormalCallUsingNonTerrestrialNetwork_enableFlag() throws Exception {
-        mSetFlagsRule.enableFlags(Flags.FLAG_CARRIER_ENABLED_SATELLITE_FLAG);
-
         setupForCallTest();
         // Call is not supported while using satellite
         when(mSatelliteController.isInSatelliteModeForCarrierRoaming(any())).thenReturn(true);
@@ -3832,8 +3829,6 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
 
     @Test
     public void testNormalCallUsingSatelliteConnectedWithinHysteresisTime() throws Exception {
-        mSetFlagsRule.enableFlags(Flags.FLAG_CARRIER_ENABLED_SATELLITE_FLAG);
-
         // Call is not supported when device is connected to satellite within hysteresis time
         setupForCallTest();
         when(mSatelliteController.isInSatelliteModeForCarrierRoaming(any())).thenReturn(true);
@@ -3859,25 +3854,7 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
     }
 
     @Test
-    public void testNormalCallUsingNonTerrestrialNetwork_disableFlag() throws Exception {
-        mSetFlagsRule.disableFlags(Flags.FLAG_CARRIER_ENABLED_SATELLITE_FLAG);
-
-        setupForCallTest();
-        // Flag is disabled, so call is supported while using satellite
-        when(mSatelliteController.isInSatelliteModeForCarrierRoaming(any())).thenReturn(true);
-        when(mSatelliteController.getCapabilitiesForCarrierRoamingSatelliteMode(any())).thenReturn(
-                List.of(NetworkRegistrationInfo.SERVICE_TYPE_VOICE));
-
-        // UnsupportedOperationException is thrown as we cannot perform actual call
-        assertThrows(UnsupportedOperationException.class, () -> mTestConnectionService
-                .onCreateOutgoingConnection(PHONE_ACCOUNT_HANDLE_1,
-                createConnectionRequest(PHONE_ACCOUNT_HANDLE_1, "1234", TELECOM_CALL_ID1)));
-    }
-
-    @Test
     public void testNormalCallUsingNonTerrestrialNetwork_canMakeWifiCall() throws Exception {
-        mSetFlagsRule.enableFlags(Flags.FLAG_CARRIER_ENABLED_SATELLITE_FLAG);
-
         setupForCallTest();
         // Call is not supported while using satellite
         when(mSatelliteController.isInSatelliteModeForCarrierRoaming(any())).thenReturn(true);
@@ -3895,7 +3872,6 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
 
     @Test
     public void testNormalCallWhenEligibilityIsTrue() throws Exception {
-        mSetFlagsRule.enableFlags(Flags.FLAG_CARRIER_ENABLED_SATELLITE_FLAG);
         mSetFlagsRule.enableFlags(Flags.FLAG_CARRIER_ROAMING_NB_IOT_NTN);
 
         setupForCallTest();
@@ -3938,8 +3914,6 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
 
     @Test
     public void testIsAvailableForEmergencyCallsUsingNonTerrestrialNetwork_enableFlag() {
-        mSetFlagsRule.enableFlags(Flags.FLAG_CARRIER_ENABLED_SATELLITE_FLAG);
-
         // Call is not supported while using satellite
         when(mSatelliteController.isInSatelliteModeForCarrierRoaming(any())).thenReturn(true);
         when(mSatelliteController.getCapabilitiesForCarrierRoamingSatelliteMode(any()))
@@ -3960,33 +3934,7 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
     }
 
     @Test
-    public void testIsAvailableForEmergencyCallsUsingNonTerrestrialNetwork_disableFlag() {
-        mSetFlagsRule.disableFlags(Flags.FLAG_CARRIER_ENABLED_SATELLITE_FLAG);
-
-        // Call is supported while using satellite
-        when(mSatelliteController.isInSatelliteModeForCarrierRoaming(any())).thenReturn(true);
-        when(mSatelliteController.getCapabilitiesForCarrierRoamingSatelliteMode(any()))
-                .thenReturn(List.of(NetworkRegistrationInfo.SERVICE_TYPE_VOICE));
-        Phone mockPhone = Mockito.mock(Phone.class);
-        ServiceState ss = new ServiceState();
-        ss.setEmergencyOnly(true);
-        ss.setState(ServiceState.STATE_EMERGENCY_ONLY);
-        when(mockPhone.getServiceState()).thenReturn(ss);
-
-        when(mPhoneFactoryProxy.getPhones()).thenReturn(new Phone[] {mockPhone});
-
-        assertTrue(mTestConnectionService.isAvailableForEmergencyCalls(mockPhone,
-                EmergencyNumber.EMERGENCY_CALL_ROUTING_EMERGENCY));
-        assertFalse(mTestConnectionService.isAvailableForEmergencyCalls(mockPhone,
-                EmergencyNumber.EMERGENCY_CALL_ROUTING_NORMAL));
-        assertTrue(mTestConnectionService.isAvailableForEmergencyCalls(mockPhone,
-                EmergencyNumber.EMERGENCY_CALL_ROUTING_UNKNOWN));
-    }
-
-    @Test
     public void testIsAvailableForEmergencyCallsUsingNTN_CellularAvailable() {
-        mSetFlagsRule.enableFlags(Flags.FLAG_CARRIER_ENABLED_SATELLITE_FLAG);
-
         // Call is not supported while using satellite
         when(mSatelliteController.isInSatelliteModeForCarrierRoaming(any())).thenReturn(true);
         when(mSatelliteController.getCapabilitiesForCarrierRoamingSatelliteMode(any()))
@@ -4018,8 +3966,6 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
 
     @Test
     public void testIsAvailableForEmergencyCallsUsingNTN_CellularNotAvailable() {
-        mSetFlagsRule.enableFlags(Flags.FLAG_CARRIER_ENABLED_SATELLITE_FLAG);
-
         // Call is not supported while using satellite
         when(mSatelliteController.isInSatelliteModeForCarrierRoaming(any())).thenReturn(true);
         when(mSatelliteController.getCapabilitiesForCarrierRoamingSatelliteMode(any()))
