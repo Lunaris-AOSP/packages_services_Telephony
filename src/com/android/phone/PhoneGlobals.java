@@ -1042,26 +1042,24 @@ public class PhoneGlobals extends ContextWrapper {
         List<DataDisallowedReason> disallowReasons = phone.getDataNetworkController()
                 .getInternetDataDisallowedReasons();
 
-        if (mFeatureFlags.roamingNotificationForSingleDataNetwork()) {
-            if (disallowReasons.contains(DataDisallowedReason.ONLY_ALLOWED_SINGLE_NETWORK)
-                    && disallowReasons.contains(DataDisallowedReason.ROAMING_DISABLED)
-                    && (notificationReason == ROAMING_NOTIFICATION_REASON_DATA_SETTING_CHANGED
-                            || notificationReason
-                                    == ROAMING_NOTIFICATION_REASON_DATA_ROAMING_SETTING_CHANGED)) {
-                // If the ONLY_ALLOWED_SINGLE_NETWORK disallow reason has not yet been removed due
-                // to a change in mobile_data (including roaming_data) settings, update roaming
-                // notification again after the Internet is completely disconnected to check
-                // ONLY_ALLOWED_SINGLE_NETWORK disallow reason is removed.
-                mWaitForInternetDisconnection.set(true);
-                Log.d(LOG_TAG, "updateDataRoamingStatus,"
-                        + " wait for internet disconnection for single data network");
-            } else if (!disallowReasons.contains(DataDisallowedReason.ONLY_ALLOWED_SINGLE_NETWORK)
-                    && mWaitForInternetDisconnection.compareAndSet(true, false)) {
-                // If the ONLY_ALLOWED_SINGLE_NETWORK disallow reason has been removed,
-                // no longer wait for Internet disconnection.
-                Log.d(LOG_TAG, "updateDataRoamingStatus,"
-                        + " cancel to wait for internet disconnection for single data network");
-            }
+        if (disallowReasons.contains(DataDisallowedReason.ONLY_ALLOWED_SINGLE_NETWORK)
+                && disallowReasons.contains(DataDisallowedReason.ROAMING_DISABLED)
+                && (notificationReason == ROAMING_NOTIFICATION_REASON_DATA_SETTING_CHANGED
+                        || notificationReason
+                                == ROAMING_NOTIFICATION_REASON_DATA_ROAMING_SETTING_CHANGED)) {
+            // If the ONLY_ALLOWED_SINGLE_NETWORK disallow reason has not yet been removed due
+            // to a change in mobile_data (including roaming_data) settings, update roaming
+            // notification again after the Internet is completely disconnected to check
+            // ONLY_ALLOWED_SINGLE_NETWORK disallow reason is removed.
+            mWaitForInternetDisconnection.set(true);
+            Log.d(LOG_TAG, "updateDataRoamingStatus,"
+                    + " wait for internet disconnection for single data network");
+        } else if (!disallowReasons.contains(DataDisallowedReason.ONLY_ALLOWED_SINGLE_NETWORK)
+                && mWaitForInternetDisconnection.compareAndSet(true, false)) {
+            // If the ONLY_ALLOWED_SINGLE_NETWORK disallow reason has been removed,
+            // no longer wait for Internet disconnection.
+            Log.d(LOG_TAG, "updateDataRoamingStatus,"
+                    + " cancel to wait for internet disconnection for single data network");
         }
 
         updateDataRoamingStatus(notificationReason, disallowReasons, serviceState);
