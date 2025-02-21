@@ -75,7 +75,6 @@ import android.provider.DeviceConfig;
 import android.telecom.TelecomManager;
 import android.telephony.AnomalyReporter;
 import android.telephony.CarrierConfigManager;
-import android.telephony.DropBoxManagerLoggerBackend;
 import android.telephony.NetworkRegistrationInfo;
 import android.telephony.PersistentLogger;
 import android.telephony.Rlog;
@@ -106,6 +105,7 @@ import com.android.internal.telephony.flags.FeatureFlags;
 import com.android.internal.telephony.satellite.SatelliteConfig;
 import com.android.internal.telephony.satellite.SatelliteConstants;
 import com.android.internal.telephony.satellite.SatelliteController;
+import com.android.internal.telephony.satellite.SatelliteServiceUtils;
 import com.android.internal.telephony.satellite.metrics.AccessControllerMetricsStats;
 import com.android.internal.telephony.satellite.metrics.ConfigUpdaterMetricsStats;
 import com.android.internal.telephony.satellite.metrics.ControllerMetricsStats;
@@ -497,10 +497,7 @@ public class SatelliteAccessController extends Handler {
             @Nullable File s2CellFile) {
         super(looper);
         mContext = context;
-        if (isSatellitePersistentLoggingEnabled(context, featureFlags)) {
-            mPersistentLogger = new PersistentLogger(
-                    DropBoxManagerLoggerBackend.getInstance(context));
-        }
+        mPersistentLogger = SatelliteServiceUtils.getPersistentLogger(context);
         mFeatureFlags = featureFlags;
         mLocationManager = locationManager;
         mTelecomManager = telecomManager;
@@ -1684,10 +1681,19 @@ public class SatelliteAccessController extends Handler {
     private void sendSatelliteAllowResultToReceivers(int resultCode, Bundle resultData,
             boolean allowed) {
         plogd("sendSatelliteAllowResultToReceivers : resultCode is " + resultCode);
-        if (resultCode == SATELLITE_RESULT_SUCCESS) {
-            updateCurrentSatelliteAllowedState(allowed);
-            mIsCurrentLocationEligibleForNotification = true;
+        switch(resultCode) {
+            case SATELLITE_RESULT_SUCCESS:
+                updateCurrentSatelliteAllowedState(allowed);
+                mIsCurrentLocationEligibleForNotification = true;
+                break;
+
+            case SATELLITE_RESULT_LOCATION_DISABLED:
+                updateCurrentSatelliteAllowedState(allowed);
+                break;
+            default:
+                break;
         }
+
         synchronized (mLock) {
             for (ResultReceiver resultReceiver : mSatelliteAllowResultReceivers) {
                 resultReceiver.send(resultCode, resultData);
@@ -3192,19 +3198,6 @@ public class SatelliteAccessController extends Handler {
 
     private static void logv(@NonNull String log) {
         Rlog.v(TAG, log);
-    }
-
-    private boolean isSatellitePersistentLoggingEnabled(
-            @NonNull Context context, @NonNull FeatureFlags featureFlags) {
-        if (featureFlags.satellitePersistentLogging()) {
-            return true;
-        }
-        try {
-            return context.getResources().getBoolean(
-                    R.bool.config_dropboxmanager_persistent_logging_enabled);
-        } catch (RuntimeException e) {
-            return false;
-        }
     }
 
     /**
