@@ -1761,7 +1761,6 @@ public class SatelliteAccessControllerTest extends TelephonyTestBase {
                 mSatelliteAccessControllerUT,
                 DEFAULT_S2_LEVEL);
         when(mMockFeatureFlags.carrierRoamingNbIotNtn()).thenReturn(true);
-        when(mMockFeatureFlags.oemEnabledSatelliteFlag()).thenReturn(true);
         when(mMockContext.getResources()).thenReturn(mMockResources);
         when(mMockResources.getBoolean(
                         com.android.internal.R.bool.config_oem_enabled_satellite_access_allow))
