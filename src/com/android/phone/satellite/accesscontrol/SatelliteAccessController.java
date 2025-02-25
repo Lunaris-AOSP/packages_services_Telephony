@@ -60,6 +60,7 @@ import android.os.AsyncResult;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CancellationSignal;
+import android.os.FileUtils;
 import android.os.Handler;
 import android.os.HandlerExecutor;
 import android.os.HandlerThread;
@@ -705,7 +706,9 @@ public class SatelliteAccessController extends Handler {
                 plogd("EVENT_LOCATION_SETTINGS_ENABLED");
             case EVENT_LOCATION_SETTINGS_DISABLED:
                 // Fall through
+                plogd("EVENT_LOCATION_SETTINGS_DISABLED");
             case EVENT_COUNTRY_CODE_CHANGED:
+                plogd("EVENT_COUNTRY_CODE_CHANGED");
                 handleSatelliteAllowedRegionPossiblyChanged(msg.what);
                 break;
             case CMD_UPDATE_SYSTEM_SELECTION_CHANNELS:
@@ -825,6 +828,9 @@ public class SatelliteAccessController extends Handler {
             if (reset) {
                 mIsOverlayConfigOverridden = false;
                 cleanUpCtsResources();
+                cleanUpTelephonyConfigs();
+                cleanUpSatelliteAccessConfigOtaResources();
+                cleanupSatelliteConfigOtaResources();
             } else {
                 mIsOverlayConfigOverridden = true;
                 mOverriddenIsSatelliteAllowAccessControl = isAllowed;
@@ -1044,6 +1050,39 @@ public class SatelliteAccessController extends Handler {
                 ploge("cleanUpCtsResources: ex=" + ex);
             }
         }
+    }
+
+    private void cleanUpTelephonyConfigs() {
+        mSatelliteController.cleanUpTelephonyConfigs();
+    }
+
+    private void cleanUpSatelliteAccessConfigOtaResources() {
+        PhoneGlobals phoneGlobals = PhoneGlobals.getInstance();
+        File satelliteAccessControlDir =
+                phoneGlobals.getDir(SATELLITE_ACCESS_CONTROL_DATA_DIR, Context.MODE_PRIVATE);
+        if (satelliteAccessControlDir == null || !satelliteAccessControlDir.exists()) {
+            plogd(
+                    "cleanUpSatelliteAccessConfigOtaResources: "
+                            + SATELLITE_ACCESS_CONTROL_DATA_DIR
+                            + " does not exist");
+            return;
+        }
+        plogd(
+                "cleanUpSatelliteAccessConfigOtaResources: Deleting contents under "
+                        + SATELLITE_ACCESS_CONTROL_DATA_DIR);
+        FileUtils.deleteContents(satelliteAccessControlDir);
+    }
+
+    private void cleanupSatelliteConfigOtaResources() {
+        SatelliteConfig satelliteConfig = mSatelliteController.getSatelliteConfig();
+        if (satelliteConfig == null) {
+            plogd(
+                    "cleanupSatelliteConfigOtaResources: satelliteConfig is null. Cannot or Not"
+                        + " needed to delete satellite config OTA files");
+            return;
+        }
+        plogd("cleanupSatelliteConfigOtaResources: Deleting satellite config OTA files");
+        satelliteConfig.cleanOtaResources(mContext);
     }
 
     @VisibleForTesting(visibility = VisibleForTesting.Visibility.PRIVATE)
@@ -1942,7 +1981,8 @@ public class SatelliteAccessController extends Handler {
                 .setAutoCancel(true)
                 .setColor(context.getColor(
                         com.android.internal.R.color.system_notification_accent_color))
-                .setVisibility(Notification.VISIBILITY_PUBLIC);
+                .setVisibility(Notification.VISIBILITY_PUBLIC)
+                .setLocalOnly(true);
 
         return notificationBuilder.build();
     }
@@ -2537,6 +2577,8 @@ public class SatelliteAccessController extends Handler {
      */
     private boolean initSatelliteOnDeviceAccessController()
             throws IllegalStateException {
+        plogd("initSatelliteOnDeviceAccessController");
+
         synchronized (mLock) {
             if (getSatelliteS2CellFile() == null) return false;
 
@@ -2550,6 +2592,10 @@ public class SatelliteAccessController extends Handler {
                 mSatelliteOnDeviceAccessController =
                         SatelliteOnDeviceAccessController.create(
                                 getSatelliteS2CellFile(), mFeatureFlags);
+
+                plogd(
+                        "initSatelliteOnDeviceAccessController: initialized"
+                            + " SatelliteOnDeviceAccessController");
                 restartKeepOnDeviceAccessControllerResourcesTimer();
                 mS2Level = mSatelliteOnDeviceAccessController.getS2Level();
                 plogd("mS2Level=" + mS2Level);
