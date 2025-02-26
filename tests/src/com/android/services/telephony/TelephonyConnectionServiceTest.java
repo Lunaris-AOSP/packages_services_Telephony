@@ -258,6 +258,7 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
     @Mock private EmergencyStateTracker mEmergencyStateTracker;
     @Mock private Resources mMockResources;
     @Mock private FeatureFlags mFeatureFlags;
+    @Mock private com.android.server.telecom.flags.FeatureFlags mTelecomFlags;
     private Phone mPhone0;
     private Phone mPhone1;
 
@@ -285,7 +286,7 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
         super.setUp();
 
         mTestConnectionService = new TestTelephonyConnectionService(mContext);
-        mTestConnectionService.setFeatureFlags(mFeatureFlags);
+        mTestConnectionService.setFeatureFlags(mFeatureFlags, mTelecomFlags);
         mTestConnectionService.setPhoneFactoryProxy(mPhoneFactoryProxy);
         mTestConnectionService.setSubscriptionManagerProxy(mSubscriptionManagerProxy);
         // Set configurations statically
@@ -1861,6 +1862,7 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
     @Test
     @SmallTest
     public void testSecondCallSameSubWontDisconnect() throws Exception {
+        doReturn(false).when(mTelecomFlags).enableCallSequencing();
         // Previous test gets us into a good enough state
         testIncomingDoesntRequestDisconnect();
 

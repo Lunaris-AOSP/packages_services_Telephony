@@ -576,6 +576,7 @@ public class RadioInfo extends AppCompatActivity {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
+        SettingsConstants.setupEdgeToEdge(this);
         mSystemUser = android.os.Process.myUserHandle().isSystem();
         log("onCreate: mSystemUser=" + mSystemUser);
         UserManager userManager = getSystemService(UserManager.class);

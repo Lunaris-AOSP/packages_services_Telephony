@@ -621,7 +621,6 @@ public class SatelliteAccessController extends Handler {
                         + satelliteSubscriberProvisionStatus);
             }
         };
-        initializeSatelliteSystemNotification(context);
         result = mSatelliteController.registerForSatelliteProvisionStateChanged(
                 mInternalSatelliteProvisionStateCallback);
         plogd("registerForSatelliteProvisionStateChanged result: " + result);
@@ -716,6 +715,7 @@ public class SatelliteAccessController extends Handler {
                 break;
             case EVENT_SATELLITE_SUBSCRIPTION_CHANGED:
                 plogd("Event: EVENT_SATELLITE_SUBSCRIPTION_CHANGED");
+                initializeSatelliteSystemNotification(mContext);
                 handleEventDisallowedReasonsChanged();
                 break;
             default:

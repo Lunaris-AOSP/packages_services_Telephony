@@ -8446,10 +8446,8 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     public boolean isRttEnabled(int subscriptionId) {
         final long identity = Binder.clearCallingIdentity();
         try {
-            if (mFeatureFlags.enforceTelephonyFeatureMappingForPublicApis()) {
-                if (!mPackageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY_IMS)) {
-                    return false;
-                }
+            if (!mPackageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY_IMS)) {
+                return false;
             }
 
             boolean isRttSupported = isRttSupported(subscriptionId);
@@ -11265,8 +11263,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
             throw new IllegalArgumentException("Invalid Subscription ID: " + subId);
         }
 
-        if (!mFeatureFlags.enforceTelephonyFeatureMappingForPublicApis()
-                || !CompatChanges.isChangeEnabled(ENABLE_FEATURE_MAPPING, getCurrentPackageName(),
+        if (!CompatChanges.isChangeEnabled(ENABLE_FEATURE_MAPPING, getCurrentPackageName(),
                 Binder.getCallingUserHandle())) {
             if (!isImsAvailableOnDevice()) {
                 // ProvisioningManager can not handle ServiceSpecificException.
@@ -11870,8 +11867,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
         if (!SubscriptionManager.isValidSubscriptionId(subId)) {
             throw new IllegalArgumentException("Invalid Subscription ID: " + subId);
         }
-        if (!mFeatureFlags.enforceTelephonyFeatureMappingForPublicApis()
-                || !CompatChanges.isChangeEnabled(ENABLE_FEATURE_MAPPING, getCurrentPackageName(),
+        if (!CompatChanges.isChangeEnabled(ENABLE_FEATURE_MAPPING, getCurrentPackageName(),
                 Binder.getCallingUserHandle())) {
             if (!isImsAvailableOnDevice()) {
                 throw new ServiceSpecificException(ImsException.CODE_ERROR_UNSUPPORTED_OPERATION,
@@ -11909,8 +11905,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
             throw new IllegalArgumentException("Invalid Subscription ID: " + subId);
         }
 
-        if (!mFeatureFlags.enforceTelephonyFeatureMappingForPublicApis()
-                || !CompatChanges.isChangeEnabled(ENABLE_FEATURE_MAPPING, getCurrentPackageName(),
+        if (!CompatChanges.isChangeEnabled(ENABLE_FEATURE_MAPPING, getCurrentPackageName(),
                 Binder.getCallingUserHandle())) {
             if (!isImsAvailableOnDevice()) {
                 // operation failed silently
@@ -11943,8 +11938,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
         if (!SubscriptionManager.isValidSubscriptionId(subId)) {
             throw new IllegalArgumentException("Invalid Subscription ID: " + subId);
         }
-        if (!mFeatureFlags.enforceTelephonyFeatureMappingForPublicApis()
-                || !CompatChanges.isChangeEnabled(ENABLE_FEATURE_MAPPING, getCurrentPackageName(),
+        if (!CompatChanges.isChangeEnabled(ENABLE_FEATURE_MAPPING, getCurrentPackageName(),
                 Binder.getCallingUserHandle())) {
             if (!isImsAvailableOnDevice()) {
                 // ProvisioningManager can not handle ServiceSpecificException.
@@ -11975,8 +11969,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
         if (!SubscriptionManager.isValidSubscriptionId(subId)) {
             throw new IllegalArgumentException("Invalid Subscription ID: " + subId);
         }
-        if (!mFeatureFlags.enforceTelephonyFeatureMappingForPublicApis()
-                || !CompatChanges.isChangeEnabled(ENABLE_FEATURE_MAPPING, getCurrentPackageName(),
+        if (!CompatChanges.isChangeEnabled(ENABLE_FEATURE_MAPPING, getCurrentPackageName(),
                 Binder.getCallingUserHandle())) {
             if (!isImsAvailableOnDevice()) {
                 throw new ServiceSpecificException(ImsException.CODE_ERROR_UNSUPPORTED_OPERATION,
@@ -14750,8 +14743,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
             return;
         }
 
-        if (!mFeatureFlags.enforceTelephonyFeatureMappingForPublicApis()
-                || !CompatChanges.isChangeEnabled(ENABLE_FEATURE_MAPPING, callingPackage,
+        if (!CompatChanges.isChangeEnabled(ENABLE_FEATURE_MAPPING, callingPackage,
                 Binder.getCallingUserHandle())
                 || mVendorApiLevel < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
             // Skip to check associated telephony feature,
