@@ -13283,6 +13283,7 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
                                 (r == SATELLITE_DISALLOWED_REASON_UNSUPPORTED_DEFAULT_MSG_APP
                                         || r == SATELLITE_DISALLOWED_REASON_NOT_PROVISIONED
                                         || r == SATELLITE_DISALLOWED_REASON_NOT_SUPPORTED))) {
+                            Log.d(LOG_TAG, "Satellite access is disallowed for current location.");
                             result.accept(SATELLITE_RESULT_ACCESS_BARRED);
                             return;
                         }
@@ -14181,6 +14182,30 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     }
 
     /**
+     * This API can be used by only CTS to override the satellite access allowed state for
+     * a list of subscription IDs.
+     *
+     * @param subIdListStr The string representation of the list of subscription IDs,
+     *                     which are numbers separated by comma.
+     * @return {@code true} if the satellite access allowed state is set successfully,
+     * {@code false} otherwise.
+     */
+    public boolean setSatelliteAccessAllowedForSubscriptions(@Nullable String subIdListStr) {
+        Log.d(LOG_TAG, "setSatelliteAccessAllowedForSubscriptions - " + subIdListStr);
+        TelephonyPermissions.enforceShellOnly(
+                Binder.getCallingUid(), "setSatelliteAccessAllowedForSubscriptions");
+        TelephonyPermissions.enforceCallingOrSelfModifyPermissionOrCarrierPrivilege(mApp,
+                SubscriptionManager.INVALID_SUBSCRIPTION_ID,
+                "setSatelliteAccessAllowedForSubscriptions");
+        final long identity = Binder.clearCallingIdentity();
+        try {
+            return mSatelliteController.setSatelliteAccessAllowedForSubscriptions(subIdListStr);
+        } finally {
+            Binder.restoreCallingIdentity(identity);
+        }
+    }
+
+    /**
      * This API can be used by only CTS to update satellite gateway service package name.
      *
      * @param servicePackageName The package name of the satellite gateway service.
@@ -14245,6 +14270,37 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
         final long identity = Binder.clearCallingIdentity();
         try {
             return mSatelliteController.setSatelliteListeningTimeoutDuration(timeoutMillis);
+        } finally {
+            Binder.restoreCallingIdentity(identity);
+        }
+    }
+
+    /**
+     * This API can be used by only CTS to override TN scanning support.
+     *
+     * @param reset {@code true} mean the overridden configs should not be used, {@code false}
+     *              otherwise.
+     * @param concurrentTnScanningSupported Whether concurrent TN scanning is supported.
+     * @param tnScanningDuringSatelliteSessionAllowed Whether TN scanning is allowed during
+     * a satellite session.
+     * @return {@code true} if the TN scanning support is set successfully,
+     * {@code false} otherwise.
+     */
+    public boolean setTnScanningSupport(boolean reset, boolean concurrentTnScanningSupported,
+        boolean tnScanningDuringSatelliteSessionAllowed) {
+        Log.d(LOG_TAG, "setTnScanningSupport: reset= " + reset
+            + ", concurrentTnScanningSupported=" + concurrentTnScanningSupported
+            + ", tnScanningDuringSatelliteSessionAllowed="
+            + tnScanningDuringSatelliteSessionAllowed);
+        TelephonyPermissions.enforceShellOnly(
+                Binder.getCallingUid(), "setTnScanningSupport");
+        TelephonyPermissions.enforceCallingOrSelfModifyPermissionOrCarrierPrivilege(mApp,
+                SubscriptionManager.INVALID_SUBSCRIPTION_ID,
+                "setTnScanningSupport");
+        final long identity = Binder.clearCallingIdentity();
+        try {
+            return mSatelliteController.setTnScanningSupport(reset,
+                concurrentTnScanningSupported, tnScanningDuringSatelliteSessionAllowed);
         } finally {
             Binder.restoreCallingIdentity(identity);
         }

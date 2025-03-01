@@ -2279,6 +2279,35 @@ public class TelephonyConnectionServiceTest extends TelephonyTestBase {
     }
 
     /**
+     * For DSDA devices, verifies that calls on other subs are disconnected based on the passed in
+     * phone account
+     */
+    @Test
+    @SmallTest
+    public void testDisconnectCallsOnOtherSubs() throws Exception {
+        setupForCallTest();
+        when(mTelephonyManagerProxy.isConcurrentCallsPossible()).thenReturn(true);
+        doNothing().when(mContext).startActivityAsUser(any(), any());
+
+        mBinderStub.createConnection(PHONE_ACCOUNT_HANDLE_1, "TC@1",
+                new ConnectionRequest(PHONE_ACCOUNT_HANDLE_1, Uri.parse("tel:16505551212"),
+                        new Bundle()),
+                true, false, null);
+        waitForHandlerAction(mTestConnectionService.getHandler(), TIMEOUT_MS);
+        assertEquals(1, mTestConnectionService.getAllConnections().size());
+
+        TelephonyConnection cn = (TelephonyConnection)
+                mTestConnectionService.getAllConnections().toArray()[0];
+        cn.setActive();
+
+        List<Conferenceable> conferenceables = mTestConnectionService
+                .disconnectAllConferenceablesOnOtherSubs(PHONE_ACCOUNT_HANDLE_2);
+        assertFalse(conferenceables.isEmpty());
+        assertEquals(conferenceables.getFirst(), cn);
+        assertEquals(cn.getState(), android.telecom.Connection.STATE_DISCONNECTED);
+    }
+
+    /**
      * Verifies that TelephonyManager is used to determine whether a connection is Emergency when
      * creating an outgoing connection.
      */
