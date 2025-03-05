@@ -57,6 +57,10 @@
                 <action android:name="android.telephony.satellite.SatelliteService" />
             </intent-filter>
         </service>
+
+        <meta-data
+            android:name="android.telephony.PROPERTY_SATELLITE_DATA_OPTIMIZED"
+            android:value="true"/>
     </application>
 
     <uses-permission android:name="android.permission.SATELLITE_COMMUNICATION" />
