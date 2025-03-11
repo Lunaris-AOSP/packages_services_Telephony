@@ -3130,15 +3130,15 @@ public class SatelliteAccessController extends Handler {
             if ("cache_allowed".equalsIgnoreCase(state)) {
                 mLatestSatelliteCommunicationAllowedSetTime = getElapsedRealtimeNanos();
                 mLatestSatelliteCommunicationAllowed = true;
-                mCurrentSatelliteAllowedState = true;
+                updateCurrentSatelliteAllowedState(true);
             } else if ("cache_not_allowed".equalsIgnoreCase(state)) {
                 mLatestSatelliteCommunicationAllowedSetTime = getElapsedRealtimeNanos();
                 mLatestSatelliteCommunicationAllowed = false;
-                mCurrentSatelliteAllowedState = false;
+                updateCurrentSatelliteAllowedState(false);
             } else if ("cache_clear_and_not_allowed".equalsIgnoreCase(state)) {
                 mLatestSatelliteCommunicationAllowedSetTime = 0;
                 mLatestSatelliteCommunicationAllowed = false;
-                mCurrentSatelliteAllowedState = false;
+                updateCurrentSatelliteAllowedState(false);
                 persistLatestSatelliteCommunicationAllowedState();
             } else if ("clear_cache_only".equalsIgnoreCase(state)) {
                 mLatestSatelliteCommunicationAllowedSetTime = 0;
