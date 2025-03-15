@@ -224,6 +224,7 @@ import com.android.internal.telephony.SmsPermissions;
 import com.android.internal.telephony.TelephonyCountryDetector;
 import com.android.internal.telephony.TelephonyIntents;
 import com.android.internal.telephony.TelephonyPermissions;
+import com.android.internal.telephony.configupdate.TelephonyConfigUpdateInstallReceiver;
 import com.android.internal.telephony.data.DataUtils;
 import com.android.internal.telephony.domainselection.DomainSelectionResolver;
 import com.android.internal.telephony.emergency.EmergencyNumberTracker;
@@ -14508,6 +14509,22 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
         } finally {
             Binder.restoreCallingIdentity(identity);
         }
+    }
+
+    /**
+     * This API is used by CTS to override the version of the config data
+     *
+     * @param reset Whether to restore the original version
+     * @param version The overriding version
+     * @return {@code true} if successful, {@code false} otherwise
+     */
+    public boolean overrideConfigDataVersion(boolean reset, int version) {
+        Log.d(LOG_TAG, "overrideVersion - reset=" + reset + ", version=" + version);
+        TelephonyPermissions.enforceShellOnly(
+                Binder.getCallingUid(), "overrideConfigDataVersion");
+        TelephonyPermissions.enforceCallingOrSelfModifyPermissionOrCarrierPrivilege(mApp,
+                SubscriptionManager.INVALID_SUBSCRIPTION_ID, "overrideVersion");
+        return TelephonyConfigUpdateInstallReceiver.getInstance().overrideVersion(reset, version);
     }
 
     /**
