@@ -15163,4 +15163,35 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
 
         return appNames;
     }
+
+    /**
+     * Method to return the current satellite data service policy supported mode for the
+     * subscriptionId based on carrier config.
+     *
+     * @param subId current subscription id.
+     *
+     * @return Supported modes {@link SatelliteManager#SatelliteDataSupportMode}
+     * @throws IllegalArgumentException if the subscription is invalid.
+     *
+     * @hide
+     */
+    @Override
+    @SatelliteManager.SatelliteDataSupportMode
+    public int getSatelliteDataSupportMode(int subId) {
+        enforceSatelliteCommunicationPermission("getSatelliteDataSupportMode");
+        int satelliteMode = SatelliteManager.SATELLITE_DATA_SUPPORT_UNKNOWN;
+
+        if (!SubscriptionManager.isValidSubscriptionId(subId)) {
+            throw new IllegalArgumentException("Invalid Subscription ID: " + subId);
+        }
+
+        final long identity = Binder.clearCallingIdentity();
+        try {
+            satelliteMode = mSatelliteController.getSatelliteDataSupportMode(subId);
+        } finally {
+            Binder.restoreCallingIdentity(identity);
+        }
+
+        return satelliteMode;
+    }
 }
