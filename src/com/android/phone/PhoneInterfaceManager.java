@@ -14355,6 +14355,32 @@ public class PhoneInterfaceManager extends ITelephony.Stub {
     }
 
     /**
+     * This API can be used by only CTS to control the feature
+     * {@code config_support_disable_satellite_while_enable_in_progress}.
+     *
+     * @param reset Whether to reset the override.
+     * @param supported Whether to support the feature.
+     * @return {@code true} if the value is set successfully, {@code false} otherwise.
+     */
+    public boolean setSupportDisableSatelliteWhileEnableInProgress(
+        boolean reset, boolean supported) {
+        Log.d(LOG_TAG, "setSupportDisableSatelliteWhileEnableInProgress - reset=" + reset
+                  + ", supported=" + supported);
+        TelephonyPermissions.enforceShellOnly(
+                Binder.getCallingUid(), "setSupportDisableSatelliteWhileEnableInProgress");
+        TelephonyPermissions.enforceCallingOrSelfModifyPermissionOrCarrierPrivilege(mApp,
+                SubscriptionManager.INVALID_SUBSCRIPTION_ID,
+                "setSupportDisableSatelliteWhileEnableInProgress");
+        final long identity = Binder.clearCallingIdentity();
+        try {
+            return mSatelliteController.setSupportDisableSatelliteWhileEnableInProgress(
+                reset, supported);
+        } finally {
+            Binder.restoreCallingIdentity(identity);
+        }
+    }
+
+    /**
      * This API can be used by only CTS to override the timeout durations used by the
      * DatagramController module.
      *
