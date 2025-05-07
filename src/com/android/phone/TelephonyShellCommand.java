@@ -246,6 +246,9 @@ public class TelephonyShellCommand extends BasicShellCommandHandler {
     private static final String GET_IMEI = "get-imei";
     private static final String GET_SIM_SLOTS_MAPPING = "get-sim-slots-mapping";
     private static final String COMMAND_DELETE_IMSI_KEY = "delete_imsi_key";
+    private static final String SET_SATELLITE_IGNORE_PLMN_LIST_FROM_STORAGE =
+            "set-satellite-ignore-plmn-list-from-storage";
+
     // Take advantage of existing methods that already contain permissions checks when possible.
     private final ITelephony mInterface;
 
@@ -459,6 +462,8 @@ public class TelephonyShellCommand extends BasicShellCommandHandler {
                 return handleSetSatelliteTnScanningSupport();
             case COMMAND_DELETE_IMSI_KEY:
                 return handleDeleteTestImsiKey();
+            case SET_SATELLITE_IGNORE_PLMN_LIST_FROM_STORAGE:
+                return handleSetSatelliteIgnorePlmnListFromStorage();
             default: {
                 return handleDefaultCommands(cmd);
             }
@@ -4473,5 +4478,37 @@ public class TelephonyShellCommand extends BasicShellCommandHandler {
         }
         phone.resetCarrierKeysForImsiEncryption(true);
         return 1;
+    }
+
+    private int handleSetSatelliteIgnorePlmnListFromStorage() {
+        PrintWriter errPw = getErrPrintWriter();
+        boolean enabled = false;
+
+        String opt;
+        while ((opt = getNextOption()) != null) {
+            switch (opt) {
+                case "-d": {
+                    enabled = Boolean.parseBoolean(getNextArgRequired());
+                    break;
+                }
+            }
+        }
+        Log.d(LOG_TAG, "handleSetSatelliteIgnorePlmnListFromStorage: enabled ="
+                + enabled);
+
+        try {
+            boolean result = mInterface.setSatelliteIgnorePlmnListFromStorage(enabled);
+            if (VDBG) {
+                Log.v(LOG_TAG, "handleSetAllPlmnListFromStorageEmpty " + enabled
+                        + ", result = " + result);
+            }
+            getOutPrintWriter().println(result);
+        } catch (RemoteException e) {
+            Log.w(LOG_TAG, "handleSetAllPlmnListFromStorageEmpty: " + enabled
+                    + ", error = " + e.getMessage());
+            errPw.println("Exception: " + e.getMessage());
+            return -1;
+        }
+        return 0;
     }
 }
